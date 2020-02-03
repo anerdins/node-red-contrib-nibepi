@@ -852,7 +852,6 @@ module.exports = function(RED) {
     let startHW;
     async function hotwaterPlugin() {
         let time = Date.now();
-        let clock = ((time.getHours()*60)+time.getMinutes())*60000;
         let hwTriggerTemp;
         let config = nibe.getConfig();
         if(config.hotwater===undefined) {
