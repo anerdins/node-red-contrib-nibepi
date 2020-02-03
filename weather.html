@@ -1,0 +1,133 @@
+<script type="text/javascript">
+    RED.nodes.registerType('nibe-weather',{
+        category: 'input',
+        color: '#e32222',
+        defaults: {
+            server: {value:"", type:"nibe-config"},
+            name: {value:""},
+            system: {value:"s1"},
+            sun: {value:""},
+            wind: {value:""},
+            adjust: {value:"0"},
+            hours: {value:"6"}
+        },
+        inputs:1,
+        outputs:2,
+        inputLabels: ["Update"],
+        outputLabels: ["Weather","Data"],
+        icon: "inject.svg",
+        label: function() {
+            return this.name||"NibePi Weather";
+        },
+        oneditprepare: function() {
+            $.getJSON('/config', function(data) {
+                let system = $("#node-input-system").val();
+                $("#node-input-lat").val(data.home.lat);
+                $("#node-input-lon").val(data.home.lon);
+                $("#node-input-sun").val(data.weather.sun_enable);
+                $("#node-input-wind").val(data.weather.wind_enable);
+                $("#node-input-adjust").val(data.home[`adjust_${system}`]);
+                $("#node-input-hours").val(data.home[`hours_${system}`]);
+
+                $('#node-input-system').change(() => {
+                    system = $("#node-input-system").val();
+                    $("#node-input-adjust").val(data.home[`adjust_${system}`]);
+                    $("#node-input-hours").val(data.home[`hours_${system}`]);
+                });
+            })
+
+        },
+        oneditsave: function() {
+            let node = this;
+            $.getJSON('/config', function(data) {
+                if ($('#node-input-wind').is(':checked')) {
+                    data.weather.wind_enable = true;
+                } else {
+                    data.weather.wind_enable = false;
+                }
+                if ($('#node-input-sun').is(':checked')) {
+                    data.weather.sun_enable = true;
+                } else {
+                    data.weather.sun_enable = false;
+                }
+                let system = $("#node-input-system").val();
+                if(data.home['hours_'+system]===undefined) data.home['hours_'+system] = 1;
+                if(data.home['adjust_'+system]===undefined) data.home['adjust_'+system] = 1;
+                data.home.lat = $("#node-input-lat").val();
+                data.home.lon = $("#node-input-lon").val();
+                data.home['hours_'+system] = $("#node-input-hours").val();
+                data.home['adjust_'+system] = $("#node-input-adjust").val();
+                $.ajax({
+                contentType: 'application/json',
+                data: JSON.stringify({config:data,data:node}),
+                dataType: 'json',
+                success: function(data){
+                    app.log("device control succeeded");
+                },
+                error: function(){
+                    app.log("Device control failed");
+                },
+                processData: false,
+                type: 'POST',
+                url: "config/"+node.id
+            });
+            })
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="nibe-weather">
+    <div class="form-row">
+        <label for="node-input-system"><i class="icon-bookmark"></i> System</label>
+        <select id="node-input-system">
+            <option value="s1">System 1</option>
+            <option value="s2">System 2</option>
+            <!-- <option value="s3">System 3</option> -->
+            <!-- <option value="s4">System 4</option> -->
+            <!-- <option value="s5">System 5</option> -->
+            <!-- <option value="s6">System 6</option> -->
+            <!-- <option value="s7">System 7</option> -->
+            <!-- <option value="s8">System 8</option> -->
+            </select>
+        </div>
+    <div class="form-row">
+        <label for="node-input-lat"><i class="icon-bookmark"></i> Latitude</label>
+        <input type="text" id="node-input-lat">
+    </div>
+    <div class="form-row">
+            <label for="node-input-lon"><i class="icon-bookmark"></i> Longitude</label>
+            <input type="text" id="node-input-lon">
+    </div>
+    <div class="form-row">
+            <label> Forecast</label>
+            <input type="checkbox" id="node-input-sun" style="margin-left: 0px; vertical-align: top; width: auto !important;"> <label style="width:auto !important;" for="node-input-sun"> Sun</label>
+            <label></label>
+            <input type="checkbox" id="node-input-wind"  style="margin-left: 0px; vertical-align: top; width: auto !important;"> <label style="width:auto !important;" for="node-input-wind"> Wind</label>
+        </div>
+        <div class="form-row">
+                <label for="node-input-hours"><i class="icon-bookmark"></i> Forecast time</label>
+                <input type="number" id="node-input-hours" min="1" max="24">
+        </div>
+        <div class="form-row">
+            <label for="node-input-adjust"><i class="icon-bookmark"></i> Curve Adjust</label>
+            <select id="node-input-adjust">
+                <option value="2">+2</option>
+                <option value="1.5">+1.5</option>
+                <option value="1">+1</option>
+                <option value="0.5">+0.5</option>
+                <option value="0">0</option>
+                <option value="-0.5">-0.5</option>
+                <option value="-1">-1</option>
+                <option value="-1.5">-1.5</option>
+                <option value="-2">-2</option>
+                </select>
+        </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="icon-tag"></i> Server</label>
+        <input type="text" id="node-input-server" placeholder="Server">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="nibe-weather">
+    <p>Weather node for NibePi</p>
+</script>

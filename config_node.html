@@ -1,0 +1,142 @@
+<script type="text/javascript">
+    RED.nodes.registerType('nibe-config',{
+        category: 'config',
+        defaults: {
+            mqtt: {value:false,required:false},
+            mqtt_discovery: {value:false,required:false},
+            mqtt_topic: {value:"",required:false},
+            mqtt_host: {value:"127.0.0.1",required:false},
+            mqtt_port: {value:"1883",required:false},
+            mqtt_user: {value:"",required:false},
+            mqtt_pass: {value:"",required:false},
+            connection_series: {value:"fSeries",required:true},
+            connection: {value:"serial",required:true},
+            serial_port: {value:"/dev/ttyAMA0",required:false},
+            tcp_server: {value:"",required:false},
+            tcp_port: {value:"",required:false}
+            
+        },
+        label: function() {
+            return this.serial_port;
+        },
+        oneditprepare: function() {
+            $.getJSON('/config', function(data) {
+                $("#node-config-input-mqtt").val(data.mqtt.enable);
+                $("#node-config-input-mqtt_discovery").val(data.mqtt.discovery);
+                $("#node-config-input-mqtt_topic").val(data.mqtt.topic);
+                $("#node-config-input-mqtt_host").val(data.mqtt.host);
+                $("#node-config-input-mqtt_port").val(data.mqtt.port);
+                $("#node-config-input-mqtt_user").val(data.mqtt.user);
+                $("#node-config-input-mqtt_pass").val(data.mqtt.pass);
+                $("#node-config-input-connection").val(data.connection.enable)
+                $("#node-config-input-connection_series").val(data.connection.series)
+                $("#node-config-input-serial_port").val(data.serial.port);
+                $("#node-config-input-tcp_server").val(data.tcp.server);
+                $("#node-config-input-tcp_port").val(data.tcp.port);
+            })
+
+        },
+        oneditsave: function() {
+            let node = this;
+            $.getJSON('/config', function(data) {
+                if(data.mqtt===undefined) data.mqtt = {};
+                if(data.connection===undefined) data.connection = {};
+                if(data.serial===undefined) data.serial = {};
+                if(data.tcp===undefined) data.tcp = {};
+                if ($('#node-config-input-mqtt').is(':checked')) {
+                    data.mqtt.enable = true;
+                } else {
+                    data.mqtt.enable = false;
+                }
+                if ($('#node-config-input-mqtt_discovery').is(':checked')) {
+                    data.mqtt.discovery = true;
+                } else {
+                    data.mqtt.discovery = false;
+                }
+                //data.mqtt.enable = $("#node-config-input-mqtt").val();
+                data.mqtt.topic = $("#node-config-input-mqtt_topic").val();
+                data.mqtt.host = $("#node-config-input-mqtt_host").val();
+                data.mqtt.port = $("#node-config-input-mqtt_port").val();
+                data.mqtt.user = $("#node-config-input-mqtt_user").val();
+                data.mqtt.pass = $("#node-config-input-mqtt_pass").val();
+                data.connection.enable = $("#node-config-input-connection").val();
+                data.connection.series = $("#node-config-input-connection_series").val();
+                data.serial.port = $("#node-config-input-serial_port").val();
+                data.tcp.server = $("#node-config-input-tcp_server").val();
+                data.tcp.port = $("#node-config-input-tcp_port").val();
+                let out = {data:node,config:data};
+                $.ajax({
+                contentType: 'application/json',
+                data: JSON.stringify(out),
+                dataType: 'json',
+                success: function(data){
+                    app.log("device control succeeded");
+                },
+                error: function(){
+                    app.log("Device control failed");
+                },
+                processData: false,
+                type: 'POST',
+                url: "config/"+node.id
+            });
+            })
+
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="nibe-config">
+    <div class="form-row">
+        <label for="node-config-input-connection_series"><i class="icon-bookmark"></i> Nibe Series</label>
+        <select id="node-config-input-connection_series">
+            <option value="fSeries">F-series</option>
+            <!-- <option value="sSeries">S-series</option> -->
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-connection"><i class="icon-bookmark"></i> Connection</label>
+        <select id="node-config-input-connection">
+            <option value="serial">Serial</option>
+            <!-- <option value="tcp">TCP</option> -->
+        </select>
+    </div>
+    <div class="form-row">
+            <label for="node-config-input-serial_port"><i class="icon-bookmark"></i> Serialport</label>
+        <input type="text" id="node-config-input-serial_port" placeholder="/dev/ttyAMA0">
+    </div>
+    <!-- <div class="form-row">
+        <label for="node-config-input-tcp_server"><i class="icon-bookmark"></i> TCP Server</label>
+        <input type="text" id="node-config-input-tcp_server">
+        <label for="node-config-input-tcp_port"><i class="icon-bookmark"></i> TCP Port</label>
+        <input type="text" id="node-config-input-tcp_port">
+    </div> -->
+    <br>
+    <div class="form-row">
+        <label for="node-config-input-mqtt"><i class="icon-bookmark"></i> Use Mosquitto broker</label>
+        <input type="checkbox" id="node-config-input-mqtt" checked="checked">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-mqtt_discovery"><i class="icon-bookmark"></i> Use Discovery</label>
+        <input type="checkbox" id="node-config-input-mqtt_discovery" checked="checked">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-mqtt_topic"><i class="icon-bookmark"></i> Topic</label>
+        <input type="text" id="node-config-input-mqtt_topic" placeholder="nibe/modbus/">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-mqtt_host"><i class="icon-bookmark"></i> Host</label>
+        <input type="text" id="node-config-input-mqtt_host">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-mqtt_port"><i class="icon-bookmark"></i> Port</label>
+        <input type="text" id="node-config-input-mqtt_port">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-mqtt_user"><i class="icon-bookmark"></i> User</label>
+        <input type="text" id="node-config-input-mqtt_user">
+    </div>
+    <div class="form-row">
+        <label for="node-config-input-mqtt_pass"><i class="icon-bookmark"></i> Password</label>
+        <input type="password" id="node-config-input-mqtt_pass">
+    </div>
+</script>

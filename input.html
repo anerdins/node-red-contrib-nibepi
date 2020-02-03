@@ -1,0 +1,44 @@
+<script type="text/javascript">
+    RED.nodes.registerType('nibe-input',{
+        category: 'input',
+        color: '#e32222',
+        defaults: {
+            server: {value:"", type:"nibe-config"},
+            name: {value:""},
+            add: {value:false}
+        },
+        inputs:0,
+        outputs:2,
+        icon: "inject.svg",
+        label: function() {
+            return this.name||"NibePi In";
+        },
+        oneditsave: function() {
+            let node = this;
+            if ($('#node-input-add').is(':checked')) {
+                add = true;
+            } else {
+                add = false;
+            }
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="nibe-input">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Register</label>
+        <input type="text" id="node-input-name" placeholder="Register">
+    </div>
+    <div class="form-row">
+        <label for="node-input-add"><i class="icon-bookmark"></i> Add register</label>
+        <input type="checkbox" id="node-input-add">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="icon-tag"></i> Server</label>
+        <input type="text" id="node-input-server" placeholder="Server">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="nibe-input">
+    <p>Test node for NibePi</p>
+</script>

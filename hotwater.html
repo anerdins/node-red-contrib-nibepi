@@ -1,0 +1,87 @@
+<script type="text/javascript">
+    RED.nodes.registerType('nibe-hotwater',{
+        category: 'input',
+        color: '#e32222',
+        defaults: {
+            server: {value:"", type:"nibe-config"},
+            name: {value:""},
+            enable_autoluxury: {value:false},
+            enable_hw_priority: {value:false},
+            autoluxury_diff: {value:"20"},
+            autoluxury_time: {value:"10"}
+        },
+        inputs:1,
+        outputs:2,
+        inputLabels: ["Update"],
+        outputLabels: ["Auto Luxury","Hotwater Priority"],
+        icon: "inject.svg",
+        label: function() {
+            return this.name||"NibePi Hotwater";
+        },
+        oneditprepare: function() {
+            $.getJSON('/config', function(data) {
+                let system = $("#node-input-system").val();
+                $("#node-input-enable_autoluxury").val(data.hotwater.enable_autoluxury);
+                $("#node-input-enable_hw_priority").val(data.hotwater.enable_hw_priority);
+                $("#node-input-autoluxury_diff").val(data.hotwater.diff);
+                $("#node-input-autoluxury_time").val(data.hotwater.time);
+            })
+        },
+        oneditsave: function() {
+            let node = this;
+            $.getJSON('/config', function(data) {
+                if ($('#node-input-enable_autoluxury').is(':checked')) {
+                    data.hotwater.enable_autoluxury = true;
+                } else {
+                    data.hotwater.enable_autoluxury = false;
+                }
+                if ($('#node-input-enable_hw_priority').is(':checked')) {
+                    data.hotwater.enable_hw_priority = true;
+                } else {
+                    data.hotwater.enable_hw_priority = false;
+                }
+                data.hotwater.diff = Number($("#node-input-autoluxury_diff").val());
+                data.hotwater.time = Number($("#node-input-autoluxury_time").val());
+                $.ajax({
+                contentType: 'application/json',
+                data: JSON.stringify({config:data,data:node}),
+                dataType: 'json',
+                success: function(data){
+                    app.log("device control succeeded");
+                },
+                error: function(){
+                    app.log("Device control failed");
+                },
+                processData: false,
+                type: 'POST',
+                url: "config/"+node.id
+            });
+            })
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="nibe-hotwater">
+    <div class="form-row">
+        <label> Hotwater Enable</label>
+        <input type="checkbox" id="node-input-enable_autoluxury" style="margin-left: 0px; vertical-align: top; width: auto !important;"> <label style="width:auto !important;" for="node-input-enable_autoluxury"> Automatic Luxury</label>
+        <label></label>
+        <input type="checkbox" id="node-input-enable_hw_priority" style="margin-left: 0px; vertical-align: top; width: auto !important;"> <label style="width:auto !important;" for="node-input-enable_hw_priority"> Hotwater Priority</label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-autoluxury_diff"><i class="icon-bookmark"></i> Difference</label>
+        <input type="number" id="node-input-autoluxury_diff" min="5" max="50">
+    </div>
+    <div class="form-row">
+        <label for="node-input-autoluxury_time"><i class="icon-bookmark"></i> Timefactor</label>
+        <input type="number" id="node-input-autoluxury_time" min="1" max="50">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="icon-tag"></i> Server</label>
+        <input type="text" id="node-input-server" placeholder="Server">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="nibe-hotwater">
+    <p>Hotwater node for NibePi</p>
+</script>

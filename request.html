@@ -1,0 +1,40 @@
+
+<script type="text/javascript">
+    RED.nodes.registerType('nibe-request',{
+        category: 'function',
+        color: '#e32222',
+        defaults: {
+            server: {value:"", type:"nibe-config"},
+            name: {value:""}
+        },
+        inputs:1,
+        outputs:2,
+        icon: "switch.svg",
+        label: function() {
+            return this.name||"NibePi Request";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="nibe-request">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Register</label>
+        <input type="text" id="node-input-name" placeholder="Register">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="icon-tag"></i> Server</label>
+        <input type="text" id="node-input-server" placeholder="Server">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="nibe-output">
+    <p>NibePi Output node</p>
+    <div>getRegister<br>
+    getConfig - Get the config<br>
+    setConfig - Set the config<br>
+    setData - Send data to heatpump<br>
+    addRegister - Add register to regular messages<br>
+    removeRegister - Remove register from regular messages<br>
+</div>
+</script>
