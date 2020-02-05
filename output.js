@@ -9,13 +9,13 @@ module.exports = function(RED) {
             
             this.on('input', function(msg) {
                 let register = config.name;
-            if(this.server.hP[config.name]!==undefined) {
-                register = this.server.hP[config.name]
+            if(this.server.hP()[config.name]!==undefined) {
+                register = this.server.hP()[config.name]
             }
             if(config.name===undefined || config.name=="") {
                 register = msg.topic
-                if(this.server.hP[msg.topic]!==undefined) {
-                    register = this.server.hP[msg.topic]
+                if(this.server.hP()[msg.topic]!==undefined) {
+                    register = this.server.hP()[msg.topic]
                 }
             }
                 if(msg.topic=="getConfig" || config.name=="getConfig") {

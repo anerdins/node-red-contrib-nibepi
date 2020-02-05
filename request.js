@@ -8,8 +8,8 @@ module.exports = function(RED) {
         const suncalc = this.server.suncalc;
         if (this.server) {
             let register = config.name;
-            if(this.server.hP[config.name]!==undefined) {
-                register = this.server.hP[config.name]
+            if(this.server.hP()[config.name]!==undefined) {
+                register = this.server.hP()[config.name]
             }
             this.on('input', function(msg) {
                 if(register.toLowerCase()=="astro") {

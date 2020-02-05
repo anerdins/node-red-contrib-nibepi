@@ -10,8 +10,8 @@ module.exports = function(RED) {
             console.log('Adding register '+config.name)
         }
         let register = config.name;
-            if(server.hP[config.name]!==undefined) {
-                register = server.hP[config.name]
+            if(server.hP()[config.name]!==undefined) {
+                register = server.hP()[config.name]
             }
         var node = this;
     if(config.name=="") {

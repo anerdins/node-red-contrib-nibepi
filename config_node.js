@@ -67,6 +67,10 @@ module.exports = function(RED) {
                             out = out;
                             nibe.reqDataAsync(curveadjust).then(result => {
                                 let config = nibe.getConfig();
+                                if(config.home===undefined) {
+                                    config.home = {};
+                                    nibe.setConfig(config);
+                                }
                                 if(config.home['adjust_'+system]!==undefined) {
                                     out = out+Number(config.home['adjust_'+system]);
                                 }
@@ -339,6 +343,10 @@ module.exports = function(RED) {
         const checkWind = (array,hours) => {
         var output = {};
         let config = nibe.getConfig();
+        if(config.weather===undefined) {
+            config.weather = {};
+            nibe.setConfig(config);
+        }
           if(config.weather.wind_enable!==undefined && config.weather.wind_enable===true) {
             
             var wind_speed_arr = [];
@@ -414,6 +422,10 @@ module.exports = function(RED) {
     const runWeather = (val) => {
         //var val = Object.assign({}, result);
         let config = nibe.getConfig();
+        if(config.weather===undefined) {
+            config.weather = {};
+            nibe.setConfig(config);
+        }
         let outside = val.outside.data;
         let heatcurve = val['heatcurve_'+val.system].data;
         let setOffset = val.weatherOffset;
@@ -523,6 +535,10 @@ module.exports = function(RED) {
         let conf = nibe.getConfig();
         let inside_enable = data['inside_enable_'+data.system];
         let inside;
+        if(conf.indoor===undefined) {
+            conf.indoor = {};
+            nibe.setConfig(conf);
+        }
         if(conf.indoor['sensor_'+data.system]!==undefined && conf.indoor['sensor_'+data.system]!=="") {
             let index = array.findIndex(i => i.name == conf.indoor['sensor_'+data.system]);
             if(index!==-1) {
@@ -586,6 +602,10 @@ module.exports = function(RED) {
     const priceAdjustCurve = (level,system) => {
         if(level!==0) {
             let config = nibe.getConfig();
+            if(config.price===undefined) {
+                config.price = {};
+                nibe.setConfig(config);
+            }
             let hw_enable = config.price.hotwater_enable;
             let heat_enable = config.price['enable_'+system];
             let hw_adjust;
@@ -650,6 +670,10 @@ module.exports = function(RED) {
             if(nibeGraph.length>600) nibeGraph.shift();
             if(nibeGraphAdjust.length>600) nibeGraphAdjust.shift();
             let config = nibe.getConfig();
+            if(config.price===undefined) {
+                config.price = {};
+                nibe.setConfig(config);
+            }
             let heat_enable = config.price['enable_'+system];
             var heat_adjust = 0;
             if(data.price_level.data=="CHEAP") {
@@ -679,6 +703,10 @@ module.exports = function(RED) {
     }
     function tibberBuildGraph(tibber,system) {
         let config = nibe.getConfig();
+        if(config.price===undefined) {
+            config.price = {};
+            nibe.setConfig(config);
+        }
         var today = tibber.data.viewer.homes[0].currentSubscription.priceInfo.today;
         var tomorrow;
         if(tibber.data.viewer.homes[0].currentSubscription.priceInfo.tomorrow!==undefined) {
@@ -731,6 +759,10 @@ module.exports = function(RED) {
     async function runPrice(data) {
         //let data = Object.assign({}, result);
         let config = nibe.getConfig();
+        if(config.price===undefined) {
+            config.price = {};
+            nibe.setConfig(config);
+        }
         if(config.price!==undefined && config.price.enable===true) {
             if(config.price.source=="tibber") {
                 await getTibberData().then(result => {
@@ -761,6 +793,10 @@ module.exports = function(RED) {
     const getTibberData = () => {
         const promise = new Promise((resolve,reject) => {
         let config = nibe.getConfig();
+        if(config.price===undefined) {
+            config.price = {};
+            nibe.setConfig(config);
+        }
             if(config.price.token!=="") {
                 let data = "";
                 let token = config.price.token;
@@ -1028,6 +1064,9 @@ async function runRMU(result,array) {
     
     
 }
+const gethP  = () => {
+    return hP;
+}
     console.log('Started')
 
     function nibeConfig(n) {
@@ -1045,6 +1084,7 @@ async function runRMU(result,array) {
                 }
             })
         }
+        
         const handleCore = (config,force=false) => {
             if(config.connection===undefined) config.connection = {};
             if(config.serial===undefined) config.serial = {};
@@ -1066,6 +1106,10 @@ async function runRMU(result,array) {
                             initiateCore(config.serial.port, (err,result)=> {
                                 if(err) console.log(err);
                                 let config = nibe.getConfig();
+                                if(config.system===undefined) {
+                                    config.system = {};
+                                    nibe.setConfig(config);
+                                }
                                 if(config.system.pump=="F750") hP.supply_s1 = "40047";
                                 sendError('Kärnan',`Nibe ${config.system.pump} är ansluten`);
                                 console.log('Core is connected')
@@ -1145,7 +1189,7 @@ async function runRMU(result,array) {
         this.runTibber = getTibberData;
         this.sendError = sendError;
         this.curveAdjust = curveAdjust;
-        this.hP = hP;
+        this.hP = gethP;
         this.checkReady = checkReady;
         this.on('close', function() {
             console.log('Closing listeners');
