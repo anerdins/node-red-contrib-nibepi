@@ -9,13 +9,17 @@ module.exports = function(RED) {
             nibe.addRegister(config.name);
             console.log('Adding register '+config.name)
         }
-        let register = config.name;
+            let register = config.name;
             if(server.hP()[config.name]!==undefined) {
                 register = server.hP()[config.name]
             }
+            server.nibeData.on('ready', data => {
+                register = server.hP()[config.name]
+            })
         var node = this;
     if(config.name=="") {
         server.nibeData.on('data', data => {
+
                 let saved = node.context().get(data.register);
                 if(data.error!==undefined) {
                     
