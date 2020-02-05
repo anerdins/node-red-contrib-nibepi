@@ -1168,6 +1168,9 @@ const gethP  = () => {
         nibeData.emit('data',data);        
         //console.log(`${data.register}, ${data.titel}: ${data.data} ${data.unit}`)
     })
+    nibe.data.on('updateSensor',data => {
+        nibeData.emit('ready',true);
+    })
         nibe.data.on('fault',data => {
             if(data.from=="core") {
                 sendError(data.from,data.message);
