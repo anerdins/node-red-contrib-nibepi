@@ -329,7 +329,7 @@ module.exports = function(RED) {
                 }
             }
             runIndoor(result,array);
-            runPrice(result);
+            runPrice(result,array);
             runRMU(result,array);
             if(hourly===true) {
                 result.array = array;
@@ -599,8 +599,12 @@ module.exports = function(RED) {
         //
         
     }
-    const priceAdjustCurve = (level,system) => {
-        if(level!==0) {
+    const priceAdjustCurve = (dataIn) => {
+        var data = Object.assign({}, dataIn);
+        let level = data.price_level.data;
+        let system = data.system;
+        let inside = data.priceSensor.data;
+        if(level!==undefined && level!==0) {
             let config = nibe.getConfig();
             if(config.price===undefined) {
                 config.price = {};
@@ -608,6 +612,7 @@ module.exports = function(RED) {
             }
             let hw_enable = config.price.hotwater_enable;
             let heat_enable = config.price['enable_'+system];
+            let temp_diff = config.price['temp_low_'+system];
             let hw_adjust;
             let heat_adjust = 0;
             if(level=="VERY_CHEAP") {
@@ -621,28 +626,24 @@ module.exports = function(RED) {
                 if(heat_enable!==undefined && heat_enable===true) if(config.price['heat_normal_'+system]!==undefined) heat_adjust = config.price['heat_normal_'+system];
             } else if(level=="EXPENSIVE") {
                 if(hw_enable!==undefined && hw_enable===true) hw_adjust = Number(config.price.hotwater_expensive);
+                if((inside>(data['inside_set_'+system].data+temp_diff)) || temp_diff===undefined || temp_diff=="") {
                 if(heat_enable!==undefined && heat_enable===true) if(config.price['heat_expensive_'+system]!==undefined) heat_adjust = config.price['heat_expensive_'+system];
                 if(heat_adjust!==0) {
-                    nibe.reqDataAsync(hP['dM']).then(result => {
-                        if(result.data<-300) {
-                            console.log('Resetting degree minutes, electric price expensive');
-                            //priceSavedDM[system] = result.data;
+                        if(data.dM.data<data.dMstart.data) {
                             nibe.setData(hP['dM'],100);
                         }
-                    })
+                    }
                 }
             } else if(level=="VERY_EXPENSIVE") {
                 if(hw_enable!==undefined && hw_enable===true) hw_adjust = Number(config.price.hotwater_very_expensive);
                 if(heat_enable!==undefined && heat_enable===true) {
-                    if(config.price['heat_very_expensive_'+system]!==undefined) heat_adjust = config.price['heat_very_expensive_'+system];
-                    if(heat_adjust!==0) {
-                        nibe.reqDataAsync(hP['dM']).then(result => {
-                            if(result.data<-300) {
-                                console.log('Resetting degree minutes, electric price very expensive');
-                                //priceSavedDM[system] = result.data;
+                    if((inside>(data['inside_set_'+system].data+temp_diff)) || temp_diff===undefined || temp_diff=="") {
+                        if(config.price['heat_very_expensive_'+system]!==undefined) heat_adjust = config.price['heat_very_expensive_'+system];
+                        if(heat_adjust!==0) {
+                            if(data.dM.data<data.dMstart.data) {
                                 nibe.setData(hP['dM'],100);
                             }
-                        })
+                        }
                     }
                 }
             }
@@ -656,6 +657,7 @@ module.exports = function(RED) {
                 }))
             }
         } else {
+            sendError('Elprisreglering',`Kunde ej hämta prisnivå från värmepumpen.`);
             if(priceOffset[system]!==0) {
                 priceOffset[system] = 0;
                 curveAdjust('price',system,0);
@@ -756,13 +758,22 @@ module.exports = function(RED) {
         let result = {values:sendArray,system:system};
         return result;
     }
-    async function runPrice(data) {
+    async function runPrice(data,array) {
         //let data = Object.assign({}, result);
         let config = nibe.getConfig();
         if(config.price===undefined) {
             config.price = {};
             nibe.setConfig(config);
         }
+        let inside;
+        
+        if(config.price['sensor_'+data.system]!==undefined && config.price['sensor_'+data.system]!=="") {
+            let index = array.findIndex(i => i.name == config.price['sensor_'+data.system]);
+            if(index!==-1) {
+                inside = array[index];
+            }
+        }
+        data.priceSensor = inside;
         if(config.price!==undefined && config.price.enable===true) {
             if(config.price.source=="tibber") {
                 await getTibberData().then(result => {
@@ -772,14 +783,14 @@ module.exports = function(RED) {
                     
                     data.price_level.data = result.data.viewer.homes[0].currentSubscription.priceInfo.current.level;
                     data.price_level.raw_data = result.data.viewer.homes[0].currentSubscription.priceInfo.current.level;
-                    priceAdjustCurve(data.price_level.data,data.system)
+                    priceAdjustCurve(data)
                     nibeData.emit('pluginPrice',data);
                     nibeData.emit('pluginPriceGraph',tibberBuildGraph(result,data.system));
                 },(reject => {
                     console.log(reject)
                 }));
             } else if(config.price.source=="nibe") {
-                priceAdjustCurve(data.price_level.data,data.system)
+                priceAdjustCurve(data)
                 nibeData.emit('pluginPriceGraph',nibeBuildGraph(data,data.system));
                 nibeData.emit('pluginPrice',data);
             }

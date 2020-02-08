@@ -7,13 +7,10 @@ module.exports = function(RED) {
             let system = config.system.replace('s','S');
             this.status({ fill: 'yellow', shape: 'dot', text: `System ${system}` });
             const arr = [
-                {topic:"inside_"+config.system,source:"nibe"},
                 {topic:"inside_set_"+config.system,source:"nibe"},
-                {topic:"heatcurve_"+config.system,source:"nibe"},
                 {topic:"dM",source:"nibe"},
                 {topic:"dMstart",source:"nibe"},
                 {topic:"outside",source:"nibe"},
-                {topic:"hw_mode",source:"nibe"},
                 {topic:"price_current",source:"nibe"},
                 {topic:"price_level",source:"nibe"},
                 {topic:"price_enable",source:"nibe"}
