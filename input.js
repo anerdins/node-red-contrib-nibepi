@@ -7,7 +7,6 @@ module.exports = function(RED) {
         var savedError = {};
         if(config.add===true && config.name.toLowerCase()!="config" && config.name.toLowerCase()!="error") {
             nibe.addRegister(config.name);
-            console.log('Adding register '+config.name)
         }
             let register = config.name;
             if(server.hP()[config.name]!==undefined) {
