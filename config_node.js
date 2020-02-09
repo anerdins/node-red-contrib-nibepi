@@ -8,6 +8,7 @@ module.exports = function(RED) {
     var series = "";
     let adjust = [];
     let hP;
+    
     let weatherOffset = {};
     let indoorOffset = {};
     let priceOffset = {};
