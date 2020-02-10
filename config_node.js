@@ -630,7 +630,7 @@ module.exports = function(RED) {
                 if((inside>(data['inside_set_'+system].data+temp_diff)) || temp_diff===undefined || temp_diff=="") {
                 if(heat_enable!==undefined && heat_enable===true) if(config.price['heat_expensive_'+system]!==undefined) heat_adjust = config.price['heat_expensive_'+system];
                 if(heat_adjust!==0) {
-                        if(data.dM.data<data.dMstart.data) {
+                        if(data.dM.data<data.dMstart.data+(-100)) {
                             nibe.setData(hP['dM'],100);
                         }
                     }
@@ -641,7 +641,7 @@ module.exports = function(RED) {
                     if((inside>(data['inside_set_'+system].data+temp_diff)) || temp_diff===undefined || temp_diff=="") {
                         if(config.price['heat_very_expensive_'+system]!==undefined) heat_adjust = config.price['heat_very_expensive_'+system];
                         if(heat_adjust!==0) {
-                            if(data.dM.data<data.dMstart.data) {
+                            if(data.dM.data<data.dMstart.data+(-100)) {
                                 nibe.setData(hP['dM'],100);
                             }
                         }
