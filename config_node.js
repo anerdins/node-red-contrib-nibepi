@@ -1052,13 +1052,7 @@ async function runFan(result,array) {
     let config = nibe.getConfig();
     var data = Object.assign({}, result);
     if(config.fan===undefined) { config.fan = {}; nibe.setConfig(config); }
-    if(data.alarm.raw_data===183) {
-        // Dont regulate when defrosting.
-        return;
-    } else if(data.vented.raw_data<0) {
-        // Dont regulate when vented air is freezing.
-        return;
-    } else if (config.fan.enable!==true) {
+    if (config.fan.enable!==true) {
         // Function turned off, stopping.
         return;
     }
@@ -1072,9 +1066,11 @@ async function runFan(result,array) {
     if(config.fan.enable_low===true && data.cpr_set.raw_data<1) {
         // Only regulate when compressor is off.
         if(fan_low===false) {
-            console.log('Saving fan speed')
-            fan_low = true;
-            fan_saved = data.fan_speed.raw_data;
+            if(data.alarm.raw_data===183 && data.vented.raw_data<0) {
+                console.log('Saving fan speed')
+                fan_low = true;
+                fan_saved = data.fan_speed.raw_data;
+            }
         }
         if(config.fan.enable_co2===true) {
             console.log('CO2 enabled')
@@ -1097,19 +1093,25 @@ async function runFan(result,array) {
         }
     } else {
         if(fan_low===true) {
-            fan_low = false;
-            nibe.setData(hP.fan_speed,fan_saved);
+            if(data.alarm.raw_data===183 && data.vented.raw_data<0) {
+                nibe.setData(hP.fan_speed,fan_saved);
+                fan_low = false;
+            }
         }
         if(config.fan.speed_normal!==undefined && config.fan.speed_normal!=="" && config.fan.speed_normal!==0) {
             setpoint = config.fan.speed_normal;
         }
     }
     if(data.bs1_flow.raw_data>(setpoint+10)) {
-        console.log('Minskar fläkthastighet')
-        nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
+        if(data.alarm.raw_data===183 && data.vented.raw_data<0) {
+            console.log('Minskar fläkthastighet')
+            nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
+        }
     } else if(data.bs1_flow.raw_data<(setpoint-10)) {
-        console.log('Ökar fläkthastighet')
-        nibe.setData(hP.fan_speed,(data.fan_speed.raw_data+1));
+        if(data.alarm.raw_data===183 && data.vented.raw_data<0) {
+            console.log('Ökar fläkthastighet')
+            nibe.setData(hP.fan_speed,(data.fan_speed.raw_data+1));
+        }
     }
     data.setpoint = setpoint;
     nibeData.emit('pluginFan',data);
