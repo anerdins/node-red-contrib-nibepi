@@ -7,14 +7,12 @@ module.exports = function(RED) {
             let system = config.system.replace('s','S');
             this.status({ fill: 'yellow', shape: 'dot', text: `System ${system}` });
             const arr = [
-                //{topic:"inside_"+config.system,source:"nibe"},
-                {topic:"inside_set_"+config.system,source:"nibe"},
-                {topic:"inside_enable_"+config.system,source:"nibe"},
-                {topic:"inside_factor_"+config.system,source:"nibe"},
-                {topic:"dM",source:"nibe"},
-                {topic:"dMstart",source:"nibe"},
-                {topic:"exhaust",source:"nibe"},
-                {topic:"outside",source:"nibe"}
+                {topic:"bs1_flow",source:"nibe"},
+                {topic:"fan_speed",source:"nibe"},
+                {topic:"alarm",source:"nibe"},
+                {topic:"vented",source:"nibe"},
+                {topic:"cpr_set",source:"nibe"},
+                {topic:"cpr_act",source:"nibe"}
             ];
             let conf = server.nibe.getConfig();
             if(conf.fan===undefined) {
@@ -25,14 +23,13 @@ module.exports = function(RED) {
                 conf.home.inside_sensors = [];
                 server.nibe.setConfig(conf);
             }
-            if(conf.fan['sensor_'+config.system]===undefined || conf.fan['sensor_'+config.system]=="Ingen") {
-                arr.push({topic:"inside_"+config.system,source:"nibe"});
+            if(conf.fan.sensor===undefined || conf.fan.sensor=="Ingen") {
+                
             } else {
-                let index = conf.home.inside_sensors.findIndex(i => i.name == conf.fan['sensor_'+config.system]);
+                let index = conf.home.inside_sensors.findIndex(i => i.name == conf.fan.sensor);
                 if(index!==-1) {
-                    var insideSensor = Object.assign({}, conf.home.inside_sensors[index]);
-                    //let insideSensor = conf.home.inside_sensors[index];
-                    arr.push(insideSensor);
+                    var co2Sensor = Object.assign({}, conf.home.inside_sensors[index]);
+                    arr.push(co2Sensor);
                 }
             }
         server.initiatePlugin(arr,'fan',config.system).then(data => {
@@ -52,8 +49,8 @@ module.exports = function(RED) {
             if(msg.payload!==undefined && msg.topic!==undefined && msg.topic!=="") {
                 let req = msg.topic.split('/');
                 if(conf[req[0]]===undefined) conf[req[0]] = {};
-                if(conf[req[0]][req[1]+'_'+config.system]!==msg.payload) {
-                    conf[req[0]][req[1]+'_'+config.system] = msg.payload;
+                if(conf[req[0]][req[1]]!==msg.payload) {
+                    conf[req[0]][req[1]] = msg.payload;
                     server.nibe.setConfig(conf);
                 }
                 startUp();
@@ -76,22 +73,11 @@ module.exports = function(RED) {
             }
         })
         server.nibeData.on('pluginFan', (data) => {
-            if(data.system===config.system) {
-                let outside = data['outside'];
-                let dM = data.dM;
-                let inside = data.fanSensor;
-                if(inside===undefined) inside = data['inside_'+data.system];
-                if(inside!==undefined && inside.data>-3276) {
-                    this.send({topic:"Inomhustemperatur",payload:inside.data});
+                let co2 = data.co2Sensor;
+                if(co2!==undefined && co2.data>-3276) {
+                    this.send({topic:"CO2",payload:co2.data});
                 }
-                if(data.fanOffset!==undefined) {
-                    this.send({topic:"Kurvjustering",payload:data.fanOffset});
-                }
-                this.send({topic:"Utomhustemperatur",payload:outside.data});
-                this.send({topic:"Gradminuter",payload:dM.data});
                 this.send({topic:"Tid",payload:dM.timestamp});
-                this.send({topic:"Avvikelse",payload:data.accuracy});
-            }
         })
 
         this.on('close', function() {

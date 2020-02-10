@@ -328,6 +328,7 @@ module.exports = function(RED) {
                     }
                 }
             }
+            runFan(result,array);
             runIndoor(result,array);
             runPrice(result,array);
             runRMU(result,array);
@@ -1045,11 +1046,68 @@ module.exports = function(RED) {
         }
         
     }
+let fan_low = false;
+let fan_saved;
 async function runFan(result,array) {
     let config = nibe.getConfig();
     var data = Object.assign({}, result);
     if(config.fan===undefined) { config.fan = {}; nibe.setConfig(config); }
-    
+    if(data.alarm.raw_data===183) {
+        // Dont regulate when defrosting.
+        return;
+    } else if(data.vented.raw_data<0) {
+        // Dont regulate when vented air is freezing.
+        return;
+    } else if (config.fan.enable_auto!==true) {
+        // Function turned off, stopping.
+        return;
+    }
+    let co2;
+        if(config.fan.sensor!==undefined && config.fan.sensor!=="") {
+            let ind = array.findIndex(index => index.name == config.fan.sensor);
+            if(ind!==-1) co2 = array[ind];
+        }
+    if(fan_saved===undefined) fan_saved = data.fan_speed.raw_data;
+    let setpoint = data.bs1_flow.raw_data;
+    if(config.fan.enable_low===true && data.cpr_set.raw_data<1) {
+        // Only regulate when compressor is off.
+        if(fan_low===false) {
+            fan_low = true;
+            fan_saved = data.fan_speed.raw_data;
+        }
+        if(config.fan.enable_co2===true) {
+            if(co2.data!==undefined) {
+                co2.data = Number(co2.data);
+                if(co2.data<800) {
+                    setpoint = config.fan.speed_low;
+                    console.log('co2 värde under 800, sänker hastighet.')
+                } else {
+                    setpoint = config.fan.speed_normal;
+                    console.log('co2 värde över 800, normal hastighet.')
+                }
+            } else {
+                setpoint = config.fan.speed_normal;
+                console.log('Saknar värde från co2 givare')
+            }
+        }
+        if(config.fan.speed_low!==undefined && config.fan.speed_low!=="" && config.fan.speed_low!==0) {
+            setpoint = config.fan.speed_low;
+        }
+    } else {
+        if(fan_low===true) {
+            fan_low = false;
+            nibe.setData(hP(fan_speed),fan_saved);
+        }
+        if(config.fan.speed_normal!==undefined && config.fan.speed_normal!=="" && config.fan.speed_normal!==0) {
+            setpoint = config.fan.speed_normal;
+        }
+    }
+    if(data.bs1_flow.raw_data>(setpoint+10)) {
+        nibe.setData(hP(fan_speed),(data.fan_speed.raw_data-1));
+    } else if(data.bs1_flow.raw_data<(setpoint-10)) {
+        nibe.setData(hP(fan_speed),(data.fan_speed.raw_data+1));
+    }
+    data.setpoint = setpoint;
 }
 async function runRMU(result,array) {
     let config = nibe.getConfig();
