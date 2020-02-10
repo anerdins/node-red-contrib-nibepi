@@ -77,7 +77,9 @@ module.exports = function(RED) {
                 if(co2!==undefined && co2.data>-3276) {
                     this.send({topic:"CO2",payload:co2.data});
                 }
-                this.send({topic:"Tid",payload:dM.timestamp});
+                this.send({topic:"Fläkthastighet",payload:data.fan_speed.data});
+                this.send({topic:"Luftflöde",payload:data.bs1_flow.data});
+                this.send({topic:"Luftflöde Börvärde",payload:data.setpoint});
         })
 
         this.on('close', function() {

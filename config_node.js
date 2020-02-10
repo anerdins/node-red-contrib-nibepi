@@ -1057,8 +1057,8 @@ async function runFan(result,array) {
         return;
     } else if(data.vented.raw_data<0) {
         // Dont regulate when vented air is freezing.
-        return;
-    } else if (config.fan.enable_auto!==true) {
+        //return;
+    } else if (config.fan.enable!==true) {
         // Function turned off, stopping.
         return;
     }
@@ -1069,13 +1069,15 @@ async function runFan(result,array) {
         }
     if(fan_saved===undefined) fan_saved = data.fan_speed.raw_data;
     let setpoint = data.bs1_flow.raw_data;
-    if(config.fan.enable_low===true && data.cpr_set.raw_data<1) {
+    if(config.fan.enable_low===true/* && data.cpr_set.raw_data<1*/) {
         // Only regulate when compressor is off.
         if(fan_low===false) {
+            console.log('Saving fan speed')
             fan_low = true;
             fan_saved = data.fan_speed.raw_data;
         }
         if(config.fan.enable_co2===true) {
+            console.log('CO2 enabled')
             if(co2.data!==undefined) {
                 co2.data = Number(co2.data);
                 if(co2.data<800) {
@@ -1096,18 +1098,21 @@ async function runFan(result,array) {
     } else {
         if(fan_low===true) {
             fan_low = false;
-            nibe.setData(hP(fan_speed),fan_saved);
+            nibe.setData(hP.fan_speed,fan_saved);
         }
         if(config.fan.speed_normal!==undefined && config.fan.speed_normal!=="" && config.fan.speed_normal!==0) {
             setpoint = config.fan.speed_normal;
         }
     }
     if(data.bs1_flow.raw_data>(setpoint+10)) {
-        nibe.setData(hP(fan_speed),(data.fan_speed.raw_data-1));
+        console.log('Minskar fläkthastighet')
+        nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
     } else if(data.bs1_flow.raw_data<(setpoint-10)) {
-        nibe.setData(hP(fan_speed),(data.fan_speed.raw_data+1));
+        console.log('Ökar fläkthastighet')
+        nibe.setData(hP.fan_speed,(data.fan_speed.raw_data+1));
     }
     data.setpoint = setpoint;
+    nibeData.emit('pluginFan',data);
 }
 async function runRMU(result,array) {
     let config = nibe.getConfig();
