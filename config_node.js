@@ -1057,7 +1057,7 @@ async function runFan(result,array) {
         return;
     } else if(data.vented.raw_data<0) {
         // Dont regulate when vented air is freezing.
-        //return;
+        return;
     } else if (config.fan.enable!==true) {
         // Function turned off, stopping.
         return;
