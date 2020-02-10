@@ -45,7 +45,11 @@
         "hw_start_2":"47043",
         "hw_stop_0":"47049",
         "hw_stop_1":"47048",
-        "hw_stop_2":"47047"
+        "hw_stop_2":"47047",
+        "bs1_flow":"40050",
+        "fan_speed":"47265",
+        "alarm":"45001",
+        "vented":"40026"
     },
     "sSeries": {
         "inside":"30026",

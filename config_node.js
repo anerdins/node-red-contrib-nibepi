@@ -8,7 +8,6 @@ module.exports = function(RED) {
     var series = "";
     let adjust = [];
     let hP;
-    
     let weatherOffset = {};
     let indoorOffset = {};
     let priceOffset = {};
@@ -1046,7 +1045,12 @@ module.exports = function(RED) {
         }
         
     }
-
+async function runFan(result,array) {
+    let config = nibe.getConfig();
+    var data = Object.assign({}, result);
+    if(config.fan===undefined) { config.fan = {}; nibe.setConfig(config); }
+    
+}
 async function runRMU(result,array) {
     let config = nibe.getConfig();
     var data = Object.assign({}, result);
