@@ -1063,14 +1063,12 @@ async function runFan(result,array) {
         }
     if(fan_saved===undefined) fan_saved = data.fan_speed.raw_data;
     let setpoint = data.bs1_flow.raw_data;
-    if(config.fan.enable_low===true && data.cpr_set.raw_data<1) {
+    if(config.fan.enable_low===true && data.cpr_set.raw_data<1 && data.alarm.raw_data!==183 && data.vented.raw_data>0) {
         // Only regulate when compressor is off.
         if(fan_low===false) {
-            if(data.alarm.raw_data!==183 && data.vented.raw_data>0) {
                 console.log('Saving fan speed')
                 fan_low = true;
                 fan_saved = data.fan_speed.raw_data;
-            }
         }
         if(config.fan.enable_co2===true) {
             console.log('CO2 enabled')
