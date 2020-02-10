@@ -1066,7 +1066,7 @@ async function runFan(result,array) {
     if(config.fan.enable_low===true && data.cpr_set.raw_data<1) {
         // Only regulate when compressor is off.
         if(fan_low===false) {
-            if(data.alarm.raw_data===183 && data.vented.raw_data<0) {
+            if(data.alarm.raw_data!==183 && data.vented.raw_data>0) {
                 console.log('Saving fan speed')
                 fan_low = true;
                 fan_saved = data.fan_speed.raw_data;
@@ -1093,7 +1093,7 @@ async function runFan(result,array) {
         }
     } else {
         if(fan_low===true) {
-            if(data.alarm.raw_data===183 && data.vented.raw_data<0) {
+            if(data.alarm.raw_data!==183 && data.vented.raw_data>0) {
                 nibe.setData(hP.fan_speed,fan_saved);
                 fan_low = false;
             }
@@ -1103,12 +1103,12 @@ async function runFan(result,array) {
         }
     }
     if(data.bs1_flow.raw_data>(setpoint+10)) {
-        if(data.alarm.raw_data===183 && data.vented.raw_data<0) {
+        if(data.alarm.raw_data!==183 && data.vented.raw_data>0) {
             console.log('Minskar fläkthastighet')
             nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
         }
     } else if(data.bs1_flow.raw_data<(setpoint-10)) {
-        if(data.alarm.raw_data===183 && data.vented.raw_data<0) {
+        if(data.alarm.raw_data!==183 && data.vented.raw_data>0) {
             console.log('Ökar fläkthastighet')
             nibe.setData(hP.fan_speed,(data.fan_speed.raw_data+1));
         }
