@@ -1066,6 +1066,42 @@ async function runFan() {
     data.alarm = await nibe.reqDataAsync(hP['alarm']);
     data.vented = await nibe.reqDataAsync(hP['vented']);
     data.cpr_set = await nibe.reqDataAsync(hP['cpr_set']);
+    if(config.fan.enable_co2===true) {
+    if(config.fan.sensor===undefined || config.fan.sensor=="Ingen") {
+        sendError('CO2 givare',`CO2 givare inte vald.`)
+    } else {
+        let index = config.home.inside_sensors.findIndex(i => i.name == config.fan.sensor);
+        if(index!==-1) {
+            data.co2Sensor = Object.assign({}, config.home.inside_sensors[index]);
+        }
+    }
+    if(data.co2Sensor!==undefined) {
+        if(data.co2Sensor.source=="mqtt") {
+            await nibe.getMQTTData(data.co2Sensor.register).then(atad => {
+                let result = Object.assign({}, atad);
+                let sensor_timeout;
+                if(config.home.sensor_timeout!==undefined && config.home.sensor_timeout!=="") {
+                    sensor_timeout = result.timestamp+(config.home.sensor_timeout*60000);
+                } else if(config.home.sensor_timeout===0) {
+                    sensor_timeout = timeNow;
+                } else {
+                    sensor_timeout = result.timestamp+(60*60000);
+                }
+                if(timeNow>sensor_timeout) {
+                    sendError('CO2 givare',`CO2 givare ${data.co2Sensor.name} har inte uppdaterats. Ignorerar.`)
+                } else {
+                    data.co2Sensor.data = result;
+                    data.co2Sensor.data.timestamp = timeNow;
+                }
+                
+            },(error => {
+                sendError('CO2 givare',`CO2 givare ${data.co2Sensor.name} har inga värden än.`)
+            }));
+        } else if(data.co2Sensor.source=="tibber") {
+            console.log('Tibber Data request');
+        }
+    }
+}
     if(config.fan.enable_low===true && data.cpr_set.raw_data<1 && data.alarm.raw_data!==183 && data.vented.raw_data>0) {
         // Only regulate when compressor is off.
         if(fan_low===false) {
@@ -1075,40 +1111,7 @@ async function runFan() {
         }
         if(config.fan.enable_co2===true) {
             console.log('CO2 enabled')
-            if(config.fan.sensor===undefined || config.fan.sensor=="Ingen") {
-        
-            } else {
-                let index = config.home.inside_sensors.findIndex(i => i.name == config.fan.sensor);
-                if(index!==-1) {
-                    data.co2Sensor = Object.assign({}, config.home.inside_sensors[index]);
-                }
-            }
-            if(data.co2Sensor!==undefined) {
-                if(data.co2Sensor.source=="mqtt") {
-                    await nibe.getMQTTData(data.co2Sensor.register).then(atad => {
-                        let result = Object.assign({}, atad);
-                        let sensor_timeout;
-                        if(config.home.sensor_timeout!==undefined && config.home.sensor_timeout!=="") {
-                            sensor_timeout = result.timestamp+(config.home.sensor_timeout*60000);
-                        } else if(config.home.sensor_timeout===0) {
-                            sensor_timeout = timeNow;
-                        } else {
-                            sensor_timeout = result.timestamp+(60*60000);
-                        }
-                        if(timeNow>sensor_timeout) {
-                            sendError('CO2 givare',`CO2 givare ${data.co2Sensor.name} har inte uppdaterats. Ignorerar.`)
-                        } else {
-                            data.co2Sensor.data = result;
-                            data.co2Sensor.data.timestamp = timeNow;
-                        }
-                        
-                    },(error => {
-                        sendError('Extra givare',`Extra givare ${data.co2Sensor.name} har inga värden än.`)
-                    }));
-                } else if(data.co2Sensor.source=="tibber") {
-                    console.log('Tibber Data request');
-                }
-            }
+            
             if(data.co2Sensor!==undefined && data.co2Sensor.data!==undefined) {
                 data.co2Sensor.data.data = Number(data.co2Sensor.data.data);
                 if(data.co2Sensor.data.data<800) {
@@ -1307,6 +1310,7 @@ const gethP  = () => {
         this.updateData = updateData;
         this.hotwaterPlugin = hotwaterPlugin;
         this.runTibber = getTibberData;
+        this.runFan = runFan;
         this.sendError = sendError;
         this.curveAdjust = curveAdjust;
         this.hP = gethP;

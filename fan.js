@@ -44,7 +44,7 @@ module.exports = function(RED) {
         this.on('input', function(msg) {
             let conf = server.nibe.getConfig();
             if(msg.topic=="update") {
-                server.updateData();
+                server.runFan();
                 return;
             }
             if(msg.payload!==undefined && msg.topic!==undefined && msg.topic!=="") {
@@ -75,8 +75,8 @@ module.exports = function(RED) {
         })
         server.nibeData.on('pluginFan', (data) => {
                 let co2 = data.co2Sensor;
-                if(co2!==undefined && co2.data>-3276) {
-                    this.send({topic:"CO2",payload:co2.data});
+                if(co2!==undefined && co2.data!==undefined && co2.data.data>0) {
+                    this.send({topic:"CO2",payload:co2.data.data});
                 }
                 this.send({topic:"Fläkthastighet",payload:data.fan_speed.data});
                 this.send({topic:"Luftflöde",payload:data.bs1_flow.data});
