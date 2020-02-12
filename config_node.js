@@ -328,7 +328,6 @@ module.exports = function(RED) {
                     }
                 }
             }
-            runFan(result,array);
             runIndoor(result,array);
             runPrice(result,array);
             runRMU(result,array);
@@ -1048,21 +1047,25 @@ module.exports = function(RED) {
     }
 let fan_low = false;
 let fan_saved;
-async function runFan(result,array) {
+async function runFan() {
     let config = nibe.getConfig();
-    var data = Object.assign({}, result);
+    var data = {};
+    var timeNow = Date.now();
     if(config.fan===undefined) { config.fan = {}; nibe.setConfig(config); }
+    if(config.home.inside_sensors===undefined) { config.home.inside_sensors = []; nibe.setConfig(config); }
     if (config.fan.enable!==true) {
         // Function turned off, stopping.
         return;
     }
-    let co2;
-        if(config.fan.sensor!==undefined && config.fan.sensor!=="") {
-            let ind = array.findIndex(index => index.name == config.fan.sensor);
-            if(ind!==-1) co2 = array[ind];
-        }
+    data.co2Sensor;
+    
+    data.fan_speed = await nibe.reqDataAsync(hP['fan_speed']);
     if(fan_saved===undefined) fan_saved = data.fan_speed.raw_data;
-    let setpoint = data.bs1_flow.raw_data;
+    data.bs1_flow = await nibe.reqDataAsync(hP['bs1_flow']);
+    data.setpoint = data.bs1_flow.raw_data;
+    data.alarm = await nibe.reqDataAsync(hP['alarm']);
+    data.vented = await nibe.reqDataAsync(hP['vented']);
+    data.cpr_set = await nibe.reqDataAsync(hP['cpr_set']);
     if(config.fan.enable_low===true && data.cpr_set.raw_data<1 && data.alarm.raw_data!==183 && data.vented.raw_data>0) {
         // Only regulate when compressor is off.
         if(fan_low===false) {
@@ -1072,22 +1075,56 @@ async function runFan(result,array) {
         }
         if(config.fan.enable_co2===true) {
             console.log('CO2 enabled')
-            if(co2.data!==undefined) {
-                co2.data = Number(co2.data);
-                if(co2.data<800) {
-                    setpoint = config.fan.speed_low;
+            if(config.fan.sensor===undefined || config.fan.sensor=="Ingen") {
+        
+            } else {
+                let index = config.home.inside_sensors.findIndex(i => i.name == config.fan.sensor);
+                if(index!==-1) {
+                    data.co2Sensor = Object.assign({}, config.home.inside_sensors[index]);
+                }
+            }
+            if(data.co2Sensor!==undefined) {
+                if(data.co2Sensor.source=="mqtt") {
+                    await nibe.getMQTTData(data.co2Sensor.register).then(atad => {
+                        let result = Object.assign({}, atad);
+                        let sensor_timeout;
+                        if(config.home.sensor_timeout!==undefined && config.home.sensor_timeout!=="") {
+                            sensor_timeout = result.timestamp+(config.home.sensor_timeout*60000);
+                        } else if(config.home.sensor_timeout===0) {
+                            sensor_timeout = timeNow;
+                        } else {
+                            sensor_timeout = result.timestamp+(60*60000);
+                        }
+                        if(timeNow>sensor_timeout) {
+                            sendError('CO2 givare',`CO2 givare ${data.co2Sensor.name} har inte uppdaterats. Ignorerar.`)
+                        } else {
+                            data.co2Sensor.data = result;
+                            data.co2Sensor.data.timestamp = timeNow;
+                        }
+                        
+                    },(error => {
+                        sendError('Extra givare',`Extra givare ${data.co2Sensor.name} har inga värden än.`)
+                    }));
+                } else if(data.co2Sensor.source=="tibber") {
+                    console.log('Tibber Data request');
+                }
+            }
+            if(data.co2Sensor!==undefined && data.co2Sensor.data!==undefined) {
+                data.co2Sensor.data.data = Number(data.co2Sensor.data.data);
+                if(data.co2Sensor.data.data<800) {
+                    data.setpoint = config.fan.speed_low;
                     console.log('co2 värde under 800, sänker hastighet.')
                 } else {
-                    setpoint = config.fan.speed_normal;
+                    data.setpoint = config.fan.speed_normal;
                     console.log('co2 värde över 800, normal hastighet.')
                 }
             } else {
-                setpoint = config.fan.speed_normal;
+                data.setpoint = config.fan.speed_normal;
                 console.log('Saknar värde från co2 givare')
             }
         }
         if(config.fan.speed_low!==undefined && config.fan.speed_low!=="" && config.fan.speed_low!==0) {
-            setpoint = config.fan.speed_low;
+            data.setpoint = config.fan.speed_low;
         }
     } else {
         if(fan_low===true) {
@@ -1097,21 +1134,21 @@ async function runFan(result,array) {
             }
         }
         if(config.fan.speed_normal!==undefined && config.fan.speed_normal!=="" && config.fan.speed_normal!==0) {
-            setpoint = config.fan.speed_normal;
+            data.setpoint = config.fan.speed_normal;
         }
     }
-    if(data.bs1_flow.raw_data>(setpoint+10)) {
+    if(data.bs1_flow.raw_data>(data.setpoint+10)) {
         if(data.alarm.raw_data!==183 && data.vented.raw_data>0) {
             console.log('Minskar fläkthastighet')
             nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
         }
-    } else if(data.bs1_flow.raw_data<(setpoint-10)) {
+    } else if(data.bs1_flow.raw_data<(data.setpoint-10)) {
         if(data.alarm.raw_data!==183 && data.vented.raw_data>0) {
             console.log('Ökar fläkthastighet')
             nibe.setData(hP.fan_speed,(data.fan_speed.raw_data+1));
         }
     }
-    data.setpoint = setpoint;
+    data.cpr_act = await nibe.reqDataAsync(hP['cpr_act']);
     nibeData.emit('pluginFan',data);
 }
 async function runRMU(result,array) {
@@ -1224,6 +1261,7 @@ const gethP  = () => {
         });
         var everyminute = cron.schedule('*/1 * * * *', () => {
             hotwaterPlugin();
+            runFan()
         })
         var threeminutes = cron.schedule('*/3 * * * *', () => {
             updateData();
