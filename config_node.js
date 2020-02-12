@@ -603,7 +603,7 @@ module.exports = function(RED) {
         var data = Object.assign({}, dataIn);
         let level = data.price_level.data;
         let system = data.system;
-        let inside = data.priceSensor.data;
+        let inside = data.priceSensor;
         if(level!==undefined && level!==0) {
             let config = nibe.getConfig();
             if(config.price===undefined) {
@@ -626,7 +626,7 @@ module.exports = function(RED) {
                 if(heat_enable!==undefined && heat_enable===true) if(config.price['heat_normal_'+system]!==undefined) heat_adjust = config.price['heat_normal_'+system];
             } else if(level=="EXPENSIVE") {
                 if(hw_enable!==undefined && hw_enable===true) hw_adjust = Number(config.price.hotwater_expensive);
-                if((inside>(data['inside_set_'+system].data+temp_diff)) || temp_diff===undefined || temp_diff=="") {
+                if(inside!==undefined && (inside.data>(data['inside_set_'+system].data+temp_diff)) || temp_diff===undefined || temp_diff=="") {
                 if(heat_enable!==undefined && heat_enable===true) if(config.price['heat_expensive_'+system]!==undefined) heat_adjust = config.price['heat_expensive_'+system];
                 if(heat_adjust!==0) {
                         if(data.dM.data<data.dMstart.data+(-100)) {
@@ -637,7 +637,7 @@ module.exports = function(RED) {
             } else if(level=="VERY_EXPENSIVE") {
                 if(hw_enable!==undefined && hw_enable===true) hw_adjust = Number(config.price.hotwater_very_expensive);
                 if(heat_enable!==undefined && heat_enable===true) {
-                    if((inside>(data['inside_set_'+system].data+temp_diff)) || temp_diff===undefined || temp_diff=="") {
+                    if(inside!==undefined && (inside.data>(data['inside_set_'+system].data+temp_diff)) || temp_diff===undefined || temp_diff=="") {
                         if(config.price['heat_very_expensive_'+system]!==undefined) heat_adjust = config.price['heat_very_expensive_'+system];
                         if(heat_adjust!==0) {
                             if(data.dM.data<data.dMstart.data+(-100)) {
