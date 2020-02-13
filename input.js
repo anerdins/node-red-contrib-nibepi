@@ -8,17 +8,18 @@ module.exports = function(RED) {
         if(config.add===true && config.name.toLowerCase()!="config" && config.name.toLowerCase()!="error") {
             nibe.addRegister(config.name);
         }
-            let register = config.name;
+        let register = config.name;
+        if(server.hP()[config.name]!==undefined) {
+            register = server.hP()[config.name]
+        }
+        server.nibeData.on('ready', data => {
             if(server.hP()[config.name]!==undefined) {
                 register = server.hP()[config.name]
             }
-            server.nibeData.on('ready', data => {
-                register = server.hP()[config.name]
-            })
+        })
         var node = this;
-    if(config.name=="") {
-        server.nibeData.on('data', data => {
-
+        if(config.name=="") {
+            server.nibeData.on('data', data => {
                 let saved = node.context().get(data.register);
                 if(data.error!==undefined) {
                     
