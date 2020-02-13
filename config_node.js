@@ -190,11 +190,11 @@ module.exports = function(RED) {
                                 resolve(true)
                             }
                         },(error => {
-                            sendError('System',`System S${system.replace('s','')} ej anslutet.`);
+                            sendError('System',`System S${system.replace('s','')} not connected.`);
                             return reject(false);
                         }));
                     } else {
-                        sendError('System',`System S${system.replace('s','')} ej anslutet.`);
+                        sendError('System',`System S${system.replace('s','')} not connected.`);
                         return reject(false);
                     }
                 }
@@ -298,7 +298,7 @@ module.exports = function(RED) {
                                 sensor_timeout = data.timestamp+(60*60000);
                             }
                             if(timeNow>sensor_timeout) {
-                                sendError('Extra givare',`Extra givare ${item.registers[i].name} har inte uppdaterats. Ignorerar.`)
+                                sendError('Extra sensors',`Extra sensor ${item.registers[i].name} has not updated. Ignoring.`)
                             } else {
                                 data.system = item.system;
                                 data.timestamp = timeNow;
@@ -309,7 +309,7 @@ module.exports = function(RED) {
                             }
                             
                         },(error => {
-                            sendError('Extra givare',`Extra givare ${item.registers[i].name} har inga värden än.`)
+                            sendError('Extra sensors',`Extra sensor ${item.registers[i].name} has no value yet.`)
                         }));
                     } else if(item.registers[i].source=="tibber") {
                         console.log('Tibber Data request');
@@ -471,11 +471,11 @@ module.exports = function(RED) {
                                 }
                             }
                                     if(outside===undefined || heatcurve===undefined) {
-                                        sendError('Prognosreglering',`Saknar värde från utomhusgivaren eller värmekurvan.`);
+                                        sendError('Forecast',`No values from the outside sensor or the heatcurve register.`);
                                         return;
                                     }
                                     if(heatcurve===0) {
-                                        sendError('Prognosreglering',`Prognosreglering fungerar inte med egen värmekurva.`);
+                                        sendError('Forecast',`Forecast does not work with an own heating curve`);
                                         return;
                                     }
                                     if(config.weather.forecast_adjust===undefined) {
@@ -501,8 +501,8 @@ module.exports = function(RED) {
                                     
                                     nibeData.emit('pluginWeather',val);
                         } else {
-                            sendError('Prognosreglering',`Ingen kontakt med väderleverantör.`);
-                            //this.error('Prognosreglering',{topic:"Prognosreglering",payload:"Får ej kontakt med Väderleverantören. Ställer in reglering till 0."});
+                            sendError('Forecast',`No contact with SMHI weather service.`);
+                            //this.error('Forecast',{topic:"Forecast",payload:"Får ej kontakt med Väderleverantören. Ställer in reglering till 0."});
                             if(weatherOffset[val.system]!==0) {
                                 curveAdjust('weather',val.system,0);
                                 weatherOffset[val.system] = 0;
@@ -514,7 +514,7 @@ module.exports = function(RED) {
                     console.log("Error: " + err.message);
                 });
             } else {
-                sendError('Prognosreglering',`Inga koordinater inlagda.`);
+                sendError('Forecast',`No coordinates added`);
                 if(weatherOffset[val.system]!==0) {
                     curveAdjust('weather',val.system,0);
                     weatherOffset[val.system] = 0;
@@ -547,7 +547,7 @@ module.exports = function(RED) {
         }
         if(inside===undefined) inside = data['inside_'+data.system];
         if(inside===undefined || inside.data<-3276) {
-            sendError('Inomhusreglering',`Inomhusgivare saknas (${data.system}), avbryter...`);
+            sendError('Indoor',`Indoor sensor is missing (${data.system}), aborting...`);
             return;
         }
         data.indoorSensor = inside;
@@ -657,7 +657,7 @@ module.exports = function(RED) {
                 }))
             }
         } else {
-            sendError('Elprisreglering',`Kunde ej hämta prisnivå från värmepumpen.`);
+            sendError('Price',`Could not retrive pricelevel from the heatpump.`);
             if(priceOffset[system]!==0) {
                 priceOffset[system] = 0;
                 curveAdjust('price',system,0);
@@ -874,7 +874,7 @@ module.exports = function(RED) {
                         if(res.statusCode===200) {
                             resolve(JSON.parse(data))
                         } else {
-                            sendError('Tibber',`Ej kontakt med servern`);
+                            sendError('Tibber',`No contact with the server`);
                             reject('No contact with server')
                         }
                         
@@ -888,7 +888,7 @@ module.exports = function(RED) {
                   req.write(request)
                   req.end()
             } else {
-                sendError('Tibber',`Token är inte giltigt.`);
+                sendError('Tibber',`Token is not valid.`);
                 reject('No token')
             }
     });
@@ -919,35 +919,35 @@ module.exports = function(RED) {
                 if(index!==-1) {
                     if(register[index].mode = "R/W") {
                         startHW = hP['startHW_rmu_s1'];
-                        sendError('Varmvattenreglering',"Använder RMU 1 som varmvattenreglering")
+                        sendError('Hotwater',"Using RMU S1 in the hotwater plugin")
                     } else {
                         let index = register.findIndex(index => index.register == hP['startHW_rmu_s2']);
                         if(index!==-1) {
                             if(register[index].mode = "R/W") {
                                 startHW = hP['startHW_rmu_s2'];
-                                sendError('Varmvattenreglering',"Använder RMU 2 som varmvattenreglering")
+                                sendError('Hotwater',"Using RMU S2 in the hotwater plugin")
                             } else {
                                 let index = register.findIndex(index => index.register == hP['startHW_rmu_s3']);
                                 if(index!==-1) {
                                     if(register[index].mode = "R/W") {
                                         startHW = hP['startHW_rmu_s3'];
-                                        sendError('Varmvattenreglering',"Använder RMU 3 som varmvattenreglering")
+                                        sendError('Hotwater',"Using RMU S3 in the hotwater plugin")
                                     } else {
-                                        sendError('Varmvattenreglering',"Inga RMU är skrivbara..")
+                                        sendError('Hotwater',"No RMU is writeable.")
                                         return;
                                     }
                                 } else {
-                                    sendError('Varmvattenreglering',"RMU 3 är inte ansluten.")
+                                    sendError('Hotwater',"RMU S3 not connected")
                                     return;
                                 }
                             }
                         } else {
-                            sendError('Varmvattenreglering',"RMU 2 är inte ansluten.")
+                            sendError('Hotwater',"RMU S2 not connected")
                             return;
                         }
                     }
                 } else {
-                    sendError('Varmvattenreglering',"RMU är inte ansluten.")
+                    sendError('Hotwater',"RMU S1 not connected")
                     return;
                 }
             }
@@ -971,7 +971,7 @@ module.exports = function(RED) {
         }
         if(config.hotwater.enable_autoluxury===true) {
             if(hwON===undefined) {
-                sendError('Varmvattenreglering',`Virtuell RMU ej aktiverad.`);
+                sendError('Hotwater',`Virtual RMU not activated.`);
             }
             let difference = Number(config.hotwater.diff);
             let diff_time = Number(config.hotwater.time);
@@ -1067,8 +1067,8 @@ async function runFan() {
     data.vented = await nibe.reqDataAsync(hP['vented']);
     data.cpr_set = await nibe.reqDataAsync(hP['cpr_set']);
     if(config.fan.enable_co2===true) {
-    if(config.fan.sensor===undefined || config.fan.sensor=="Ingen") {
-        sendError('CO2 givare',`CO2 givare inte vald.`)
+    if(config.fan.sensor===undefined || config.fan.sensor=="None") {
+        sendError('CO2 sensor',`CO2 sensor not selected.`)
     } else {
         let index = config.home.inside_sensors.findIndex(i => i.name == config.fan.sensor);
         if(index!==-1) {
@@ -1088,14 +1088,14 @@ async function runFan() {
                     sensor_timeout = result.timestamp+(60*60000);
                 }
                 if(timeNow>sensor_timeout) {
-                    sendError('CO2 givare',`CO2 givare ${data.co2Sensor.name} har inte uppdaterats. Ignorerar.`)
+                    sendError('CO2 sensor',`CO2 sensor ${data.co2Sensor.name} has not updated. Ignoring.`)
                 } else {
                     data.co2Sensor.data = result;
                     data.co2Sensor.data.timestamp = timeNow;
                 }
                 
             },(error => {
-                sendError('CO2 givare',`CO2 givare ${data.co2Sensor.name} har inga värden än.`)
+                sendError('CO2 sensor',`CO2 sensor ${data.co2Sensor.name} has no value yet.`)
             }));
         } else if(data.co2Sensor.source=="tibber") {
             console.log('Tibber Data request');
@@ -1105,25 +1105,20 @@ async function runFan() {
     if(config.fan.enable_low===true && data.cpr_set.raw_data<1 && data.alarm.raw_data!==183 && data.vented.raw_data>0) {
         // Only regulate when compressor is off.
         if(fan_low===false) {
-                console.log('Saving fan speed')
                 fan_low = true;
                 fan_saved = data.fan_speed.raw_data;
         }
         if(config.fan.enable_co2===true) {
-            console.log('CO2 enabled')
             
             if(data.co2Sensor!==undefined && data.co2Sensor.data!==undefined) {
                 data.co2Sensor.data.data = Number(data.co2Sensor.data.data);
                 if(data.co2Sensor.data.data<800) {
                     data.setpoint = config.fan.speed_low;
-                    console.log('co2 värde under 800, sänker hastighet.')
                 } else {
                     data.setpoint = config.fan.speed_normal;
-                    console.log('co2 värde över 800, normal hastighet.')
                 }
             } else {
                 data.setpoint = config.fan.speed_normal;
-                console.log('Saknar värde från co2 givare')
             }
         }
         if(config.fan.speed_low!==undefined && config.fan.speed_low!=="" && config.fan.speed_low!==0) {
@@ -1142,12 +1137,10 @@ async function runFan() {
     }
     if(data.bs1_flow.raw_data>(data.setpoint+10)) {
         if(data.alarm.raw_data!==183 && data.vented.raw_data>0) {
-            console.log('Minskar fläkthastighet')
             nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
         }
     } else if(data.bs1_flow.raw_data<(data.setpoint-10)) {
         if(data.alarm.raw_data!==183 && data.vented.raw_data>0) {
-            console.log('Ökar fläkthastighet')
             nibe.setData(hP.fan_speed,(data.fan_speed.raw_data+1));
         }
     }
@@ -1171,7 +1164,7 @@ async function runRMU(result,array) {
             if(inside!==undefined) {
                 nibe.setData(hP['rmu_sensor_s'+i],inside.data);
             } else {
-                sendError(`RMU40 System ${i}`,`Givare ej vald, avbryter...`);
+                sendError(`RMU40 System ${i}`,`Sensor not selected, aborting...`);
                 return;
             }
             data.rmuSensor = inside;
@@ -1230,7 +1223,7 @@ const gethP  = () => {
                                     nibe.setConfig(config);
                                 }
                                 if(config.system.pump=="F750") hP.supply_s1 = "40047";
-                                sendError('Kärnan',`Nibe ${config.system.pump} är ansluten`);
+                                sendError('Core',`Nibe ${config.system.pump} is connected`);
                                 console.log('Core is connected')
                                 updateData(true);
                                 nibe.redOn();
