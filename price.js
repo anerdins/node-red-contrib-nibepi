@@ -26,7 +26,7 @@ module.exports = function(RED) {
                 server.nibe.setConfig(conf);
             }
             
-            if(conf.price['sensor_'+config.system]===undefined || conf.price['sensor_'+config.system]=="Ingen") {
+            if(conf.price['sensor_'+config.system]===undefined || conf.price['sensor_'+config.system]=="None") {
                 arr.push({topic:"inside_"+config.system,source:"nibe"});
             } else {
                 let index = conf.home.inside_sensors.findIndex(i => i.name == conf.price['sensor_'+config.system]);
@@ -79,8 +79,8 @@ module.exports = function(RED) {
         })
         server.nibeData.on('pluginPriceGraph', (data) => {
             if(data.system===config.system) {
-                this.send({topic:"Graf",payload:[]});
-                this.send({topic:"Graf",payload:data.values});
+                this.send({topic:"Graph",payload:[]});
+                this.send({topic:"Graph",payload:data.values});
             }
             
         });
@@ -99,8 +99,8 @@ module.exports = function(RED) {
                 this.send({topic:"Utomhustemperatur",payload:outside.data});
                 this.send({topic:"Gradminuter",payload:dM.data});
                 this.send({topic:"Tid",payload:dM.timestamp});*/
-                this.send({topic:"Nuvarande Elprisnivå",payload:data.price_level.data});
-                this.send({topic:"Nuvarande Elpris",payload:data.price_current.data});
+                this.send({topic:"Current price level",payload:data.price_level.data});
+                this.send({topic:"Current price",payload:data.price_current.data});
                 this.send([null,{topic:"test",payload:data}]);
             }
         })

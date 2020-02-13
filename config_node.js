@@ -409,9 +409,9 @@ module.exports = function(RED) {
                 direction_arr.sort((a, b) => (a.x > b.x) ? 1 : -1)
                 output.graph = [
                     {
-                        "series":["Vindhastighet","Byvind","Utomhustemp","Köldeffekt","Riktning"],
+                        "series":["Windspeed","Gust","Outsidetemp","Cooling factor","Direction"],
                         "data":[wind_speed_arr,wind_gust_arr,temp_arr,feel_arr,direction_arr],
-                        "labels":["Vindhastighet","Byvind","Utomhustemp","Köldeffekt","Riktning"]
+                        "labels":["Windspeed","Gust","Outsidetemp","Cooling factor","Direction"]
                     }];
           } else {
               output.feel = undefined;
@@ -502,7 +502,6 @@ module.exports = function(RED) {
                                     nibeData.emit('pluginWeather',val);
                         } else {
                             sendError('Forecast',`No contact with SMHI weather service.`);
-                            //this.error('Forecast',{topic:"Forecast",payload:"Får ej kontakt med Väderleverantören. Ställer in reglering till 0."});
                             if(weatherOffset[val.system]!==0) {
                                 curveAdjust('weather',val.system,0);
                                 weatherOffset[val.system] = 0;
@@ -691,9 +690,9 @@ module.exports = function(RED) {
             nibeGraphAdjust.sort((a, b) => (a.x > b.x) ? 1 : -1)
             var sendArray = [
                 {
-                    "series":["Pris","Kurvjustering"],
+                    "series":["Price","Curve adjustment"],
                     "data":[nibeGraph,nibeGraphAdjust],
-                    "labels":["Pris","Kurvjustering"]
+                    "labels":["Price","Curve adjustment"]
                 }];
             let result = {values:sendArray,system:system};
             return result;
@@ -751,9 +750,9 @@ module.exports = function(RED) {
 
         var sendArray = [
             {
-                "series":["Pris","Kurvjustering"],
+                "series":["Price","Curve adjustment"],
                 "data":[valueArray,adjustArray],
-                "labels":["Pris","Kurvjustering"]
+                "labels":["Price","Curve adjustment"]
             }];
         let result = {values:sendArray,system:system};
         return result;

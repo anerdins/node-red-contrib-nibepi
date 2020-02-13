@@ -54,22 +54,22 @@ module.exports = function(RED) {
         })
         server.nibeData.on('pluginHotwaterAutoLuxury', (value) => {
             if(value.bt7!==undefined && value.bt7.data>-3276) {
-                this.send({topic:"BT7 Topp",payload:value.bt7.data})
-                this.send({topic:"BT6 Laddning",payload:value.bt6.data})
-                if(value.hwTriggerTemp!==undefined) this.send({topic:"Startvärde",payload:value.hwTriggerTemp})
+                this.send({topic:"BT7 Top",payload:value.bt7.data})
+                this.send({topic:"BT6 Load",payload:value.bt6.data})
+                if(value.hwTriggerTemp!==undefined) this.send({topic:"Trigger value",payload:value.hwTriggerTemp})
                 if(value.hwTargetValue!==undefined) {
-                    this.send({topic:"Stoppvärde",payload:value.hwTargetValue});
+                    this.send({topic:"Stop value",payload:value.hwTargetValue});
                 } else {
-                    this.send({topic:"Stoppvärde",payload:value.bt6.data});
+                    this.send({topic:"Stop value",payload:value.bt6.data});
                 }
             }
     })
         server.nibeData.on('pluginHotwaterPriority', (value) => {
                 if(value.bt7!==undefined && value.bt7.data>-3276) {
-                    this.send([null,{topic:"BT7 Topp",payload:value.bt7.data}])
-                    this.send([null,{topic:"BT6 Laddning",payload:value.bt6.data}])
-                    this.send([null,{topic:"Startvärde",payload:value.hwStartTemp.data}])
-                    this.send([null,{topic:"Stoppvärde",payload:value.hwStopTemp.data}])
+                    this.send([null,{topic:"BT7 Top",payload:value.bt7.data}])
+                    this.send([null,{topic:"BT6 Load",payload:value.bt6.data}])
+                    this.send([null,{topic:"Trigger value",payload:value.hwStartTemp.data}])
+                    this.send([null,{topic:"Stop value",payload:value.hwStopTemp.data}])
                     
                 }
         })

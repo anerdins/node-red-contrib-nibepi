@@ -20,7 +20,7 @@ module.exports = function(RED) {
                 server.nibe.setConfig(conf);
             }
             
-            if(conf.weather['sensor_'+config.system]===undefined || conf.weather['sensor_'+config.system]=="Ingen") {
+            if(conf.weather['sensor_'+config.system]===undefined || conf.weather['sensor_'+config.system]=="None") {
                 arr.push({topic:"inside_"+config.system,source:"nibe"});
             } else {
                 let index = conf.home.inside_sensors.findIndex(i => i.name == conf.weather['sensor_'+config.system]);
@@ -82,21 +82,21 @@ module.exports = function(RED) {
                 }
                 if(inside===undefined) inside = data['inside_'+data.system];
                 if(inside===undefined || inside.data<-3276) {
-                    server.sendError('Prognosreglering',`Inomhusgivare saknas (${data.system}).`);
+                    server.sendError('Forecast',`Inside sensor missing (${data.system}).`);
                 }
                 data.weatherSensor = inside;
                 if(inside===undefined) inside = data['inside_'+data.system];
                 let outside = data['outside'];
                 if(inside!==undefined && inside.data>-3276) {
-                    this.send({topic:"Inomhustemperatur",payload:inside.data});
+                    this.send({topic:"Inside temperature",payload:inside.data});
                 }
                 
-                this.send({topic:"Utomhustemperatur",payload:outside.data});
-                this.send({topic:"Kurvjustering",payload:data.weatherOffset});
+                this.send({topic:"Outside temperature",payload:outside.data});
+                this.send({topic:"Curve adjustment",payload:data.weatherOffset});
                 //if(data.predictedNow!==undefined) this.send({topic:"Nuvarande prognos",payload:data.predictedNow.payload,timestamp:data.predictedNow.timestamp});
-                if(data.predictedLater!==undefined) this.send({topic:"Prognos",payload:data.predictedLater.payload,timestamp:data.predictedLater.timestamp});
-                if(data.unfiltredTemp!==undefined) this.send({topic:"Ojusterad Prognos",payload:data.unfiltredTemp.payload,timestamp:data.unfiltredTemp.timestamp});
-                this.send([null,{topic:"Vindgraf",payload:data.windGraph}]);
+                if(data.predictedLater!==undefined) this.send({topic:"Forecast",payload:data.predictedLater.payload,timestamp:data.predictedLater.timestamp});
+                if(data.unfiltredTemp!==undefined) this.send({topic:"Unadjusted Forecast",payload:data.unfiltredTemp.payload,timestamp:data.unfiltredTemp.timestamp});
+                this.send([null,{topic:"Windgraph",payload:data.windGraph}]);
             }
         })
         this.on('close', function() {

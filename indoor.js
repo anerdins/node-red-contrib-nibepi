@@ -25,7 +25,7 @@ module.exports = function(RED) {
                 conf.home.inside_sensors = [];
                 server.nibe.setConfig(conf);
             }
-            if(conf.indoor['sensor_'+config.system]===undefined || conf.indoor['sensor_'+config.system]=="Ingen") {
+            if(conf.indoor['sensor_'+config.system]===undefined || conf.indoor['sensor_'+config.system]=="None") {
                 arr.push({topic:"inside_"+config.system,source:"nibe"});
             } else {
                 let index = conf.home.inside_sensors.findIndex(i => i.name == conf.indoor['sensor_'+config.system]);
@@ -82,15 +82,15 @@ module.exports = function(RED) {
                 let inside = data.indoorSensor;
                 if(inside===undefined) inside = data['inside_'+data.system];
                 if(inside!==undefined && inside.data>-3276) {
-                    this.send({topic:"Inomhustemperatur",payload:inside.data});
+                    this.send({topic:"Inside temperature",payload:inside.data});
                 }
                 if(data.indoorOffset!==undefined) {
-                    this.send({topic:"Kurvjustering",payload:data.indoorOffset});
+                    this.send({topic:"Curve adjustment",payload:data.indoorOffset});
                 }
-                this.send({topic:"Utomhustemperatur",payload:outside.data});
-                this.send({topic:"Gradminuter",payload:dM.data});
-                this.send({topic:"Tid",payload:dM.timestamp});
-                this.send({topic:"Avvikelse",payload:data.accuracy});
+                this.send({topic:"Outside temperature",payload:outside.data});
+                this.send({topic:"Degree minutes",payload:dM.data});
+                this.send({topic:"Time",payload:dM.timestamp});
+                this.send({topic:"Deviation",payload:data.accuracy});
             }
         })
 

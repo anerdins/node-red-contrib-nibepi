@@ -17,7 +17,7 @@ module.exports = function(RED) {
                 conf.home.inside_sensors = [];
                 server.nibe.setConfig(conf);
             }
-            if(conf.rmu['sensor_'+config.system]===undefined || conf.rmu['sensor_'+config.system]=="Ingen") {
+            if(conf.rmu['sensor_'+config.system]===undefined || conf.rmu['sensor_'+config.system]=="None") {
                 arr.push({topic:"inside_"+config.system,source:"nibe"});
             } else {
                 let index = conf.home.inside_sensors.findIndex(i => i.name == conf.rmu['sensor_'+config.system]);
@@ -69,7 +69,7 @@ module.exports = function(RED) {
         })
         server.nibeData.on('pluginRMU', (data) => {
             if(data.system===config.system) {
-                this.send({topic:"Inomhustemperatur",payload:data.rmuSensor.data});
+                this.send({topic:"Inside temperature",payload:data.rmuSensor.data});
             }
         })
 
