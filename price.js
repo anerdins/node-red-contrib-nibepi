@@ -11,9 +11,9 @@ module.exports = function(RED) {
                 {topic:"dM",source:"nibe"},
                 {topic:"dMstart",source:"nibe"},
                 {topic:"outside",source:"nibe"},
-                {topic:"price_current",source:"nibe"},
-                {topic:"price_level",source:"nibe"},
-                {topic:"price_enable",source:"nibe"}
+                //{topic:"price_current",source:"nibe"},
+                //{topic:"price_level",source:"nibe"},
+                //{topic:"price_enable",source:"nibe"}
             ];
             let conf = server.nibe.getConfig();
             

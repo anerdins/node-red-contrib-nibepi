@@ -790,6 +790,9 @@ module.exports = function(RED) {
                     console.log(reject)
                 }));
             } else if(config.price.source=="nibe") {
+                data.price_current = await nibe.reqDataAsync('price_current');
+                data.price_level = await nibe.reqDataAsync('price_level');
+                data.price_enable = await nibe.reqDataAsync('price_enable');
                 priceAdjustCurve(data)
                 nibeData.emit('pluginPriceGraph',nibeBuildGraph(data,data.system));
                 nibeData.emit('pluginPrice',data);
