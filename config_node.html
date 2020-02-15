@@ -9,6 +9,7 @@
             mqtt_port: {value:"1883",required:false},
             mqtt_user: {value:"",required:false},
             mqtt_pass: {value:"",required:false},
+            readonly: {value:false,required:false},
             connection_series: {value:"fSeries",required:true},
             connection: {value:"serial",required:true},
             serial_port: {value:"/dev/ttyAMA0",required:false},
@@ -21,6 +22,7 @@
         },
         oneditprepare: function() {
             $.getJSON('/config', function(data) {
+                $("#node-config-input-readonly").val(data.system.readonly);
                 $("#node-config-input-mqtt").val(data.mqtt.enable);
                 $("#node-config-input-mqtt_discovery").val(data.mqtt.discovery);
                 $("#node-config-input-mqtt_topic").val(data.mqtt.topic);
@@ -43,6 +45,11 @@
                 if(data.connection===undefined) data.connection = {};
                 if(data.serial===undefined) data.serial = {};
                 if(data.tcp===undefined) data.tcp = {};
+                if ($('#node-config-input-readonly').is(':checked')) {
+                    data.system.readonly = true;
+                } else {
+                    data.system.readonly = false;
+                }
                 if ($('#node-config-input-mqtt').is(':checked')) {
                     data.mqtt.enable = true;
                 } else {
@@ -110,14 +117,17 @@
         <label for="node-config-input-tcp_port"><i class="icon-bookmark"></i> TCP Port</label>
         <input type="text" id="node-config-input-tcp_port">
     </div> -->
-    <br>
+    <div class="form-row">
+        <label for="node-config-input-readonly"><i class="icon-bookmark"></i> Use read-only mode</label>
+        <input type="checkbox" id="node-config-input-readonly">
+    </div>
     <div class="form-row">
         <label for="node-config-input-mqtt"><i class="icon-bookmark"></i> Use Mosquitto broker</label>
-        <input type="checkbox" id="node-config-input-mqtt" checked="checked">
+        <input type="checkbox" id="node-config-input-mqtt">
     </div>
     <div class="form-row">
         <label for="node-config-input-mqtt_discovery"><i class="icon-bookmark"></i> Use Discovery</label>
-        <input type="checkbox" id="node-config-input-mqtt_discovery" checked="checked">
+        <input type="checkbox" id="node-config-input-mqtt_discovery">
     </div>
     <div class="form-row">
         <label for="node-config-input-mqtt_topic"><i class="icon-bookmark"></i> Topic</label>

@@ -205,6 +205,45 @@ module.exports = function(RED) {
                             if(data.data<-3276) {
                                 checkRMU();
                             } else {
+                                if(plugin=="fan") {
+                                    nibe.reqDataAsync(hP.bs1_flow).then(data => {
+                                        if(data.data<-3276) {
+                                            return reject(false);
+                                        } else {
+                                            let regN = getList.findIndex(regN => regN.system == system);
+                                if(regN===-1) {
+                                    getList.push({system:system,registers:[]});
+                                    for( var i = 0; i < arr.length; i=i+1){
+                                        let regI = getList.findIndex(regI => regI.system == system);
+                                        let newArr = arr[i];
+                                        newArr.plugin = [plugin];
+                                        getList[regI].registers.push(newArr);
+                                    }
+                                } else {
+                                    for( var i = 0; i < arr.length; i=i+1){
+                                    let regI = getList[regN].registers.findIndex(regI => regI.register == arr[i].register);
+                                    if(regI===-1) {
+                                        let newArr = arr[i];
+                                        newArr.plugin = [plugin];
+                                        getList[regN].registers.push(newArr);
+                                    } else {
+                                        if(getList[regN].registers[regI].topic===undefined) getList[regN].registers[regI].topic = arr[i].topic;
+                                        if(getList[regN].registers[regI].name===undefined) getList[regN].registers[regI].name = arr[i].name;
+                                        let regP = getList[regN].registers[regI].plugin.findIndex(regP => regP == plugin);
+                                        if(regP===-1) {
+                                            getList[regN].registers[regI].plugin.push(plugin);
+                                        } else {
+
+                                        }
+                                    }
+                                    }
+                                }
+                                resolve(true)
+                                        }
+                                    },(error => {
+                                        return reject(false);
+                                    }));
+                            } else {
                                 let regN = getList.findIndex(regN => regN.system == system);
                                 if(regN===-1) {
                                     getList.push({system:system,registers:[]});
@@ -235,6 +274,8 @@ module.exports = function(RED) {
                                 }
                                 resolve(true)
                             }
+                                
+                            }
                         },(error => {
                             checkRMU();
                         }));
@@ -244,7 +285,19 @@ module.exports = function(RED) {
                             if(data.data<-3276) {
                                 checkRMU();
                             } else {
+                                if(plugin=="fan") {
+                                    nibe.reqDataAsync(hP.bs1_flow).then(data => {
+                                        if(data.data<-3276) {
+                                            return reject(false);
+                                        } else {
+                                            resolve(true)
+                                        }
+                                    },(error => {
+                                        return reject(false);
+                                    }));
+                            } else {
                                 resolve(true)
+                            }
                             }
                         },(error => {
                             checkRMU();
@@ -256,7 +309,19 @@ module.exports = function(RED) {
                         if(data.data<-3276) {
                             checkRMU();
                         } else {
+                            if(plugin=="fan") {
+                                nibe.reqDataAsync(hP.bs1_flow).then(data => {
+                                    if(data.data<-3276) {
+                                        return reject(false);
+                                    } else {
+    
+                                    }
+                                },(error => {
+                                    return reject(false);
+                                }));
+                        } else {
                             resolve(true)
+                        }
                         }
                     },(error => {
                         checkRMU();
@@ -778,9 +843,10 @@ module.exports = function(RED) {
             if(config.price.source=="tibber") {
                 await getTibberData().then(result => {
                     data.tibber = result;
+                    data.price_current = {};
                     data.price_current.data = Number((result.data.viewer.homes[0].currentSubscription.priceInfo.current.energy*100).toFixed(2))
                     data.price_current.raw_data = Number((result.data.viewer.homes[0].currentSubscription.priceInfo.current.energy*100).toFixed(2))
-                    
+                    data.price_level = {};
                     data.price_level.data = result.data.viewer.homes[0].currentSubscription.priceInfo.current.level;
                     data.price_level.raw_data = result.data.viewer.homes[0].currentSubscription.priceInfo.current.level;
                     priceAdjustCurve(data)
@@ -811,7 +877,7 @@ module.exports = function(RED) {
             config.price = {};
             nibe.setConfig(config);
         }
-            if(config.price.token!=="") {
+            if(config.price.token!==undefined && config.price.token!=="") {
                 let data = "";
                 let token = config.price.token;
                 const request = JSON.stringify({
