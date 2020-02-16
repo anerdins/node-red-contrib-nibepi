@@ -1171,28 +1171,23 @@ async function runFan() {
         }
     }
 }
-    if(config.fan.enable_low===true && data.cpr_set.raw_data<1 && data.alarm.raw_data!==183 && data.vented.raw_data>0) {
+    if(config.fan.enable_low===true && data.cpr_set.raw_data<40 && data.alarm.raw_data!==183 && data.vented.raw_data>0) {
         // Only regulate when compressor is off.
         if(fan_low===false) {
-                console.log('Saving fan speed')
                 fan_low = true;
                 fan_saved = data.fan_speed.raw_data;
         }
         if(config.fan.enable_co2===true) {
-            console.log('CO2 enabled')
             
             if(data.co2Sensor!==undefined && data.co2Sensor.data!==undefined) {
                 data.co2Sensor.data.data = Number(data.co2Sensor.data.data);
                 if(data.co2Sensor.data.data<800) {
                     data.setpoint = config.fan.speed_low;
-                    console.log('co2 värde under 800, sänker hastighet.')
                 } else {
                     data.setpoint = config.fan.speed_normal;
-                    console.log('co2 värde över 800, normal hastighet.')
                 }
             } else {
                 data.setpoint = config.fan.speed_normal;
-                console.log('Saknar värde från co2 givare')
             }
         }
         if(config.fan.speed_low!==undefined && config.fan.speed_low!=="" && config.fan.speed_low!==0) {
@@ -1211,12 +1206,10 @@ async function runFan() {
     }
     if(data.bs1_flow.raw_data>(data.setpoint+10)) {
         if(data.alarm.raw_data!==183 && data.vented.raw_data>0) {
-            console.log('Minskar fläkthastighet')
             nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
         }
     } else if(data.bs1_flow.raw_data<(data.setpoint-10)) {
         if(data.alarm.raw_data!==183 && data.vented.raw_data>0) {
-            console.log('Ökar fläkthastighet')
             nibe.setData(hP.fan_speed,(data.fan_speed.raw_data+1));
         }
     }
