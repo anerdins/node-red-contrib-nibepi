@@ -171,6 +171,7 @@ module.exports = function(RED) {
                             if(data!==undefined) {
                                 let regN = getList.findIndex(regN => regN.system == "s1");
                                 for( var i = 0; i < arr.length; i=i+1){
+                                    // Undefined blir problem i logg.
                                     let regI = getList[regN].registers.findIndex(regI => regI.register == arr[i].register);
                                     if(regI===-1) {
                                         let newArr = arr[i];
