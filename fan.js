@@ -75,12 +75,23 @@ module.exports = function(RED) {
         })
         server.nibeData.on('pluginFan', (data) => {
                 let co2 = data.co2Sensor;
+                let low_co2_limit = data.low_co2_limit;
+                let high_co2_limit = data.high_co2_limit;
                 if(co2!==undefined && co2.data!==undefined && co2.data.data>0) {
                     this.send({topic:"CO2",payload:co2.data.data});
                 }
+                if(low_co2_limit!==undefined) {
+                    this.send({topic:"CO2 Gränsvärde för sänkt flöde.",payload:low_co2_limit});
+                }
+                if(high_co2_limit!==undefined) {
+                    this.send({topic:"CO2 Gränsvärde för ökat flöde.",payload:high_co2_limit});
+                }
+                if(data.filter_eff!==undefined) this.send({topic:"Filter effektivitet",payload:data.filter_eff});
                 this.send({topic:"Fläkthastighet",payload:data.fan_speed.data});
                 this.send({topic:"Luftflöde",payload:data.bs1_flow.data});
                 this.send({topic:"Luftflöde Börvärde",payload:data.setpoint});
+                this.send({topic:"Kompressorfrekvens",payload:data.cpr_act.data});
+                
         })
 
         this.on('close', function() {

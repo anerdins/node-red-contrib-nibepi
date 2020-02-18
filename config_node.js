@@ -1,6 +1,6 @@
 module.exports = function(RED) {
     const EventEmitter = require('events').EventEmitter;
-    require('events').EventEmitter.defaultMaxListeners = 100;
+    require('events').EventEmitter.defaultMaxListeners = 150;
     const https = require('https');
     const nibeData = new EventEmitter()
     const nibe = require('nibepi')
@@ -11,7 +11,6 @@ module.exports = function(RED) {
     let weatherOffset = {};
     let indoorOffset = {};
     let priceOffset = {};
-    let priceSavedDM = {};
     const SunCalc = require('suncalc');
     const suncalc = (data) => {
         var times = SunCalc.getTimes(data.timestamp, data.lat, data.lon);
@@ -434,15 +433,19 @@ module.exports = function(RED) {
                 let factor = 1;
                 if(((1 <= dir) && (dir <= 45)) || ((315 <= dir) && (dir <= 360))) {
                     direction = -1;
+                    if(config.weather.wind_factor_n===undefined) config.weather.wind_factor_n = 0; nibe.setConfig(config);
                     factor = config.weather.wind_factor_n;
                 } else if(136 <= dir && dir <= 225) {
                     direction = -2;
+                    if(config.weather.wind_factor_s===undefined) {config.weather.wind_factor_s = 0; nibe.setConfig(config);}
                     factor = config.weather.wind_factor_s;
                 } else if(226 <= dir && dir <= 314) {
                     direction = -3;
+                    if(config.weather.wind_factor_w===undefined) {config.weather.wind_factor_w = 0; nibe.setConfig(config);}
                     factor = config.weather.wind_factor_w;
                 } else if(46 <= dir && dir <= 135) {
                     direction = -4;
+                    if(config.weather.wind_factor_e===undefined) {config.weather.wind_factor_e = 0; nibe.setConfig(config);}
                     factor = config.weather.wind_factor_e;
                 }
                 let v = Math.pow(speed, 0.16);
@@ -529,10 +532,13 @@ module.exports = function(RED) {
                             var sunFactor = 0;
                             if(config.weather.sun_enable!==undefined && config.weather.sun_enable===true) {
                                 if(weatherPredicted===1 && sun===true) {
+                                    if(config.weather.clear===undefined) { config.weather.clear = 0; nibe.setConfig(config); }
                                     sunFactor = config.weather.clear;
                                 } else if(weatherPredicted===2 && sun===true) {
+                                    if(config.weather.mostly_clear===undefined) { config.weather.mostly_clear = 0; nibe.setConfig(config); }
                                     sunFactor = config.weather.mostly_clear;
                                 } else if(weatherPredicted===3 && sun===true) {
+                                    if(config.weather.half_clear===undefined) { config.weather.half_clear = 0; nibe.setConfig(config); }
                                     sunFactor = config.weather.half_clear;
                                 }
                             }
@@ -857,10 +863,10 @@ module.exports = function(RED) {
                     console.log(reject)
                 }));
             } else if(config.price.source=="nibe") {
-                data.price_current = await nibe.reqDataAsync('price_current');
                 data.price_level = await nibe.reqDataAsync('price_level');
                 data.price_enable = await nibe.reqDataAsync('price_enable');
                 priceAdjustCurve(data)
+                data.price_current = await nibe.reqDataAsync('price_current');
                 nibeData.emit('pluginPriceGraph',nibeBuildGraph(data,data.system));
                 nibeData.emit('pluginPrice',data);
             }
@@ -1117,6 +1123,8 @@ module.exports = function(RED) {
     }
 let fan_low = false;
 let fan_saved;
+let fan_filter_normal_eff;
+let fan_filter_low_eff;
 async function runFan() {
     let config = nibe.getConfig();
     var data = {};
@@ -1172,17 +1180,26 @@ async function runFan() {
         }
     }
 }
-    if(config.fan.enable_low===true && data.cpr_set.raw_data<40 && data.alarm.raw_data!==183 && data.vented.raw_data>0) {
-        // Only regulate when compressor is off.
+    // If compressor freq is low and not defrosting, allow low speed.
+    if(config.fan.low_cpr_freq===undefined || config.fan.low_cpr_freq=="") {
+        config.fan.low_cpr_freq = 40;
+        nibe.setConfig(config);
+    }
+    if(config.fan.enable_low===true && data.cpr_set.raw_data<config.fan.low_cpr_freq && data.alarm.raw_data!==183) {
+        // Save the value from the last speed.
         if(fan_low===false) {
                 fan_low = true;
                 fan_saved = data.fan_speed.raw_data;
+                console.log('Saving fan speed going in to low mode: '+fan_saved+"%")
         }
         if(config.fan.enable_co2===true) {
-            
             if(data.co2Sensor!==undefined && data.co2Sensor.data!==undefined) {
                 data.co2Sensor.data.data = Number(data.co2Sensor.data.data);
-                if(data.co2Sensor.data.data<800) {
+                if(config.fan.low_co2_limit===undefined || config.fan.low_co2_limit=="" || config.fan.low_co2_limit===0) {
+                    config.fan.low_co2_limit = 800;
+                    nibe.setConfig(config);
+                }
+                if(data.co2Sensor.data.data<config.fan.low_co2_limit) {
                     data.setpoint = config.fan.speed_low;
                 } else {
                     data.setpoint = config.fan.speed_normal;
@@ -1191,13 +1208,16 @@ async function runFan() {
                 data.setpoint = config.fan.speed_normal;
             }
         }
+
         if(config.fan.speed_low!==undefined && config.fan.speed_low!=="" && config.fan.speed_low!==0) {
             data.setpoint = config.fan.speed_low;
         }
     } else {
         if(fan_low===true) {
-            if(data.alarm.raw_data!==183 && data.vented.raw_data>0) {
+            if(data.alarm.raw_data!==183) {
+                console.log('Setting high flow, speed: '+fan_saved+"%")
                 nibe.setData(hP.fan_speed,fan_saved);
+                data.fan_speed.raw_data = fan_saved;
                 fan_low = false;
             }
         }
@@ -1205,13 +1225,74 @@ async function runFan() {
             data.setpoint = config.fan.speed_normal;
         }
     }
-    if(data.bs1_flow.raw_data>(data.setpoint+10)) {
-        if(data.alarm.raw_data!==183 && data.vented.raw_data>0) {
-            nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
+    // Check if co2 wants boosting
+    let fan_high = false;
+    if(config.fan.enable_co2===true) {
+        if(config.fan.enable_high) {
+        if(config.fan.low_co2_limit===undefined || config.fan.low_co2_limit=="" || config.fan.low_co2_limit===0) {
+            config.fan.high_co2_limit = 800;
+            nibe.setConfig(config);
         }
-    } else if(data.bs1_flow.raw_data<(data.setpoint-10)) {
-        if(data.alarm.raw_data!==183 && data.vented.raw_data>0) {
-            nibe.setData(hP.fan_speed,(data.fan_speed.raw_data+1));
+        data.high_co2_limit = config.fan.high_co2_limit;
+        if(data.co2Sensor!==undefined && data.co2Sensor.data!==undefined) {
+            data.co2Sensor.data.data = Number(data.co2Sensor.data.data);
+            
+            if(data.co2Sensor.data.data>config.fan.high_co2_limit) {
+                if(config.fan.speed_high!==undefined && config.fan.speed_high!="" && config.fan.speed_high!==0) data.setpoint = config.fan.speed_high;
+                fan_high = true;
+                sendError('CO2 över gränsvärde',`Inget flöde valt för forcering.`);
+            } else {
+
+            }
+        } else {
+
+        }
+    }
+    }
+    // Start regulating only if not defrosting av vented air is above freezing temperatures.
+    if(data.alarm.raw_data!==183 && data.vented.raw_data>0) {
+        if(data.bs1_flow.raw_data>(data.setpoint+10)) {
+            if(data.fan_speed.raw_data>0) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
+        } else if(data.bs1_flow.raw_data<(data.setpoint-10)) {
+            if(data.fan_speed.raw_data<100) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data+1));
+        } else {
+            if(config.fan.enable_filter===true) {
+            // Value is stable, save fan speeds if calibration is active.
+            if(fan_low===true && fan_high===false) {
+                if(config.fan.filter_value_low===-1) {
+                    config.fan.filter_value_low = data.fan_speed.raw_data;
+                    nibe.setConfig(config);
+                } else {
+                    if(config.fan.filter_value_low!==undefined && config.fan.filter_value_low!="") {
+                        let saved = config.fan.filter_value_low;
+                        fan_filter_low_eff = Number((saved/data.fan_speed.raw_data*100).toFixed(0));
+                    }
+                }
+            } else if(fan_low===false && fan_high===false) {
+                if(config.fan.filter_value_normal===-1) {
+                    config.fan.filter_value_normal = data.fan_speed.raw_data;
+                    nibe.setConfig(config);
+                } else {
+                    if(config.fan.filter_value_normal!==undefined && config.fan.filter_value_normal!="") {
+                        let saved = config.fan.filter_value_normal;
+                        fan_filter_normal_eff = Number((saved/data.fan_speed.raw_data*100).toFixed(0));
+                    }
+                    
+                }
+            }
+            if(fan_filter_low_eff!==undefined && fan_filter_normal_eff===undefined) {
+                data.filter_eff = Number((fan_filter_low_eff).toFixed(0));
+                if(data.filter_eff>100) data.filter_eff = 100;
+            } else if(fan_filter_low_eff===undefined && fan_filter_normal_eff!==undefined) {
+                data.filter_eff = Number((fan_filter_normal_eff).toFixed(0));
+                if(data.filter_eff>100) data.filter_eff = 100;
+            } else if(fan_filter_low_eff!==undefined && fan_filter_normal_eff!==undefined) {
+                data.filter_eff = Number(((fan_filter_low_eff+fan_filter_normal_eff)/2).toFixed(0));
+                if(data.filter_eff>100) data.filter_eff = 100;
+            } else {
+
+            }
+            }
         }
     }
     data.cpr_act = await nibe.reqDataAsync(hP['cpr_act']);
