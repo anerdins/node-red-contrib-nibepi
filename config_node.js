@@ -611,6 +611,7 @@ module.exports = function(RED) {
             conf.indoor = {};
             nibe.setConfig(conf);
         }
+        if((inside_enable.data!==undefined && inside_enable.data===1) || (conf.indoor['enable_'+data.system]!==undefined && conf.indoor['enable_'+data.system]===true)) {
         if(conf.indoor['sensor_'+data.system]!==undefined && conf.indoor['sensor_'+data.system]!=="") {
             let index = array.findIndex(i => i.name == conf.indoor['sensor_'+data.system]);
             if(index!==-1) {
@@ -637,8 +638,6 @@ module.exports = function(RED) {
         let result = sum/(indoorArray.length);
         data.accuracy = result;
         // Restore degree minutes if the inside conditions are good.
-        
-        if((inside_enable.data!==undefined && inside_enable.data===1) || (conf.indoor['enable_'+data.system]!==undefined && conf.indoor['enable_'+data.system]===true)) {
             if(conf.indoor.dm_reset_enable===true) {
                 if(conf.indoor.dm_reset_value===undefined) {
                     conf.indoor.dm_reset_value = -200;
