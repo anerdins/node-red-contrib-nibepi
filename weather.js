@@ -82,7 +82,7 @@ module.exports = function(RED) {
                 }
                 if(inside===undefined) inside = data['inside_'+data.system];
                 if(inside===undefined || inside.data<-3276) {
-                    server.sendError('Prognosreglering',`Inomhusgivare saknas (${data.system}).`);
+                    //server.sendError('Prognosreglering',`Inomhusgivare saknas (${data.system}).`);
                 }
                 data.weatherSensor = inside;
                 if(inside===undefined) inside = data['inside_'+data.system];
