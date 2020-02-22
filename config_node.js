@@ -665,10 +665,15 @@ module.exports = function(RED) {
                 }
                 data.indoorOffset = 0;
             }
-            nibeData.emit('pluginIndoor',data);
+            
+        } else {
+            if(indoorOffset[data.system]!==0) {
+                indoorOffset[data.system] = 0;
+                curveAdjust('indoor',data.system,0);
+            }
+            data.indoorOffset = 0;
         }
-        //
-        
+        nibeData.emit('pluginIndoor',data);
     }
     const priceAdjustCurve = (dataIn) => {
         var data = Object.assign({}, dataIn);
