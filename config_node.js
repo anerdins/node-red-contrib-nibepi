@@ -619,7 +619,7 @@ module.exports = function(RED) {
             }
         }
         if(inside===undefined) inside = data['inside_'+data.system];
-        if(inside===undefined || inside.data<-3276) {
+        if(inside===undefined || inside.data<4) {
             sendError('Inomhusreglering',`Inomhusgivare saknas (${data.system}), avbryter...`);
             return;
         }
