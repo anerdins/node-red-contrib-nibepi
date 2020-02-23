@@ -5,6 +5,7 @@ module.exports = function(RED) {
     const nibeData = new EventEmitter()
     const nibe = require('nibepi')
     var serialPort = "";
+    let text = require('./language-SE.json')
     var series = "";
     let adjust = [];
     let hP;
@@ -190,11 +191,11 @@ module.exports = function(RED) {
                                 resolve(true)
                             }
                         },(error => {
-                            sendError('System',`System S${system.replace('s','')} ej anslutet.`);
+                            sendError('System',`System S${system.replace('s','')} ${text.sys_not_connected}`);
                             return reject(false);
                         }));
                     } else {
-                        sendError('System',`System S${system.replace('s','')} ej anslutet.`);
+                        sendError('System',`System S${system.replace('s','')} ${text.sys_not_connected}`);
                         return reject(false);
                     }
                 }
@@ -363,7 +364,7 @@ module.exports = function(RED) {
                                 sensor_timeout = data.timestamp+(60*60000);
                             }
                             if(timeNow>sensor_timeout) {
-                                sendError('Extra givare',`Extra givare ${item.registers[i].name} har inte uppdaterats. Ignorerar.`)
+                                sendError(text.extra_sensor,`${text.extra_sensor} ${item.registers[i].name} ${text.not_updated}`)
                             } else {
                                 data.system = item.system;
                                 data.timestamp = timeNow;
@@ -374,7 +375,7 @@ module.exports = function(RED) {
                             }
                             
                         },(error => {
-                            sendError('Extra givare',`Extra givare ${item.registers[i].name} har inga värden än.`)
+                            sendError(text.extra_sensor,`${text.extra_sensor} ${item.registers[i].name} ${text.no_values}`)
                         }));
                     } else if(item.registers[i].source=="tibber") {
                         console.log('Tibber Data request');
@@ -1334,12 +1335,23 @@ async function runRMU(result,array) {
 const gethP  = () => {
     return hP;
 }
-    console.log('Started')
+const checkTranslation = () => {
+    let config = nibe.getConfig();
+    if(config.update!==undefined) {
+        if(config.update.release.includes('english') || config.update.release.includes('snapshot-EN')) {
+            text = require('./language-EN.json')
+        } else {
+            text = require('./language-SE.json')
+        }
+    }
+}
+    console.log(text.starting)
 
     function nibeConfig(n) {
         RED.nodes.createNode(this,n);
         var cron = require('node-cron');
         nibeData.emit('config',nibe.getConfig());
+        checkTranslation();
         const handleMQTT = (config) => {
             if(config.mqtt===undefined) config.mqtt = {};
             nibe.handleMQTT(config.mqtt.enable,config.mqtt.host,config.mqtt.port,config.mqtt.user,config.mqtt.pass, (err,result) => {
