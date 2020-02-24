@@ -6,7 +6,7 @@ module.exports = function(RED) {
         const startUp = () => {
             let system = config.system.replace('s','S');
             this.status({ fill: 'yellow', shape: 'dot', text: `System ${system}` });
-            const arr = [
+            let arr = [
                 {topic:"inside_set_"+config.system,source:"nibe"},
                 {topic:"dM",source:"nibe"},
                 {topic:"dMstart",source:"nibe"},
@@ -36,13 +36,15 @@ module.exports = function(RED) {
                     arr.push(insideSensor);
                 }
             }
-        server.initiatePlugin(arr,'price',config.system).then(data => {
-            this.status({ fill: 'green', shape: 'dot', text: `System ${system}` });
-            this.send({enabled:true});
-        },(reject => {
-            this.status({ fill: 'red', shape: 'dot', text: `System ${system}` });
-            this.send({enabled:false});
-        }));
+            if(conf.price.enable!==true) arr = [];
+                server.initiatePlugin(arr,'price',config.system).then(data => {
+                    this.status({ fill: 'green', shape: 'dot', text: `System ${system}` });
+                    this.send({enabled:true});
+                },(reject => {
+                    this.status({ fill: 'red', shape: 'dot', text: `System ${system}` });
+                    this.send({enabled:false});
+                }));
+        
         }
         this.on('input', function(msg) {
             let conf = server.nibe.getConfig();
@@ -50,8 +52,15 @@ module.exports = function(RED) {
                 let data = {system:config.system}
                 server.updateData(data);
                 return;
-            }
-            if(msg.payload!==undefined && msg.topic!==undefined && msg.topic!=="") {
+            } else if(msg.topic=="price/enable") {
+                let req = msg.topic.split('/');
+                if(conf[req[0]]===undefined) conf[req[0]] = {};
+                if(conf[req[0]][req[1]]!==msg.payload) {
+                    conf[req[0]][req[1]] = msg.payload;
+                    server.nibe.setConfig(conf);
+                }
+                startUp();
+            } else if(msg.payload!==undefined && msg.topic!==undefined && msg.topic!=="") {
                 let req = msg.topic.split('/');
                 if(conf[req[0]]===undefined) conf[req[0]] = {};
                 if(conf[req[0]][req[1]+'_'+config.system]!==msg.payload) {

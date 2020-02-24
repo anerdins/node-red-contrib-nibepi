@@ -6,7 +6,7 @@ module.exports = function(RED) {
         const startUp = () => {
             let system = config.system.replace('s','S');
             this.status({ fill: 'yellow', shape: 'dot', text: `System ${system}` });
-            const arr = [
+            let arr = [
                 //{topic:"inside_"+config.system,source:"nibe"},
                 {topic:"inside_set_"+config.system,source:"nibe"},
                 {topic:"inside_enable_"+config.system,source:"nibe"},
@@ -31,17 +31,19 @@ module.exports = function(RED) {
                 let index = conf.home.inside_sensors.findIndex(i => i.name == conf.indoor['sensor_'+config.system]);
                 if(index!==-1) {
                     var insideSensor = Object.assign({}, conf.home.inside_sensors[index]);
-                    //let insideSensor = conf.home.inside_sensors[index];
+                    
+                    
                     arr.push(insideSensor);
                 }
             }
-        server.initiatePlugin(arr,'indoor',config.system).then(data => {
-            this.status({ fill: 'green', shape: 'dot', text: `System ${system}` });
-            this.send({enabled:true});
-        },(reject => {
-            this.status({ fill: 'red', shape: 'dot', text: `System ${system}` });
-            this.send({enabled:false});
-        }));
+            if(conf.indoor['enable_'+config.system]!==true) arr = [];
+                server.initiatePlugin(arr,'indoor',config.system).then(data => {
+                    this.status({ fill: 'green', shape: 'dot', text: `System ${system}` });
+                    this.send({enabled:true});
+                },(reject => {
+                    this.status({ fill: 'red', shape: 'dot', text: `System ${system}` });
+                    this.send({enabled:false});
+                }));
         }
         this.on('input', function(msg) {
             let conf = server.nibe.getConfig();

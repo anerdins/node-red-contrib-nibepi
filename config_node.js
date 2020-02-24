@@ -334,6 +334,7 @@ module.exports = function(RED) {
     return promise;
 }
     async function updateData(hourly=false) {
+        console.log(JSON.stringify(getList,null,2))
         let timeNow = Date.now();
         for (const item of getList) {
             const array = [];
@@ -402,7 +403,9 @@ module.exports = function(RED) {
                 runWeather(result);
             } else {
                 result.array = array;
-                nibeData.emit('pluginWeather',result);
+                if(nibe.getConfig().weather['enable_'+item.system]===true) {
+                    nibeData.emit('pluginWeather',result);
+                }
             }
         }
       }
@@ -612,7 +615,7 @@ module.exports = function(RED) {
             conf.indoor = {};
             nibe.setConfig(conf);
         }
-        if((inside_enable.data!==undefined && inside_enable.data===1) || (conf.indoor['enable_'+data.system]!==undefined && conf.indoor['enable_'+data.system]===true)) {
+        if((inside_enable!==undefined && inside_enable.data!==undefined && inside_enable.data===1) || (conf.indoor['enable_'+data.system]!==undefined && conf.indoor['enable_'+data.system]===true)) {
         if(conf.indoor['sensor_'+data.system]!==undefined && conf.indoor['sensor_'+data.system]!=="") {
             let index = array.findIndex(i => i.name == conf.indoor['sensor_'+data.system]);
             if(index!==-1) {
@@ -666,7 +669,7 @@ module.exports = function(RED) {
                 }
                 data.indoorOffset = 0;
             }
-            
+            nibeData.emit('pluginIndoor',data);
         } else {
             if(indoorOffset[data.system]!==0) {
                 indoorOffset[data.system] = 0;
@@ -674,7 +677,6 @@ module.exports = function(RED) {
             }
             data.indoorOffset = 0;
         }
-        nibeData.emit('pluginIndoor',data);
     }
     const priceAdjustCurve = (dataIn) => {
         var data = Object.assign({}, dataIn);
@@ -1195,7 +1197,6 @@ async function runFan() {
         if(fan_low===false) {
                 fan_low = true;
                 fan_saved = data.fan_speed.raw_data;
-                console.log('Saving fan speed going in to low mode: '+fan_saved+"%")
         }
         if(config.fan.enable_co2===true) {
             if(data.co2Sensor!==undefined && data.co2Sensor.data!==undefined) {
@@ -1220,7 +1221,6 @@ async function runFan() {
     } else {
         if(fan_low===true) {
             if(data.alarm.raw_data!==183) {
-                console.log('Setting high flow, speed: '+fan_saved+"%")
                 nibe.setData(hP.fan_speed,fan_saved);
                 data.fan_speed.raw_data = fan_saved;
                 fan_low = false;
@@ -1234,7 +1234,7 @@ async function runFan() {
     let fan_high = false;
     if(config.fan.enable_co2===true) {
         if(config.fan.enable_high) {
-        if(config.fan.low_co2_limit===undefined || config.fan.low_co2_limit=="" || config.fan.low_co2_limit===0) {
+        if(config.fan.high_co2_limit===undefined || config.fan.high_co2_limit=="" || config.fan.high_co2_limit===0) {
             config.fan.high_co2_limit = 800;
             nibe.setConfig(config);
         }

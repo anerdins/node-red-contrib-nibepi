@@ -11,7 +11,7 @@ module.exports = function(RED) {
                 conf.weather = {};
                 server.nibe.setConfig(conf);
             }
-            const arr = [
+            let arr = [
                 {topic:"outside",source:"nibe"},
                 {topic:"heatcurve_"+config.system,source:"nibe"}
             ];
@@ -30,13 +30,15 @@ module.exports = function(RED) {
                     arr.push(insideSensor);
                 }
             }
-        server.initiatePlugin(arr,'weather',config.system).then(result => {
-            this.status({ fill: 'green', shape: 'dot', text: `System ${system}` });
-            this.send({enabled:true});
-        },(reject => {
-            this.status({ fill: 'red', shape: 'dot', text: `System ${system}` });
-            this.send({enabled:false});
-        }));
+            if(conf.weather['enable_'+config.system]!==true) arr = [];
+                server.initiatePlugin(arr,'weather',config.system).then(result => {
+                    this.status({ fill: 'green', shape: 'dot', text: `System ${system}` });
+                    this.send({enabled:true});
+                },(reject => {
+                    this.status({ fill: 'red', shape: 'dot', text: `System ${system}` });
+                    this.send({enabled:false});
+                }));
+        
         }
         
         if(server.nibe.core!==undefined && server.nibe.core.connected!==undefined && server.nibe.core.connected===true) {
