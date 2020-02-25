@@ -1347,7 +1347,7 @@ async function runRMU(result,array) {
             if(inside!==undefined) {
                 nibe.setData(hP['rmu_sensor_s'+i],inside.data);
             } else {
-                sendError(`RMU40 System ${i}`,`Givare ej vald, avbryter...`);
+                sendError(`RMU40 System ${i}`,`Givare har inga värden, avbryter...`);
                 return;
             }
             data.rmuSensor = inside;
