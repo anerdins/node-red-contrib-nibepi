@@ -29,6 +29,7 @@ module.exports = function(RED) {
             }
         server.initiatePlugin(arr,'rmu',config.system).then(data => {
             this.status({ fill: 'green', shape: 'dot', text: `RMU 40 ${system}` });
+            server.sendError('RMU 40',`RMU 40 ${system} ${server.text.sys_connected}`);
             this.send({enabled:true});
         },(reject => {
             this.status({ fill: 'red', shape: 'dot', text: `RMU 40 ${system}` });
@@ -52,10 +53,10 @@ module.exports = function(RED) {
             }
             
         });
-        if(server.nibe.core!==undefined && server.nibe.core.connected!==undefined && server.nibe.core.connected===true) {
+        if(server.rmu_ready===true) {
             startUp();
         } else {
-            server.nibeData.on('ready', (data) => {
+            server.nibeData.on('rmu_ready', (data) => {
                 startUp();
             })
         }

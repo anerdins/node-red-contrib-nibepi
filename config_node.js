@@ -170,8 +170,8 @@ module.exports = function(RED) {
                         nibe.reqDataAsync(hP['startHW_rmu_'+system]).then(data => {
                             if(data!==undefined) {
                                 let regN = getList.findIndex(regN => regN.system == "s1");
+                                if(regN!==-1) {
                                 for( var i = 0; i < arr.length; i=i+1){
-                                    // Undefined blir problem i logg.
                                     let regI = getList[regN].registers.findIndex(regI => regI.register == arr[i].register);
                                     if(regI===-1) {
                                         let newArr = arr[i];
@@ -188,20 +188,22 @@ module.exports = function(RED) {
                                         }
                                     }
                                     }
+                                }
                                 resolve(true)
                             }
                         },(error => {
-                            sendError('System',`System S${system.replace('s','')} ${text.sys_not_connected}`);
+                            //sendError('System',`System S${system.replace('s','')} ${text.sys_not_connected}`);
                             return reject(false);
                         }));
-                    } else {
+                    }/* else {
                         sendError('System',`System S${system.replace('s','')} ${text.sys_not_connected}`);
                         return reject(false);
-                    }
+                    }*/
                 }
                 if(newSystem===true) {
                     let regN = getList.findIndex(regN => regN.system == system);
                     if(regN===-1) {
+                        checkRMU();
                         nibe.reqDataAsync(checkReg).then(data => {
                             if(data.data<-3276) {
                                 checkRMU();
@@ -282,6 +284,7 @@ module.exports = function(RED) {
                         }));
                         
                     } else {
+                        checkRMU();
                         nibe.reqDataAsync(checkReg).then(data => {
                             if(data.data<-3276) {
                                 checkRMU();
@@ -306,6 +309,7 @@ module.exports = function(RED) {
                         
                     }
                 } else {
+                    checkRMU();
                     nibe.reqDataAsync(checkReg).then(data => {
                         if(data.data<-3276) {
                             checkRMU();
@@ -334,7 +338,6 @@ module.exports = function(RED) {
     return promise;
 }
     async function updateData(hourly=false) {
-        console.log(JSON.stringify(getList,null,2))
         let timeNow = Date.now();
         for (const item of getList) {
             const array = [];
@@ -499,10 +502,10 @@ module.exports = function(RED) {
             config.weather = {};
             nibe.setConfig(config);
         }
-        let outside = val.outside.data;
-        let heatcurve = val['heatcurve_'+val.system].data;
-        let setOffset = val.weatherOffset;
         if(config.weather!==undefined && config.weather['enable_'+val.system]===true) {
+            let outside = val.outside.data;
+            let heatcurve = val['heatcurve_'+val.system].data;
+            let setOffset = val.weatherOffset;
             let lon = config.home.lon;
             let lat = config.home.lat;
             if(lon!==undefined && lat!==undefined && lon!="" && lat!="") {
@@ -1030,12 +1033,36 @@ module.exports = function(RED) {
                         }
                     }
                 } else {
-                    sendError('Varmvattenreglering',"RMU är inte ansluten.")
-                    return;
+                    sendError('Varmvattenreglering',"RMU 1 är inte ansluten.")
+                    let index = register.findIndex(index => index.register == hP['startHW_rmu_s2']);
+                        if(index!==-1) {
+                            if(register[index].mode = "R/W") {
+                                startHW = hP['startHW_rmu_s2'];
+                                sendError('Varmvattenreglering',"Använder RMU 2 som varmvattenreglering")
+                            } else {
+                                let index = register.findIndex(index => index.register == hP['startHW_rmu_s3']);
+                                if(index!==-1) {
+                                    if(register[index].mode = "R/W") {
+                                        startHW = hP['startHW_rmu_s3'];
+                                        sendError('Varmvattenreglering',"Använder RMU 3 som varmvattenreglering")
+                                    } else {
+                                        sendError('Varmvattenreglering',"Inga RMU är skrivbara..")
+                                        return;
+                                    }
+                                } else {
+                                    sendError('Varmvattenreglering',"RMU 3 är inte ansluten.")
+                                    return;
+                                }
+                            }
+                        } else {
+                            sendError('Varmvattenreglering',"RMU 2 är inte ansluten.")
+                            return;
+                        }
                 }
             }
             
             hwON = await nibe.reqDataAsync(startHW);
+            if(hwON===undefined) startHW = undefined;
             hwON.timestamp = time;
             bt6 = await nibe.reqDataAsync(hP['bt6']);
             bt6.timestamp = time;
@@ -1448,6 +1475,12 @@ const checkTranslation = () => {
         nibeData.emit('data',data);        
         //console.log(`${data.register}, ${data.titel}: ${data.data} ${data.unit}`)
     })
+    var rmu_ready = false;
+    nibe.data.on('rmu_ready',data => {
+        rmu_ready = true;
+        nibeData.emit('rmu_ready',data);
+    });
+
     nibe.data.on('updateSensor',data => {
         nibeData.emit('ready',true);
     })
@@ -1465,6 +1498,8 @@ const checkTranslation = () => {
         this.suncalc = suncalc;
         this.nibe = nibe;
         this.cron = cron;
+        this.text = text;
+        this.rmu_ready = rmu_ready;
         this.nibeData = nibeData;
         this.initiatePlugin = initiatePlugin;
         this.updateData = updateData;
