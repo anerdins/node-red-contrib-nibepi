@@ -1364,7 +1364,7 @@ const gethP  = () => {
 }
 const checkTranslation = () => {
     let config = nibe.getConfig();
-    if(config.update!==undefined) {
+    if(config.update!==undefined && config.update.release!==undefined) {
         if(config.update.release.includes('english') || config.update.release.includes('snapshot-EN')) {
             text = require('./language-EN.json')
         } else {
