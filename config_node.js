@@ -1159,6 +1159,7 @@ let fan_low = false;
 let fan_saved;
 let fan_filter_normal_eff;
 let fan_filter_low_eff;
+let dMboost = false;
 async function runFan() {
     let config = nibe.getConfig();
     var data = {};
@@ -1178,6 +1179,10 @@ async function runFan() {
     data.alarm = await nibe.reqDataAsync(hP['alarm']);
     data.vented = await nibe.reqDataAsync(hP['vented']);
     data.cpr_set = await nibe.reqDataAsync(hP['cpr_set']);
+    data.dMadd = await nibe.reqDataAsync(hP['dMadd']);
+    data.dMstart = await nibe.reqDataAsync(hP['dMstart']);
+    data.dM = await nibe.reqDataAsync(hP['dM']);
+    
     if(config.fan.enable_co2===true) {
     if(config.fan.sensor===undefined || config.fan.sensor=="Ingen") {
         sendError('CO2 givare',`CO2 givare inte vald.`)
@@ -1214,9 +1219,10 @@ async function runFan() {
         }
     }
 }
+    
     // If compressor freq is low and not defrosting, allow low speed.
     if(config.fan.low_cpr_freq===undefined || config.fan.low_cpr_freq=="") {
-        config.fan.low_cpr_freq = 40;
+        config.fan.low_cpr_freq = 41;
         nibe.setConfig(config);
     }
     if(config.fan.enable_low===true && data.cpr_set.raw_data<config.fan.low_cpr_freq && data.alarm.raw_data!==183) {
@@ -1280,13 +1286,65 @@ async function runFan() {
 
         }
     }
+    
+}
+let adjusted = false;
+if(config.fan.enable_dm_boost!==undefined && config.fan.enable_dm_boost===true) {
+    if(config.fan.dm_boost_start===undefined || config.fan.dm_boost_start=="" || config.fan.dm_boost_start===0) {
+        config.fan.dm_boost_start = 300;
+        nibe.setConfig(config);
     }
-    // Start regulating only if not defrosting av vented air is above freezing temperatures.
+    let boost = (data.dMstart.data-data.dMadd.data)+config.fan.dm_boost_start;
+    if(boost>(data.dMstart.data-100)) {
+        sendError('Gradminut boost',`Startvärde för boost ligger för nära gradminuter vid start av kompressor`)
+        
+    } else {
+
+        if(data.dM.data<boost) {
+            // Degree minutes starts boost
+            if(config.fan.dm_boost_value!==undefined && config.fan.dm_boost_value!=="" && config.fan.dm_boost_value!==0) {
+            data.setpoint = config.fan.dm_boost_value
+            if(dMboost===false) {
+                if(data.bs1_flow.raw_data<(data.setpoint+10) && data.bs1_flow.raw_data>(data.setpoint-10)) dMboost = true;
+                if(data.alarm.raw_data===183) {
+                    if(data.bs1_flow.raw_data>(data.setpoint+10)) {
+                        if(data.fan_speed.raw_data>0) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
+                        adjusted = true;
+                    } else if(data.bs1_flow.raw_data<(data.setpoint-10)) {
+                        if(data.fan_speed.raw_data<100) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data+1));
+                        adjusted = true;
+                    }
+                }
+            }
+            
+        } else {
+            // No value to boost to.
+            sendError('Gradminut boost',`Inget boostvärde angivet`)
+        
+        }
+        } else {
+            // Degree minutes stops boost
+            if(dMboost===true) {
+                if(data.bs1_flow.raw_data<(data.setpoint+10) && data.bs1_flow.raw_data>(data.setpoint-10)) dMboost = false;
+                if(data.alarm.raw_data!==183) {
+                    if(data.bs1_flow.raw_data>(data.setpoint+10)) {
+                        if(data.fan_speed.raw_data>0) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
+                        adjusted = true;
+                    } else if(data.bs1_flow.raw_data<(data.setpoint-10)) {
+                        if(data.fan_speed.raw_data<100) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data+1));
+                        adjusted = true;
+                    }
+                }
+            }
+        }
+    }
+}
+    // Start regulating only if not defrosting and vented air is above freezing temperatures.
     if(data.alarm.raw_data!==183 && data.vented.raw_data>0) {
         if(data.bs1_flow.raw_data>(data.setpoint+10)) {
-            if(data.fan_speed.raw_data>0) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
+            if(data.fan_speed.raw_data>0 && adjusted===false) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
         } else if(data.bs1_flow.raw_data<(data.setpoint-10)) {
-            if(data.fan_speed.raw_data<100) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data+1));
+            if(data.fan_speed.raw_data<100 && adjusted===false) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data+1));
         } else {
             if(config.fan.enable_filter===true) {
             // Value is stable, save fan speeds if calibration is active.

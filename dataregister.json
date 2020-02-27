@@ -25,6 +25,7 @@
         "outdoor_set":"47375",
         "dM":"43005",
         "dMstart":"47206",
+        "dMadd":"48072",
         "exhaust":"40025",
         "hw_mode":"47041",
         "price_current":"41928",
@@ -55,7 +56,8 @@
         "alarm":"45001",
         "vented":"40026",
         "cpr_set":"43182",
-        "cpr_act":"43136"
+        "cpr_act":"43136",
+        "defrost_time":"43066"
     },
     "sSeries": {
         "inside":"30026",
