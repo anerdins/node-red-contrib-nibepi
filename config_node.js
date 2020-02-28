@@ -167,7 +167,7 @@ module.exports = function(RED) {
                 let checkReg = hP['supply_'+system];
                 function checkRMU() {
                     if(plugin=="rmu") {
-                        nibe.reqDataAsync(hP['startHW_rmu_'+system]).then(data => {
+                        nibe.reqDataAsync(hP['startHW']).then(data => {
                             if(data!==undefined) {
                                 let regN = getList.findIndex(regN => regN.system == "s1");
                                 if(regN!==-1) {
@@ -626,7 +626,7 @@ module.exports = function(RED) {
             }
         }
         if(inside===undefined) inside = data['inside_'+data.system];
-        if(inside===undefined || inside.data<4) {
+        if(inside===undefined || inside.data===undefined || inside.data<4) {
             sendError('Inomhusreglering',`Inomhusgivare saknas (${data.system}), avbryter...`);
             return;
         }
@@ -636,14 +636,16 @@ module.exports = function(RED) {
         let dM = data.dM;
         let dMstart = data.dMstart;
         // Calculate setpoint accuracy
-        indoorArray.unshift({set:inside_set.data,act:inside.data});
-        if(indoorArray.length>=2016) indoorArray.pop();
-        let sum = 0;
-        for (const arr of indoorArray) {
-            sum = sum+(arr.act/arr.set)
+        if(inside!==undefined) {
+            indoorArray.unshift({set:inside_set.data,act:inside.data});
+            if(indoorArray.length>=2016) indoorArray.pop();
+            let sum = 0;
+            for (const arr of indoorArray) {
+                sum = sum+(arr.act/arr.set)
+            }
+            let result = sum/(indoorArray.length);
+            data.accuracy = result;
         }
-        let result = sum/(indoorArray.length);
-        data.accuracy = result;
         // Restore degree minutes if the inside conditions are good.
             if(conf.indoor.dm_reset_enable===true) {
                 if(conf.indoor.dm_reset_value===undefined) {
@@ -982,7 +984,6 @@ module.exports = function(RED) {
     }
     let hwSavedTemp = [];
     let hwTargetValue;
-    let startHW;
     async function hotwaterPlugin() {
         let time = Date.now();
         let hwTriggerTemp;
@@ -998,71 +999,8 @@ module.exports = function(RED) {
         let hwStartTemp;
         let hwStopTemp;
         let data = {};
-        if(config.hotwater.enable_autoluxury===true || config.hotwater.enable_hw_priority===true) {
-            let register = nibe.getRegister();
-            if(startHW===undefined) {
-                let index = register.findIndex(index => index.register == hP['startHW_rmu_s1']);
-                if(index!==-1) {
-                    if(register[index].mode = "R/W") {
-                        startHW = hP['startHW_rmu_s1'];
-                        sendError('Varmvattenreglering',"Använder RMU 1 som varmvattenreglering")
-                    } else {
-                        let index = register.findIndex(index => index.register == hP['startHW_rmu_s2']);
-                        if(index!==-1) {
-                            if(register[index].mode = "R/W") {
-                                startHW = hP['startHW_rmu_s2'];
-                                sendError('Varmvattenreglering',"Använder RMU 2 som varmvattenreglering")
-                            } else {
-                                let index = register.findIndex(index => index.register == hP['startHW_rmu_s3']);
-                                if(index!==-1) {
-                                    if(register[index].mode = "R/W") {
-                                        startHW = hP['startHW_rmu_s3'];
-                                        sendError('Varmvattenreglering',"Använder RMU 3 som varmvattenreglering")
-                                    } else {
-                                        sendError('Varmvattenreglering',"Inga RMU är skrivbara..")
-                                        return;
-                                    }
-                                } else {
-                                    sendError('Varmvattenreglering',"RMU 3 är inte ansluten.")
-                                    return;
-                                }
-                            }
-                        } else {
-                            sendError('Varmvattenreglering',"RMU 2 är inte ansluten.")
-                            return;
-                        }
-                    }
-                } else {
-                    sendError('Varmvattenreglering',"RMU 1 är inte ansluten.")
-                    let index = register.findIndex(index => index.register == hP['startHW_rmu_s2']);
-                        if(index!==-1) {
-                            if(register[index].mode = "R/W") {
-                                startHW = hP['startHW_rmu_s2'];
-                                sendError('Varmvattenreglering',"Använder RMU 2 som varmvattenreglering")
-                            } else {
-                                let index = register.findIndex(index => index.register == hP['startHW_rmu_s3']);
-                                if(index!==-1) {
-                                    if(register[index].mode = "R/W") {
-                                        startHW = hP['startHW_rmu_s3'];
-                                        sendError('Varmvattenreglering',"Använder RMU 3 som varmvattenreglering")
-                                    } else {
-                                        sendError('Varmvattenreglering',"Inga RMU är skrivbara..")
-                                        return;
-                                    }
-                                } else {
-                                    sendError('Varmvattenreglering',"RMU 3 är inte ansluten.")
-                                    return;
-                                }
-                            }
-                        } else {
-                            sendError('Varmvattenreglering',"RMU 2 är inte ansluten.")
-                            return;
-                        }
-                }
-            }
-            
-            hwON = await nibe.reqDataAsync(startHW);
-            if(hwON===undefined) startHW = undefined;
+        if(config.hotwater.enable_autoluxury===true || config.hotwater.enable_hw_priority===true) {            
+            hwON = await nibe.reqDataAsync(hP['startHW']);
             hwON.timestamp = time;
             bt6 = await nibe.reqDataAsync(hP['bt6']);
             bt6.timestamp = time;
@@ -1107,7 +1045,7 @@ module.exports = function(RED) {
                         hwTargetValue = hwTriggerTemp+difference-5;
                         hwTargetValue = Number(hwTargetValue.toFixed(2));
                         //console.log(`Huge hotwater load. BT6 target value: ${hwTargetValue} °C, BT6 actual: ${bt6.data} °C`);
-                        nibe.setData(startHW,4);
+                        nibe.setData(hP['startHW'],4);
                     } else {
                         //console.log('Not huge hotwater load')
                     }
@@ -1120,7 +1058,7 @@ module.exports = function(RED) {
                     if(bt6.data>=hwTargetValue || bt6.data>=hwStopTemp.data) {
                         //console.log(`BT6 target (${hwTargetValue} °C) reached, BT6 actual: ${bt6.data} °C`);
                         hwTargetValue = undefined;
-                        nibe.setData(startHW,0);
+                        nibe.setData(hP['startHW'],0);
                     } else {
                         //console.log('Target temperature not reached yet.')
                     }
@@ -1136,7 +1074,7 @@ module.exports = function(RED) {
             if(hwON.raw_data!==4) {
                 if(bt7.data<=hwStartTemp.data) {
                     //console.log(`Start HW priority. BT7 target value: ${hwStopTemp.data} °C, BT7 actual: ${bt7.data} °C`);
-                    nibe.setData(startHW,4);
+                    nibe.setData(hP['startHW'],4);
                 } else {
                     //console.log('Not starting HW priority')
                 }
@@ -1145,7 +1083,7 @@ module.exports = function(RED) {
                     //console.log(`BT7 target value: ${hwStopTemp.data} °C, BT7 actual: ${bt7.data} °C`);
                     if(bt7.data>=hwStopTemp.data && hwTargetValue===undefined) {
                         //console.log(`BT7 target (${hwStopTemp.data} °C) reached, BT7 actual: ${bt7.data} °C`);
-                        nibe.setData(startHW,0);
+                        nibe.setData(hP['startHW'],0);
                     } else {
                         //console.log('Target temperature not reached yet.')
                     }
@@ -1160,18 +1098,62 @@ let fan_saved;
 let fan_filter_normal_eff;
 let fan_filter_low_eff;
 let dMboost = false;
+let temporary_fan_speed;
 async function runFan() {
     let config = nibe.getConfig();
     var data = {};
     var timeNow = Date.now();
     if(config.fan===undefined) { config.fan = {}; nibe.setConfig(config); }
     if(config.home.inside_sensors===undefined) { config.home.inside_sensors = []; nibe.setConfig(config); }
-    if (config.fan.enable!==true) {
+    if(config.fan.enable!==true) {
         // Function turned off, stopping.
         return;
     }
-    data.co2Sensor;
+    if(temporary_fan_speed===undefined) {
+        nibe.reqDataAsync(hP['fan_rmu_s1']).then(result => {
+            
+        },(reject => {
+
+        }));
+        data.temp_fan_speed = await nibe.reqDataAsync(hP['fan_rmu_s1']);
+        if(data.temp_fan_speed===undefined) {
+            data.temp_fan_speed = await nibe.reqDataAsync(hP['fan_rmu_s2']);
+            if(data.temp_fan_speed===undefined) {
+                data.temp_fan_speed = await nibe.reqDataAsync(hP['fan_rmu_s3']);
+                if(data.temp_fan_speed===undefined) {
+                    data.temp_fan_speed = await nibe.reqDataAsync(hP['fan_rmu_s4']);
+                    if(data.temp_fan_speed===undefined) {
+                        // No RMU found
+                        sendError('Automatiskt luftflöde',`Virtuell RMU krävs för automatisk fläkthastighet`);
+                    } else {
+                        // RMU S4 found
+                        temporary_fan_speed = "fan_rmu_s4";
+                        sendError('Automatiskt luftflöde',`RMU S4 används i automatiskt luftflöde`);
+                    }
+                } else {
+                    // RMU S3 found
+                    temporary_fan_speed = "fan_rmu_s3";
+                    sendError('Automatiskt luftflöde',`RMU S3 används i automatiskt luftflöde`);
+                }
+            } else {
+                // RMU S2 found
+                temporary_fan_speed = "fan_rmu_s2";
+                sendError('Automatiskt luftflöde',`RMU S2 används i automatiskt luftflöde`);
+            }
+        } else {
+            // RMU S1 found
+            temporary_fan_speed = "fan_rmu_s1";
+            sendError('Automatiskt luftflöde',`RMU S1 används i automatiskt luftflöde`);
+        }
+    } else {
+        data.temp_fan_speed = await nibe.reqDataAsync(hP[temporary_fan_speed]);
+        if(data.temp_fan_speed===undefined) {
+            sendError('Automatiskt luftflöde',`Ingen data från fläktforceringsregister. Avbryter...`);
+            return;
+        }
+    }
     
+    data.co2Sensor;
     data.fan_speed = await nibe.reqDataAsync(hP['fan_speed']);
     if(fan_saved===undefined) fan_saved = data.fan_speed.raw_data;
     data.bs1_flow = await nibe.reqDataAsync(hP['bs1_flow']);
@@ -1306,7 +1288,7 @@ if(config.fan.enable_dm_boost!==undefined && config.fan.enable_dm_boost===true) 
             data.setpoint = config.fan.dm_boost_value
             if(dMboost===false) {
                 if(data.bs1_flow.raw_data<(data.setpoint+10) && data.bs1_flow.raw_data>(data.setpoint-10)) dMboost = true;
-                if(data.alarm.raw_data===183) {
+                if(data.alarm.raw_data===183 && data.temp_fan_speed.data===0) {
                     if(data.bs1_flow.raw_data>(data.setpoint+10)) {
                         if(data.fan_speed.raw_data>0) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
                         adjusted = true;
@@ -1326,7 +1308,7 @@ if(config.fan.enable_dm_boost!==undefined && config.fan.enable_dm_boost===true) 
             // Degree minutes stops boost
             if(dMboost===true) {
                 if(data.bs1_flow.raw_data<(data.setpoint+10) && data.bs1_flow.raw_data>(data.setpoint-10)) dMboost = false;
-                if(data.alarm.raw_data!==183) {
+                if(data.alarm.raw_data!==183 && data.temp_fan_speed.data===0) {
                     if(data.bs1_flow.raw_data>(data.setpoint+10)) {
                         if(data.fan_speed.raw_data>0) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
                         adjusted = true;
@@ -1340,7 +1322,7 @@ if(config.fan.enable_dm_boost!==undefined && config.fan.enable_dm_boost===true) 
     }
 }
     // Start regulating only if not defrosting and vented air is above freezing temperatures.
-    if(data.alarm.raw_data!==183 && data.vented.raw_data>0) {
+    if(data.alarm.raw_data!==183 && data.vented.raw_data>0 && data.temp_fan_speed.data===0) {
         if(data.bs1_flow.raw_data>(data.setpoint+10)) {
             if(data.fan_speed.raw_data>0 && adjusted===false) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
         } else if(data.bs1_flow.raw_data<(data.setpoint-10)) {
