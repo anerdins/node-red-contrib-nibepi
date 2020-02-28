@@ -1110,41 +1110,33 @@ async function runFan() {
         return;
     }
     if(temporary_fan_speed===undefined) {
-        nibe.reqDataAsync(hP['fan_rmu_s1']).then(result => {
-            
-        },(reject => {
-
-        }));
-        data.temp_fan_speed = await nibe.reqDataAsync(hP['fan_rmu_s1']);
-        if(data.temp_fan_speed===undefined) {
-            data.temp_fan_speed = await nibe.reqDataAsync(hP['fan_rmu_s2']);
-            if(data.temp_fan_speed===undefined) {
-                data.temp_fan_speed = await nibe.reqDataAsync(hP['fan_rmu_s3']);
-                if(data.temp_fan_speed===undefined) {
-                    data.temp_fan_speed = await nibe.reqDataAsync(hP['fan_rmu_s4']);
-                    if(data.temp_fan_speed===undefined) {
-                        // No RMU found
-                        sendError('Automatiskt luftflöde',`Virtuell RMU krävs för automatisk fläkthastighet`);
-                    } else {
-                        // RMU S4 found
-                        temporary_fan_speed = "fan_rmu_s4";
-                        sendError('Automatiskt luftflöde',`RMU S4 används i automatiskt luftflöde`);
-                    }
+        let register = nibe.getRegister();
+                let index = register.findIndex(index => index.register == hP['fan_rmu_s1']);
+                if(index!==-1) {
+                    temporary_fan_speed = "fan_rmu_s1";
+                    sendError('Automatiskt luftflöde',`RMU S1 används i automatiskt luftflöde`);
                 } else {
-                    // RMU S3 found
-                    temporary_fan_speed = "fan_rmu_s3";
-                    sendError('Automatiskt luftflöde',`RMU S3 används i automatiskt luftflöde`);
+                    let index = register.findIndex(index => index.register == hP['fan_rmu_s2']);
+                    if(index!==-1) {
+                        temporary_fan_speed = "fan_rmu_s2";
+                        sendError('Automatiskt luftflöde',`RMU S2 används i automatiskt luftflöde`);
+                    } else {
+                        let index = register.findIndex(index => index.register == hP['fan_rmu_s3']);
+                        if(index!==-1) {
+                            temporary_fan_speed = "fan_rmu_s3";
+                            sendError('Automatiskt luftflöde',`RMU S3 används i automatiskt luftflöde`);
+                        } else {
+                            let index = register.findIndex(index => index.register == hP['fan_rmu_s4']);
+                            if(index!==-1) {
+                                temporary_fan_speed = "fan_rmu_s4";
+                                sendError('Automatiskt luftflöde',`RMU S4 används i automatiskt luftflöde`);
+                            } else {
+                                sendError('Automatiskt luftflöde',`Virtuell RMU krävs för automatisk fläkthastighet`);
+                                return;
+                            }
+                        }
+                    }
                 }
-            } else {
-                // RMU S2 found
-                temporary_fan_speed = "fan_rmu_s2";
-                sendError('Automatiskt luftflöde',`RMU S2 används i automatiskt luftflöde`);
-            }
-        } else {
-            // RMU S1 found
-            temporary_fan_speed = "fan_rmu_s1";
-            sendError('Automatiskt luftflöde',`RMU S1 används i automatiskt luftflöde`);
-        }
     } else {
         data.temp_fan_speed = await nibe.reqDataAsync(hP[temporary_fan_speed]);
         if(data.temp_fan_speed===undefined) {
