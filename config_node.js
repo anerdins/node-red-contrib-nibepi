@@ -1212,10 +1212,7 @@ async function runFan() {
     }
     if(config.fan.enable_low===true && data.cpr_set.raw_data<config.fan.low_cpr_freq && data.alarm.raw_data!==183) {
         // Save the value from the last speed.
-        if(fan_low===false) {
-                fan_low = true;
-                fan_saved = data.fan_speed.raw_data;
-        }
+        
         if(config.fan.enable_co2===true) {
             if(data.co2Sensor!==undefined && data.co2Sensor.data!==undefined) {
                 data.co2Sensor.data.data = Number(data.co2Sensor.data.data);
@@ -1224,18 +1221,24 @@ async function runFan() {
                     nibe.setConfig(config);
                 }
                 if(data.co2Sensor.data.data<config.fan.low_co2_limit) {
-                    data.setpoint = config.fan.speed_low;
+                    if(fan_low===true && config.fan.speed_low!==undefined && config.fan.speed_low!=="" && config.fan.speed_low!==0) {
+                        data.setpoint = config.fan.speed_low;
+                    }
                 } else {
                     data.setpoint = config.fan.speed_normal;
                 }
             } else {
                 data.setpoint = config.fan.speed_normal;
             }
+        } else {
+            if(fan_low===true && config.fan.speed_low!==undefined && config.fan.speed_low!=="" && config.fan.speed_low!==0) {
+                data.setpoint = config.fan.speed_low;
+            }
         }
-
-        if(config.fan.speed_low!==undefined && config.fan.speed_low!=="" && config.fan.speed_low!==0) {
-            data.setpoint = config.fan.speed_low;
-        }
+        if(fan_low===false) {
+            fan_low = true;
+            fan_saved = data.fan_speed.raw_data;
+    }
     } else {
         if(fan_low===true) {
             if(data.alarm.raw_data!==183) {
