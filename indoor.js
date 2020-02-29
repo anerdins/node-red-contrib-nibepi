@@ -2,10 +2,11 @@
 module.exports = function(RED) {
     function nibeIndoor(config) {
         RED.nodes.createNode(this,config);
+        let node = this;
         const server = RED.nodes.getNode(config.server);
-        const startUp = () => {
+        async function startUp() {
             let system = config.system.replace('s','S');
-            this.status({ fill: 'yellow', shape: 'dot', text: `System ${system}` });
+            node.status({ fill: 'yellow', shape: 'dot', text: `System ${system}` });
             let arr = [
                 //{topic:"inside_"+config.system,source:"nibe"},
                 {topic:"inside_set_"+config.system,source:"nibe"},
@@ -36,16 +37,17 @@ module.exports = function(RED) {
                     arr.push(insideSensor);
                 }
             }
-            if(conf.indoor['enable_'+config.system]!==true) arr = [];
+            let nibe_enabled = await server.nibe.reqDataAsync(server.hP()["inside_enable_"+config.system]);
+            if(nibe_enabled===undefined || nibe_enabled.data===undefined || nibe_enabled.data!==1 && conf.indoor['enable_'+config.system]!==true){ arr = [];}
                 server.initiatePlugin(arr,'indoor',config.system).then(data => {
-                    this.status({ fill: 'green', shape: 'dot', text: `System ${system}` });
-                    this.send({enabled:true});
+                    node.status({ fill: 'green', shape: 'dot', text: `System ${system}` });
+                    node.send({enabled:true});
                 },(reject => {
-                    this.status({ fill: 'red', shape: 'dot', text: `System ${system}` });
-                    this.send({enabled:false});
+                    node.status({ fill: 'red', shape: 'dot', text: `System ${system}` });
+                    node.send({enabled:false});
                 }));
         }
-        this.on('input', function(msg) {
+        node.on('input', function(msg) {
             let conf = server.nibe.getConfig();
             if(msg.topic=="update") {
                 server.updateData();
@@ -69,7 +71,7 @@ module.exports = function(RED) {
                 startUp();
             })
         }
-        server.nibeData.on(this.id, (data) => {
+        server.nibeData.on(node.id, (data) => {
             if(data.changed===true) {
                 config.system = data.system;
                 if(server.nibe.core!==undefined && server.nibe.core.connected!==undefined && server.nibe.core.connected===true) {
@@ -84,22 +86,22 @@ module.exports = function(RED) {
                 let inside = data.indoorSensor;
                 if(inside===undefined) inside = data['inside_'+data.system];
                 if(inside!==undefined && inside.data>-3276) {
-                    this.send({topic:"Inomhustemperatur",payload:inside.data});
+                    node.send({topic:"Inomhustemperatur",payload:inside.data});
                 }
                 if(data.indoorOffset!==undefined) {
-                    this.send({topic:"Kurvjustering",payload:data.indoorOffset});
+                    node.send({topic:"Kurvjustering",payload:data.indoorOffset});
                 }
-                this.send({topic:"Utomhustemperatur",payload:outside.data});
-                this.send({topic:"Gradminuter",payload:dM.data});
-                this.send({topic:"Tid",payload:dM.timestamp});
-                this.send({topic:"Avvikelse",payload:data.accuracy});
+                node.send({topic:"Utomhustemperatur",payload:outside.data});
+                node.send({topic:"Gradminuter",payload:dM.data});
+                node.send({topic:"Tid",payload:dM.timestamp});
+                node.send({topic:"Avvikelse",payload:data.accuracy});
             }
         })
 
-        this.on('close', function() {
+        node.on('close', function() {
             let system = config.system.replace('s','S');
             server.nibeData.removeAllListeners();
-            this.status({ fill: 'yellow', shape: 'dot', text: `System ${system}` });
+            node.status({ fill: 'yellow', shape: 'dot', text: `System ${system}` });
         });
     }
     RED.nodes.registerType("nibe-indoor",nibeIndoor);
