@@ -1280,7 +1280,7 @@ if(config.fan.enable_dm_boost!==undefined && config.fan.enable_dm_boost===true) 
             data.setpoint = config.fan.dm_boost_value
             if(dMboost===false) {
                 if(data.bs1_flow.raw_data<(data.setpoint+10) && data.bs1_flow.raw_data>(data.setpoint-10)) dMboost = true;
-                if(data.alarm.raw_data===183 && data.temp_fan_speed.data===0) {
+                if(data.alarm.raw_data===183 && data.temp_fan_speed.raw_data===0) {
                     if(data.bs1_flow.raw_data>(data.setpoint+10)) {
                         if(data.fan_speed.raw_data>0) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
                         adjusted = true;
@@ -1300,7 +1300,7 @@ if(config.fan.enable_dm_boost!==undefined && config.fan.enable_dm_boost===true) 
             // Degree minutes stops boost
             if(dMboost===true) {
                 if(data.bs1_flow.raw_data<(data.setpoint+10) && data.bs1_flow.raw_data>(data.setpoint-10)) dMboost = false;
-                if(data.alarm.raw_data!==183 && data.temp_fan_speed.data===0) {
+                if(data.alarm.raw_data!==183 && data.temp_fan_speed.raw_data===0) {
                     if(data.bs1_flow.raw_data>(data.setpoint+10)) {
                         if(data.fan_speed.raw_data>0) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
                         adjusted = true;
@@ -1314,7 +1314,7 @@ if(config.fan.enable_dm_boost!==undefined && config.fan.enable_dm_boost===true) 
     }
 }
     // Start regulating only if not defrosting and vented air is above freezing temperatures.
-    if(data.alarm.raw_data!==183 && data.vented.raw_data>0 && data.temp_fan_speed.data===0) {
+    if(data.alarm.raw_data!==183 && data.vented.raw_data>0 && data.temp_fan_speed.raw_data===0) {
         if(data.bs1_flow.raw_data>(data.setpoint+10)) {
             if(data.fan_speed.raw_data>0 && adjusted===false) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
         } else if(data.bs1_flow.raw_data<(data.setpoint-10)) {
