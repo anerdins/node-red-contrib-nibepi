@@ -1018,9 +1018,9 @@ module.exports = function(RED) {
             data.hwON = hwON;
         }
         if(config.hotwater.enable_autoluxury===true) {
-            if(hwON===undefined) {
-                sendError('Varmvattenreglering',`Virtuell RMU ej aktiverad.`);
-            }
+            //if(hwON===undefined) {
+            //    sendError('Varmvattenreglering',`Virtuell RMU ej aktiverad.`);
+            //}
             let difference = Number(config.hotwater.diff);
             let diff_time = Number(config.hotwater.time);
             hwSavedTemp.unshift(bt6.data);
@@ -1105,25 +1105,25 @@ async function runFan() {
         let register = nibe.getRegister();
         let index = register.findIndex(index => index.register == hP['fan_rmu_s1']);
         if(index!==-1) {
-            sendError('Automatiskt luftflöde',`RMU S1 används i automatiskt luftflöde`);
+            nibe.log('RMU S1 används i automatiskt luftflöde','fan','info');
             resolve("fan_rmu_s1");
         } else {
             let index = register.findIndex(index => index.register == hP['fan_rmu_s2']);
             if(index!==-1) {
-                sendError('Automatiskt luftflöde',`RMU S2 används i automatiskt luftflöde`);
+                nibe.log('RMU 2 används i automatiskt luftflöde','fan','info');
                 resolve("fan_rmu_s2");
             } else {
                 let index = register.findIndex(index => index.register == hP['fan_rmu_s3']);
                 if(index!==-1) {
-                    sendError('Automatiskt luftflöde',`RMU S3 används i automatiskt luftflöde`);
+                    nibe.log('RMU S3 används i automatiskt luftflöde','fan','info');
                     resolve("fan_rmu_s3");
                 } else {
                     let index = register.findIndex(index => index.register == hP['fan_rmu_s4']);
                     if(index!==-1) {
-                        sendError('Automatiskt luftflöde',`RMU S4 används i automatiskt luftflöde`);
+                        nibe.log('RMU S4 används i automatiskt luftflöde','fan','info');
                         resolve("fan_rmu_s4");
                     } else {
-                        sendError('Automatiskt luftflöde',`Virtuell RMU krävs för automatisk fläkthastighet`);
+                        nibe.log('Virtuell RMU krävs för automatiskt luftflöde','fan','error');
                         reject('rmu missing');
                     }
                 }
@@ -1142,16 +1142,18 @@ async function runFan() {
         return;
     }
     if(temporary_fan_speed===undefined) {
-        temporary_fan_speed = await findRMU();
+        temporary_fan_speed = await findRMU().catch(err => {
+
+        });
         data.temp_fan_speed = await nibe.reqDataAsync(hP[temporary_fan_speed]);
         if(data.temp_fan_speed===undefined) {
-            sendError('Automatiskt luftflöde',`Ingen data från fläktforceringsregister. Avbryter...`);
+            nibe.log('Ingen data från fläktforceringsregister. Avbryter...','fan','error');
             return;
         }
     } else {
         data.temp_fan_speed = await nibe.reqDataAsync(hP[temporary_fan_speed]);
         if(data.temp_fan_speed===undefined) {
-            sendError('Automatiskt luftflöde',`Ingen data från fläktforceringsregister. Avbryter...`);
+            nibe.log('Ingen data från fläktforceringsregister. Avbryter...','fan','error');
             return;
         }
     }
@@ -1170,34 +1172,42 @@ async function runFan() {
     
     if(config.fan.enable_co2===true) {
     if(config.fan.sensor===undefined || config.fan.sensor=="Ingen") {
-        sendError('CO2 givare',`CO2 givare inte vald.`)
+        nibe.log('CO2 givare inte vald.','fan','error');
     } else {
         let index = config.home.inside_sensors.findIndex(i => i.name == config.fan.sensor);
         if(index!==-1) {
+            nibe.log('CO2 givare hittad.\n'+JSON.stringify(data.co2Sensor,null,2),'fan','debug');
             data.co2Sensor = Object.assign({}, config.home.inside_sensors[index]);
+        } else {
+            nibe.log('CO2 givare inte hittad.','fan','debug');
         }
     }
     if(data.co2Sensor!==undefined) {
         if(data.co2Sensor.source=="mqtt") {
             await nibe.getMQTTData(data.co2Sensor.register).then(atad => {
                 let result = Object.assign({}, atad);
+                nibe.log('Data från CO2 givare\n'+result,'fan','debug');
                 let sensor_timeout;
                 if(config.home.sensor_timeout!==undefined && config.home.sensor_timeout!=="") {
                     sensor_timeout = result.timestamp+(config.home.sensor_timeout*60000);
+                    nibe.log('Timeout vald för sensor, tid:'+config.home.sensor_timeout+" minuter",'fan','debug');
                 } else if(config.home.sensor_timeout===0) {
                     sensor_timeout = timeNow;
+                    nibe.log('Timeout är avvaktiverad för sensor','fan','debug');
                 } else {
                     sensor_timeout = result.timestamp+(60*60000);
+                    nibe.log('Timeout ej vald, sätter standard tid 60 minuter','fan','debug');
                 }
                 if(timeNow>sensor_timeout) {
-                    sendError('CO2 givare',`CO2 givare ${data.co2Sensor.name} har inte uppdaterats. Ignorerar.`)
+                    nibe.log(`CO2 givare ${data.co2Sensor.name} har inte uppdaterats. Ignorerar.`,'fan','error');
                 } else {
+                    nibe.log(`CO2 givare ${data.co2Sensor.name} värde:${result}`,'fan','debug');
                     data.co2Sensor.data = result;
                     data.co2Sensor.data.timestamp = timeNow;
                 }
                 
             },(error => {
-                sendError('CO2 givare',`CO2 givare ${data.co2Sensor.name} har inga värden än.`)
+                nibe.log(`CO2 givare ${data.co2Sensor.name} har inga värden än.`,'fan','error');
             }));
         } else if(data.co2Sensor.source=="tibber") {
             console.log('Tibber Data request');
@@ -1207,55 +1217,75 @@ async function runFan() {
     
     // If compressor freq is low and not defrosting, allow low speed.
     if(config.fan.low_cpr_freq===undefined || config.fan.low_cpr_freq=="") {
+        nibe.log(`Ingen frekvens vald, sätter standard på 41 Hz`,'fan','debug');
         config.fan.low_cpr_freq = 41;
         nibe.setConfig(config);
     }
-    if(config.fan.enable_low===true && data.cpr_set.raw_data<config.fan.low_cpr_freq && data.alarm.raw_data!==183) {
+    if(config.fan.enable_low===true && data.cpr_set.raw_data<config.fan.low_cpr_freq) {
+        nibe.log(`Låg kompressorfrekvens, och ingen avfrostning`,'fan','debug');
         // Save the value from the last speed.
         
         if(config.fan.enable_co2===true) {
+            nibe.log(`CO2 styrning aktiverad.`,'fan','debug');
             if(data.co2Sensor!==undefined && data.co2Sensor.data!==undefined) {
+                nibe.log(`Värde finns från CO2 givare`,'fan','debug');
                 data.co2Sensor.data.data = Number(data.co2Sensor.data.data);
                 if(config.fan.low_co2_limit===undefined || config.fan.low_co2_limit=="" || config.fan.low_co2_limit===0) {
                     config.fan.low_co2_limit = 800;
                     nibe.setConfig(config);
+                    nibe.log(`Inget standard värde för CO2 valt, sätter 800.`,'fan','debug');
                 }
                 if(data.co2Sensor.data.data<config.fan.low_co2_limit) {
+                    nibe.log(`CO2 givares värde (${data.co2Sensor.data.data}) ppm under gränsvärde för att kunna forcera låg fläkthastighet (${config.fan.low_co2_limit} ppm)`,'fan','debug');
                     if(fan_low===true && config.fan.speed_low!==undefined && config.fan.speed_low!=="" && config.fan.speed_low!==0) {
                         data.setpoint = config.fan.speed_low;
                     }
                 } else {
+                    nibe.log(`CO2 givares värde (${data.co2Sensor.data.data}) ppm över gränsvärde för att kunna forcera låg fläkthastighet (${config.fan.low_co2_limit} ppm)`,'fan','debug');
                     data.setpoint = config.fan.speed_normal;
                 }
             } else {
+                nibe.log(`Inget värde på CO2 givare, ställer in normalt luftflöde: ${config.fan.speed_normal} m3/h`,'fan','debug');
                 data.setpoint = config.fan.speed_normal;
             }
         } else {
+            nibe.log(`CO2 styrning ej aktiverad`,'fan','debug');
             if(fan_low===true && config.fan.speed_low!==undefined && config.fan.speed_low!=="" && config.fan.speed_low!==0) {
                 data.setpoint = config.fan.speed_low;
+                nibe.log(`Ställer in lågt luftflöde: ${config.fan.speed_low} m3/h`,'fan','debug');
             }
         }
         if(fan_low===false) {
             fan_low = true;
             fan_saved = data.fan_speed.raw_data;
-    }
+            nibe.log(`Sparar fläkthastighet vid första upptäckt av låg frekvens, värde: ${fan_saved}%`,'fan','debug');
+        }
     } else {
+        nibe.log(`Hög kompressorfrekvens, eller avfrostning`,'fan','debug');
         if(fan_low===true) {
+            nibe.log(`Hög kompressorfrekvens men den körde nyss i låg frekvens.`,'fan','debug');
             if(data.alarm.raw_data!==183) {
                 nibe.setData(hP.fan_speed,fan_saved);
                 data.fan_speed.raw_data = fan_saved;
                 fan_low = false;
+                nibe.log(`Ingen avfrostning, återställer fläkthastighet (${fan_saved}%)`,'fan','debug');
+            } else {
+                nibe.log(`Avfrostning pågår, avvaktar, sparad fläkthastighet (${fan_saved}%)`,'fan','debug');
             }
         }
         if(config.fan.speed_normal!==undefined && config.fan.speed_normal!=="" && config.fan.speed_normal!==0) {
             data.setpoint = config.fan.speed_normal;
+            nibe.log(`Ställer in normalt luftflöde: ${config.fan.speed_normal} m3/h`,'fan','debug');
         }
     }
     // Check if co2 wants boosting
     let fan_high = false;
     if(config.fan.enable_co2===true) {
+        nibe.log(`CO2 styrning aktiverad`,'fan','debug');
         if(config.fan.enable_high) {
+            nibe.log(`CO2 boosting aktiverad`,'fan','debug');
         if(config.fan.high_co2_limit===undefined || config.fan.high_co2_limit=="" || config.fan.high_co2_limit===0) {
+            nibe.log(`Inget standard värde för boosting, ställer in 800 ppm`,'fan','debug');
             config.fan.high_co2_limit = 800;
             nibe.setConfig(config);
         }
@@ -1264,34 +1294,41 @@ async function runFan() {
             data.co2Sensor.data.data = Number(data.co2Sensor.data.data);
             
             if(data.co2Sensor.data.data>config.fan.high_co2_limit) {
-                if(config.fan.speed_high!==undefined && config.fan.speed_high!="" && config.fan.speed_high!==0) data.setpoint = config.fan.speed_high;
-                fan_high = true;
-                sendError('CO2 över gränsvärde',`Inget flöde valt för forcering.`);
+                nibe.log(`CO2 givares värde (${data.co2Sensor.data.data}) över gränsvärde ${config.fan.high_co2_limit}`,'fan','debug');
+                if(config.fan.speed_high!==undefined && config.fan.speed_high!="" && config.fan.speed_high!==0) {
+                    data.setpoint = config.fan.speed_high;
+                    nibe.log(`Ställer in högt luftflöde: ${config.fan.speed_high} m3/h`,'fan','debug');
+                    fan_high = true;
+                } else {
+                    nibe.log(`Inget luftflöde valt för boosting.`,'fan','error');
+                }
             } else {
-
+                nibe.log(`CO2 givares värde (${data.co2Sensor.data.data}) under gränsvärde ${config.fan.high_co2_limit}`,'fan','debug');
             }
         } else {
-
+            nibe.log(`Inget värde på CO2 givare`,'fan','error');
         }
     }
     
 }
 let adjusted = false;
 if(config.fan.enable_dm_boost!==undefined && config.fan.enable_dm_boost===true) {
+    nibe.log(`Luftflödes boost vid låga gradminuter aktiverat.`,'fan','debug');
     if(config.fan.dm_boost_start===undefined || config.fan.dm_boost_start=="" || config.fan.dm_boost_start===0) {
         config.fan.dm_boost_start = 300;
         nibe.setConfig(config);
+        nibe.log(`Inget standard värde för boosting, ställer 300 gradminuter som diff.`,'fan','debug');
     }
     let boost = (data.dMstart.data-data.dMadd.data)+config.fan.dm_boost_start;
+    nibe.log(`Boostvärde: ${boost}`,'fan','debug');
     if(boost>(data.dMstart.data-100)) {
-        sendError('Gradminut boost',`Startvärde för boost ligger för nära gradminuter vid start av kompressor`)
-        
+        nibe.log(`Startvärde för boost ligger för nära gradminuter vid start av kompressor, ${boost}>${data.dMstart.data-100}`,'fan','debug');
     } else {
-
         if(data.dM.data<boost) {
-            // Degree minutes starts boost
+            nibe.log(`Gradminuter under gränsvärde för boost: ${boost}, Gradminuter: ${data.dM.data}`,'fan','debug');
             if(config.fan.dm_boost_value!==undefined && config.fan.dm_boost_value!=="" && config.fan.dm_boost_value!==0) {
             data.setpoint = config.fan.dm_boost_value
+            nibe.log(`Ställer in Gradminutboost luftflöde: ${config.fan.dm_boost_value} m3/h`,'fan','debug');
             if(dMboost===false) {
                 if(data.bs1_flow.raw_data<(data.setpoint+10) && data.bs1_flow.raw_data>(data.setpoint-10)) dMboost = true;
                 if(data.alarm.raw_data===183 && data.temp_fan_speed.raw_data===0) {
@@ -1306,13 +1343,12 @@ if(config.fan.enable_dm_boost!==undefined && config.fan.enable_dm_boost===true) 
             }
             
         } else {
-            // No value to boost to.
-            sendError('Gradminut boost',`Inget boostvärde angivet`)
-        
+            nibe.log(`Inget boostvärde angivet`,'fan','debug');        
         }
         } else {
             // Degree minutes stops boost
             if(dMboost===true) {
+                nibe.log(`Gradminuter över gränsvärde för boost: ${boost}, Gradminuter: ${data.dM.data}`,'fan','debug');
                 if(data.bs1_flow.raw_data<(data.setpoint+10) && data.bs1_flow.raw_data>(data.setpoint-10)) dMboost = false;
                 if(data.alarm.raw_data!==183 && data.temp_fan_speed.raw_data===0) {
                     if(data.bs1_flow.raw_data>(data.setpoint+10)) {
@@ -1329,12 +1365,17 @@ if(config.fan.enable_dm_boost!==undefined && config.fan.enable_dm_boost===true) 
 }
     // Start regulating only if not defrosting and vented air is above freezing temperatures.
     if(data.alarm.raw_data!==183 && data.vented.raw_data>0 && data.temp_fan_speed.raw_data===0) {
+        nibe.log(`Villkor uppfyllda för reglering av flöde.`,'fan','debug');
         if(data.bs1_flow.raw_data>(data.setpoint+10)) {
+            nibe.log(`Luftflöde över gränsvärde: ${data.setpoint+10}, Flöde: ${data.bs1_flow.raw_data} m3/h, -1%`,'fan','debug');
             if(data.fan_speed.raw_data>0 && adjusted===false) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
         } else if(data.bs1_flow.raw_data<(data.setpoint-10)) {
+            nibe.log(`Luftflöde under gränsvärde: ${data.setpoint+10}, Flöde: ${data.bs1_flow.raw_data} m3/h, +1%`,'fan','debug');
             if(data.fan_speed.raw_data<100 && adjusted===false) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data+1));
         } else {
+            nibe.log(`Luftflöde stabilt (${data.bs1_flow.raw_data} m3/h)`,'fan','debug');
             if(config.fan.enable_filter===true) {
+                nibe.log(`Filterkontroll är aktiverad`,'fan','debug');
             // Value is stable, save fan speeds if calibration is active.
             if(fan_low===true && fan_high===false) {
                 if(config.fan.filter_value_low===-1) {
@@ -1372,6 +1413,10 @@ if(config.fan.enable_dm_boost!==undefined && config.fan.enable_dm_boost===true) 
             }
             }
         }
+    } else {
+        if(data.alarm.raw_data===183) nibe.log(`Villkor för reglering ej uppfyllt, avfrostning pågår.`,'fan','debug');
+        if(data.vented.raw_data<0) nibe.log(`Villkor för reglering ej uppfyllt, avluft för kall (${data.vented.raw_data})`,'fan','debug');
+        if(data.temp_fan_speed.raw_data!==0) nibe.log(`Villkor för reglering ej uppfyllt, Tillfällig fläktforcering pågår. värde: ${data.temp_fan_speed.raw_data}`,'fan','debug');
     }
     data.cpr_act = await nibe.reqDataAsync(hP['cpr_act']);
     nibeData.emit('pluginFan',data);
