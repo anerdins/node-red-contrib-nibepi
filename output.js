@@ -32,6 +32,8 @@ module.exports = function(RED) {
                     nibe.getRegister();
                 } else if(msg.topic=="removeRegister" || config.name=="removeRegister") {
                     nibe.removeRegister(msg.payload);
+                } else if(msg.topic=="saveGraph" || config.name=="saveGraph") {
+                    nibe.saveGraph(msg.payload);
                 } else if(config.name===undefined || config.name=="") {
                     msg = {topic:msg.topic,payload:msg.payload};
                     this.status({ fill: 'yellow', shape: 'dot', text: `${msg.payload}` });

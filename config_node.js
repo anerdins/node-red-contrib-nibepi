@@ -1531,6 +1531,14 @@ const checkTranslation = () => {
         }
         handleCore(nibe.getConfig());
         handleMQTT(nibe.getConfig());
+        nibe.requireGraph().then(result => {
+            let config = nibe.getConfig();
+            if(config.system===undefined || config.system.save_graph!==true) return;
+            if(result===undefined) return;
+            this.context().global.set(`graphs`, result);
+        },(err => {
+
+        }));
         RED.httpAdmin.post("/config/:id", RED.auth.needsPermission("nibe-config.write"), function(req, res) {
             nibe.setConfig(req.body.config);
             handleCore(req.body.config);
@@ -1541,6 +1549,9 @@ const checkTranslation = () => {
             res.json(nibe.getConfig());
         });
         var everyminute = cron.schedule('*/1 * * * *', () => {
+            let graph = this.context().global.get(`graphs`);
+            if(graph!==undefined) nibe.saveGraph(graph);
+            //console.log(JSON.stringify(graph,null,2))
             hotwaterPlugin();
             runFan()
         })
@@ -1549,9 +1560,10 @@ const checkTranslation = () => {
         })
         var hourly = cron.schedule('0 * * * *', () => {
             updateData(true);
+            
         })
+
     nibe.data.on('config',data => {
-        let run = false;
         if(timer.config!==undefined && timer.config._idleTimeout>0) {
             clearTimeout(timer.config);
         }
@@ -1603,12 +1615,13 @@ const checkTranslation = () => {
         this.checkReady = checkReady;
         this.on('close', function() {
             console.log('Closing listeners');
+            let graph = this.context().global.get(`graphs`);
+            nibe.saveGraph(graph);
             nibeData.removeAllListeners();
             nibe.data.removeAllListeners();
             threeminutes.stop();
             hourly.stop();
             everyminute.stop();
-            
         });
     }
     
