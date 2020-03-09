@@ -33,7 +33,15 @@ module.exports = function(RED) {
                 } else if(msg.topic=="removeRegister" || config.name=="removeRegister") {
                     nibe.removeRegister(msg.payload);
                 } else if(msg.topic=="saveGraph" || config.name=="saveGraph") {
-                    nibe.saveGraph(msg.payload);
+                    this.status({ fill: 'yellow', shape: 'dot', text: `Sparar grafer...` });
+                    this.server.saveGraph().then(result => {
+                        this.send({topic:msg.topic,payload:result});
+                        this.status({ fill: 'green', shape: 'dot', text: `${result}` });
+                    },(err => {
+                        this.send({topic:msg.topic,payload:err});
+                        this.status({ fill: 'red', shape: 'dot', text: `${err}` });
+                    }));
+                    
                 } else if(config.name===undefined || config.name=="") {
                     msg = {topic:msg.topic,payload:msg.payload};
                     this.status({ fill: 'yellow', shape: 'dot', text: `${msg.payload}` });

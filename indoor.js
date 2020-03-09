@@ -84,17 +84,31 @@ module.exports = function(RED) {
                 let outside = data['outside'];
                 let dM = data.dM;
                 let inside = data.indoorSensor;
+                var array = [
+                    {
+                    "series":[],
+                    "data":[],
+                    "labels":[]
+                }];
+
                 if(inside===undefined) inside = data['inside_'+data.system];
                 if(inside!==undefined && inside.data>-3276) {
+                    array[0].series.push('Inomhustemperatur');
+                    array[0].data.push(data.graph['indoor_sensor_'+data.system])
                     node.send({topic:"Inomhustemperatur",payload:inside.data});
                 }
                 if(data.indoorOffset!==undefined) {
+                    array[0].series.push('Kurvjustering');
+                    array[0].data.push(data.graph['indoor_offset_'+data.system])
                     node.send({topic:"Kurvjustering",payload:data.indoorOffset});
                 }
                 node.send({topic:"Utomhustemperatur",payload:outside.data});
+                array[0].series.push('Utomhustemperatur');
+                array[0].data.push(data.graph['outside'])
                 node.send({topic:"Gradminuter",payload:dM.data});
                 node.send({topic:"Tid",payload:dM.timestamp});
                 node.send({topic:"Avvikelse",payload:data.accuracy});
+                node.send([null,{payload:array}]);
             }
         })
 
