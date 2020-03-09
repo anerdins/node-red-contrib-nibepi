@@ -360,7 +360,7 @@ module.exports = function(RED) {
                                 config.home = {};
                                 nibe.setConfig(config);
                             }
-                            if(config.home.sensor_timeout!==undefined && config.home.sensor_timeout!=="") {
+                            if(config.home.sensor_timeout!==undefined && config.home.sensor_timeout!=="" && config.home.sensor_timeout!==0) {
                                 sensor_timeout = data.timestamp+(config.home.sensor_timeout*60000);
                             } else if(config.home.sensor_timeout===0) {
                                 sensor_timeout = timeNow;
