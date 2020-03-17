@@ -77,39 +77,23 @@ module.exports = function(RED) {
                 let co2 = data.co2Sensor;
                 let low_co2_limit = data.low_co2_limit;
                 let high_co2_limit = data.high_co2_limit;
-                var array = [
-                    {
-                    "series":["Fläkthastighet","Luftflöde","Luftflöde Börvärde","Kompressorfrekvens","Avluftstemperatur"],
-                    "data":[data.graph.fan_speed,data.graph.bs1_flow,data.graph.fan_setpoint,data.graph.cpr_act,data.graph.vented],
-                    "labels":[""]
-                }];
                 if(co2!==undefined && co2.data!==undefined && co2.data.data>0) {
-                    array[0].series.push('CO2');
-                    array[0].data.push(data.graph.fan_co2Sensor)
                     //this.send({topic:"CO2",payload:co2.data.data});
                 }
                 if(low_co2_limit!==undefined) {
-                    array[0].series.push('CO2 Gränsvärde för sänkt flöde.');
-                    array[0].data.push(data.graph.fan_low_co2_limit)
                     //this.send({topic:"CO2 Gränsvärde för sänkt flöde.",payload:low_co2_limit});
                 }
                 if(high_co2_limit!==undefined) {
-                    array[0].series.push('CO2 Gränsvärde för ökat flöde.');
-                    array[0].data.push(data.graph.fan_high_co2_limit)
                     //this.send({topic:"CO2 Gränsvärde för ökat flöde.",payload:high_co2_limit});
                 }
                 if(data.filter_eff!==undefined) {
-                    array[0].series.push('Filtereffektivtet');
-                    array[0].data.push(data.graph.filter_eff)
                     this.send({topic:"Filtereffektivitet",payload:data.filter_eff});
                 }
-                this.send({topic:"Fläkthastighet",payload:data.fan_speed.data});
-                this.send({topic:"Luftflöde",payload:data.bs1_flow.data});
+                this.send({topic:"Fläkthastighet",payload:data['fan_speed'].data});
+                this.send({topic:"Luftflöde",payload:data['bs1_flow'].data});
                 this.send({topic:"Luftflöde Börvärde",payload:data.setpoint});
-                this.send({topic:"Kompressorfrekvens",payload:data.cpr_act.data});
-                this.send({topic:"Avluftstemperatur",payload:data.vented.raw_data});
-                
-                this.send([null,{payload:array}]);
+                this.send({topic:"Kompressorfrekvens",payload:data['cpr_act'].data});
+                this.send({topic:"Förångartemperatur",payload:data['evaporator'].raw_data});
         })
 
         this.on('close', function() {

@@ -27,7 +27,8 @@
       "nibe-price": "price.js",
       "nibe-hotwater": "hotwater.js",
       "nibe-rmu": "rmu.js",
-      "nibe-fan": "fan.js"
+      "nibe-fan": "fan.js",
+      "nibe-graph": "graph.js"
     }
   },
   "scripts": {

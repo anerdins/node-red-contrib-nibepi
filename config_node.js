@@ -7,6 +7,7 @@ module.exports = function(RED) {
     var serialPort = "";
     let text = require('./language-SE.json')
     var series = "";
+    var systems = {};
     let adjust = [];
     let hP;
     let weatherOffset = {};
@@ -145,14 +146,20 @@ module.exports = function(RED) {
                         arr[i].register = hP[arr[i].topic];
                     }
                     for( var o = 0; o < getList.length; o++){
+                        
                         if(getList[o].system===system) {
+                            // System exists, moving on.
                             newSystem = false;
+                                // Looking for the register from the incoming array.
                                 let regI = getList[o].registers.findIndex(regI => regI.register == arr[i].register);
                                 if(regI===-1) {
+                                    // Register dont exist, adding new register.
                                     let newArr = arr[i];
+                                    // Adding the plugin name to the first array
                                     newArr.plugin = [plugin];
                                     getList[o].registers.push(newArr);
                                 } else {
+                                    // The register already exists, checking if the plugin is already added and gets the index.
                                     let regP = getList[o].registers[regI].plugin.findIndex(regP => regP == plugin);
                                     if(getList[o].registers[regI].name===undefined) getList[o].registers[regI].name = arr[i].name;
                                     if(getList[o].registers[regI].topic===undefined) getList[o].registers[regI].topic = arr[i].topic;
@@ -210,6 +217,7 @@ module.exports = function(RED) {
                             if(data.data<-3276) {
                                 checkRMU();
                             } else {
+                                systems[system] = true;
                                 if(plugin=="fan") {
                                     nibe.reqDataAsync(hP.bs1_flow).then(data => {
                                         if(data.data<-3276) {
@@ -291,6 +299,7 @@ module.exports = function(RED) {
                             if(data.data<-3276) {
                                 checkRMU();
                             } else {
+                                systems[system] = true;
                                 if(plugin=="fan") {
                                     nibe.reqDataAsync(hP.bs1_flow).then(data => {
                                         if(data.data<-3276) {
@@ -316,6 +325,7 @@ module.exports = function(RED) {
                         if(data.data<-3276) {
                             checkRMU();
                         } else {
+                            systems[system] = true;
                             if(plugin=="fan") {
                                 nibe.reqDataAsync(hP.bs1_flow).then(data => {
                                     if(data.data<-3276) {
@@ -364,7 +374,7 @@ module.exports = function(RED) {
                             }
                             if(config.home.sensor_timeout!==undefined && config.home.sensor_timeout!=="" && config.home.sensor_timeout!==0) {
                                 sensor_timeout = data.timestamp+(config.home.sensor_timeout*60000);
-                            } else if(config.home.sensor_timeout===0) {
+                            } else if(config.home.sensor_timeout===0 || config.home.sensor_timeout===undefined || config.home.sensor_timeout==="") {
                                 sensor_timeout = timeNow;
                             } else {
                                 sensor_timeout = data.timestamp+(60*60000);
@@ -378,8 +388,6 @@ module.exports = function(RED) {
                                 data.topic = item.registers[i].register;
                                 result[item.registers[i].register] = data;
                                 array.push(data)
-                                if(savedGraph[item.registers[i].topic]===undefined) savedGraph[item.registers[i].topic] = []
-                                savedGraph[item.registers[i].topic].push({x:timeNow,y:data.data});
                             }
                             
                         },(error => {
@@ -388,37 +396,19 @@ module.exports = function(RED) {
                     } else if(item.registers[i].source=="tibber") {
                         console.log('Tibber Data request');
                     } else if(item.registers[i].source=="nibe") {
-                        if(savedData[item.registers[i].register]===undefined || timeNow>(savedData[item.registers[i].register].timestamp+10000)) {
-                            await nibe.reqDataAsync(item.registers[i].register).then(atad => {
+                            await getNibeData(item.registers[i].register).then(atad => {
                                 let data = Object.assign({}, atad);
                                 data.system = item.system;
-                                data.timestamp = timeNow;
-                                console.log('Using new data for topic: '+item.registers[i].register+", Timestamp: "+data.timestamp)
                                 data.name = item.registers[i].name;
                                 data.topic = item.registers[i].topic;
                                 result[item.registers[i].topic] = data;
                                 array.push(data)
-                                //savedData[item.registers[i].register] = data;
-                                if(savedGraph[item.registers[i].topic]===undefined) savedGraph[item.registers[i].topic] = []
-                                savedGraph[item.registers[i].topic].push({x:timeNow,y:data.raw_data});
                             },(error => {
                                 console.log(error)
                             }));
-                        } else {
-                            console.log('Using old data for topic: '+item.registers[i].register+", Timestamp: "+savedData[item.registers[i].register].timestamp)
-                            let data = Object.assign({}, savedData[item.registers[i].register]);
-                                data.system = item.system;
-                                data.name = item.registers[i].name;
-                                data.topic = item.registers[i].topic;
-                                result[item.registers[i].topic] = data;
-                                array.push(data)
-                                if(savedGraph[item.registers[i].topic]===undefined) savedGraph[item.registers[i].topic] = []
-                                savedGraph[item.registers[i].topic].push({x:timeNow,y:data.raw_data});
-                        }
                     }
                 }
             }
-            result.graph = savedGraph;
             runIndoor(result,array);
             runPrice(result,array);
             runRMU(result,array);
@@ -431,6 +421,7 @@ module.exports = function(RED) {
                     nibeData.emit('pluginWeather',result);
                 }
             }
+            nibeData.emit('updateGraph');
         }
       }
         const checkWind = (array,hours) => {
@@ -517,6 +508,7 @@ module.exports = function(RED) {
             return output;
         }
     const runWeather = (val) => {
+        let timeNow = Date.now();
         //var val = Object.assign({}, result);
         let config = nibe.getConfig();
         if(config.weather===undefined) {
@@ -584,6 +576,7 @@ module.exports = function(RED) {
                                     }
                                     if(config.weather.forecast_adjust===true) {
                                         val.unfiltredTemp = {payload:tempPredicted,timestamp:toTimestamp(data.timeSeries[hours].validTime)};
+                                        saveDataGraph('weather_unfilterd_'+val.system,toTimestamp(data.timeSeries[hours].validTime),tempPredicted,true)
                                         tempPredicted = Number(((outside-(tempNow.values[0]))+tempPredicted).toFixed(2));
                                         if(windSet!==undefined) windSet = Number(((outside-tempNow.values[0])+windSet).toFixed(2));
                                     }
@@ -598,7 +591,25 @@ module.exports = function(RED) {
                                     weatherOffset[val.system] = setOffset;
                                     val.predictedNow = {payload:tempNow.values[0],timestamp:toTimestamp(data.timeSeries[0].validTime)};
                                     val.predictedLater = {payload:tempPredicted,timestamp:toTimestamp(data.timeSeries[hours].validTime)};
-                                    
+                                    saveDataGraph('weather_forecast_'+val.system,toTimestamp(data.timeSeries[hours].validTime),tempPredicted,true);
+                                    saveDataGraph('weather_offset_'+val.system,timeNow,val.weatherOffset,true);
+                                    let inside;
+                                    if(config.weather['sensor_'+val.system]!==undefined && config.weather['sensor_'+val.system]!=="") {
+                                        let index = val.array.findIndex(i => i.name == config.weather['sensor_'+val.system]);
+                                        if(index!==-1) {
+                                            inside = val.array[index];
+                                        }
+                                    }
+                                    if(inside===undefined) inside = val['inside_'+val.system];
+                                    if(inside===undefined || inside.data<-3276) {
+                                        //server.sendError('Prognosreglering',`Inomhusgivare saknas (${data.system}).`);
+                                    }
+                                    val.weatherSensor = inside;
+                                    if(inside===undefined) inside = val['inside_'+val.system];
+                                    if(inside!==undefined && inside.data>-3276) {
+                                        saveDataGraph('weather_sensor_'+val.system,timeNow,inside.data,true);
+                                    }
+
                                     nibeData.emit('pluginWeather',val);
                         } else {
                             sendError('Prognosreglering',`Ingen kontakt med väderleverantör.`);
@@ -607,6 +618,7 @@ module.exports = function(RED) {
                                 curveAdjust('weather',val.system,0);
                                 weatherOffset[val.system] = 0;
                             }
+                            saveDataGraph('weather_offset_'+val.system,timeNow,0,true);
                         }
                     });
                 
@@ -619,13 +631,14 @@ module.exports = function(RED) {
                     curveAdjust('weather',val.system,0);
                     weatherOffset[val.system] = 0;
                 }
+                saveDataGraph('weather_offset_'+val.system,timeNow,0,true);
             }
         } else {
             if(weatherOffset[val.system]!==0) {
                 curveAdjust('weather',val.system,0);
                 weatherOffset[val.system] = 0;
             }
-            
+            saveDataGraph('weather_offset_'+val.system,timeNow,0,true);
         }
         
     }
@@ -641,21 +654,21 @@ module.exports = function(RED) {
             nibe.setConfig(conf);
         }
         if((inside_enable!==undefined && inside_enable.data!==undefined && inside_enable.data===1) || (conf.indoor['enable_'+data.system]!==undefined && conf.indoor['enable_'+data.system]===true)) {
-        if(conf.indoor['sensor_'+data.system]!==undefined && conf.indoor['sensor_'+data.system]!=="") {
-            let index = array.findIndex(i => i.name == conf.indoor['sensor_'+data.system]);
-            if(index!==-1) {
-                inside = array[index];
+            if(conf.indoor['enable_'+data.system]!==undefined && conf.indoor['enable_'+data.system]===true) {
+                if(conf.indoor['sensor_'+data.system]!==undefined && conf.indoor['sensor_'+data.system]!=="") {
+                let index = array.findIndex(i => i.name == conf.indoor['sensor_'+data.system]);
+                if(index!==-1) {
+                    inside = array[index];
+                }
             }
-        }
+            }
         if(inside===undefined) inside = data['inside_'+data.system];
         if(inside===undefined || inside.data===undefined || inside.data<4) {
             sendError('Inomhusreglering',`Inomhusgivare saknas (${data.system}), avbryter...`);
             return;
         }
         data.indoorSensor = inside;
-        if(savedGraph['indoor_sensor_'+data.system]===undefined) savedGraph['indoor_sensor_'+data.system] = [];
-        savedGraph['indoor_sensor_'+data.system].push({x:timeNow,y:inside.data});
-        data.graph = savedGraph;
+        saveDataGraph('indoor_sensor_'+data.system,timeNow,inside.data,true)
         let inside_set = data['inside_set_'+data.system];
         let factor = data['inside_factor_'+data.system];
         let dM = data.dM;
@@ -699,9 +712,7 @@ module.exports = function(RED) {
                 }
                 data.indoorOffset = 0;
             }
-            if(savedGraph['indoor_offset_'+data.system]===undefined) savedGraph['indoor_offset_'+data.system] = [];
-            savedGraph['indoor_offset_'+data.system].push({x:timeNow,y:data.indoorOffset});
-            data.graph = savedGraph;
+            saveDataGraph('indoor_offset_'+data.system,timeNow,setOffset,true)
             nibeData.emit('pluginIndoor',data);
         } else {
             if(indoorOffset[data.system]!==0) {
@@ -709,8 +720,7 @@ module.exports = function(RED) {
                 curveAdjust('indoor',data.system,0);
             }
             data.indoorOffset = 0;
-            if(savedGraph['indoor_offset_'+data.system]===undefined) savedGraph['indoor_offset_'+data.system] = [];
-            savedGraph['indoor_offset_'+data.system].push({x:timeNow,y:data.indoorOffset});
+            saveDataGraph('indoor_offset_'+data.system,timeNow,setOffset,true)
         }
     }
     const priceAdjustCurve = (dataIn) => {
@@ -905,10 +915,10 @@ module.exports = function(RED) {
                     console.log(reject)
                 }));
             } else if(config.price.source=="nibe") {
-                data.price_level = await nibe.reqDataAsync('price_level');
-                data.price_enable = await nibe.reqDataAsync('price_enable');
+                data.price_level = await getNibeData('price_level');
+                data.price_enable = await getNibeData('price_enable');
                 priceAdjustCurve(data)
-                data.price_current = await nibe.reqDataAsync('price_current');
+                data.price_current = await getNibeData('price_current');
                 nibeData.emit('pluginPriceGraph',nibeBuildGraph(data,data.system));
                 nibeData.emit('pluginPrice',data);
             }
@@ -1029,22 +1039,18 @@ module.exports = function(RED) {
         let hwStartTemp;
         let hwStopTemp;
         let data = {};
-        if(config.hotwater.enable_autoluxury===true || config.hotwater.enable_hw_priority===true) {            
-            hwON = await nibe.reqDataAsync(hP['startHW']);
-            hwON.timestamp = time;
-            bt6 = await nibe.reqDataAsync(hP['bt6']);
-            bt6.timestamp = time;
-            bt7 = await nibe.reqDataAsync(hP['bt7']);
-            bt7.timestamp = time;
-            hwMode = await nibe.reqDataAsync(hP['hw_mode']);
-            hwMode.timestamp = time;
-            hwStopTemp = await nibe.reqDataAsync(hP['hw_stop_'+hwMode.raw_data]);
-            hwStopTemp.timestamp = time;
+        if(config.hotwater.enable_autoluxury===true || config.hotwater.enable_hw_priority===true) {      
+            hwON = await getNibeData(hP['startHW']);
+            bt6 = await getNibeData(hP['bt6']);
+            bt7 = await getNibeData(hP['bt7']);
+            hwMode = await getNibeData(hP['hw_mode']);
+            hwStopTemp = await getNibeData(hP['hw_stop_'+hwMode.raw_data]);
             data.bt6 = bt6;
             data.bt7 = bt7;
             data.hwMode = hwMode;
             hwStopTemp.data = hwStopTemp.data-1;
             data.hwStopTemp = hwStopTemp;
+            saveDataGraph('hw_stop_temp',time,hwStopTemp.data,true);
             data.hwON = hwON;
         }
         if(config.hotwater.enable_autoluxury===true) {
@@ -1096,10 +1102,12 @@ module.exports = function(RED) {
             }
             data.hwTriggerTemp = hwTriggerTemp;
             data.hwTargetValue = hwTargetValue;
+            saveDataGraph('hw_trigger_temp',time,hwTriggerTemp,true);
+            saveDataGraph('hw_target_temp',time,hwTargetValue,true);
             nibeData.emit('pluginHotwaterAutoLuxury',data);
         }
         if(config.hotwater.enable_hw_priority===true) {
-            hwStartTemp = await nibe.reqDataAsync(hP['hw_start_'+hwMode.data]);
+            hwStartTemp = await getNibeData(hP['hw_start_'+hwMode.data]);
             hwStartTemp.timestamp = time;
             if(hwON.raw_data!==4) {
                 if(bt7.data<=hwStartTemp.data) {
@@ -1119,6 +1127,7 @@ module.exports = function(RED) {
                     }
             }
             data.hwStartTemp = hwStartTemp;
+            saveDataGraph('hw_start_temp',time,hwStartTemp.data,true);
             nibeData.emit('pluginHotwaterPriority',data);
         }
         
@@ -1232,13 +1241,13 @@ async function runFan() {
         temporary_fan_speed = await findRMU().catch(err => {
 
         });
-        data.temp_fan_speed = await nibe.reqDataAsync(hP[temporary_fan_speed]);
+        data.temp_fan_speed = await getNibeData(hP[temporary_fan_speed]);
         if(data.temp_fan_speed===undefined) {
             nibe.log('Ingen data från fläktforceringsregister. Avbryter...','fan','error');
             return;
         }
     } else {
-        data.temp_fan_speed = await nibe.reqDataAsync(hP[temporary_fan_speed]);
+        data.temp_fan_speed = await getNibeData(hP[temporary_fan_speed]);
         if(data.temp_fan_speed===undefined) {
             nibe.log('Ingen data från fläktforceringsregister. Avbryter...','fan','error');
             return;
@@ -1246,31 +1255,15 @@ async function runFan() {
     }
     
     data.co2Sensor;
-    data.fan_speed = await nibe.reqDataAsync(hP['fan_speed']);
-    if(savedGraph['fan_speed']===undefined) savedGraph['fan_speed'] = [];
-    savedGraph['fan_speed'].push({x:timeNow,y:data.fan_speed.raw_data});
-    data.bs1_flow = await nibe.reqDataAsync(hP['bs1_flow']);
-    if(savedGraph['bs1_flow']===undefined) savedGraph['bs1_flow'] = [];
-    savedGraph['bs1_flow'].push({x:timeNow,y:data.bs1_flow.raw_data});
+    data.fan_speed = await getNibeData(hP['fan_speed']);
+    data.bs1_flow = await getNibeData(hP['bs1_flow']);
     if(flow_set===undefined) flow_set = data.bs1_flow.raw_data;
-    data.alarm = await nibe.reqDataAsync(hP['alarm']);
-    if(savedGraph['alarm']===undefined) savedGraph['alarm'] = [];
-    savedGraph['alarm'].push({x:timeNow,y:data.alarm.raw_data});
-    data.vented = await nibe.reqDataAsync(hP['vented']);
-    if(savedGraph['vented']===undefined) savedGraph['vented'] = [];
-    savedGraph['vented'].push({x:timeNow,y:data.vented.raw_data});
-    data.cpr_set = await nibe.reqDataAsync(hP['cpr_set']);
-    if(savedGraph['cpr_set']===undefined) savedGraph['cpr_set'] = [];
-    savedGraph['cpr_set'].push({x:timeNow,y:data.cpr_set.raw_data});
-    data.dMadd = await nibe.reqDataAsync(hP['dMadd']);
-    if(savedGraph['dMadd']===undefined) savedGraph['dMadd'] = [];
-    savedGraph['dMadd'].push({x:timeNow,y:data.dMadd.raw_data});
-    data.dMstart = await nibe.reqDataAsync(hP['dMstart']);
-    if(savedGraph['dMstart']===undefined) savedGraph['dMstart'] = [];
-    savedGraph['dMstart'].push({x:timeNow,y:data.dMstart.raw_data});
-    data.dM = await nibe.reqDataAsync(hP['dM']);
-    if(savedGraph['dM']===undefined) savedGraph['dM'] = [];
-    savedGraph['dM'].push({x:timeNow,y:data.dM.raw_data});
+    data.alarm = await getNibeData(hP['alarm']);
+    data.evaporator = await getNibeData(hP['evaporator']);
+    data.cpr_set = await getNibeData(hP['cpr_set']);
+    data.dMadd = await getNibeData(hP['dMadd']);
+    data.dMstart = await getNibeData(hP['dMstart']);
+    data.dM = await getNibeData(hP['dM']);
     
     if(config.fan.enable_co2===true) {
     if(config.fan.sensor===undefined || config.fan.sensor=="Ingen") {
@@ -1306,8 +1299,7 @@ async function runFan() {
                     nibe.log(`CO2 givare ${data.co2Sensor.name} värde:${result}`,'fan','debug');
                     data.co2Sensor.data = result;
                     data.co2Sensor.data.timestamp = timeNow;
-                    if(savedGraph['fan_co2Sensor']===undefined) savedGraph['fan_co2Sensor'] = [];
-                    savedGraph['fan_co2Sensor'].push({x:timeNow,y:data.co2Sensor.data.data});
+                    saveDataGraph('fan_co2Sensor',timeNow,data.co2Sensor.data.data,true)
                 }
                 
             },(error => {
@@ -1328,8 +1320,7 @@ async function runFan() {
             nibe.setConfig(config);
         }
         data.high_co2_limit = config.fan.high_co2_limit;
-        if(savedGraph['fan_high_co2_limit']===undefined) savedGraph['fan_high_co2_limit'] = [];
-        savedGraph['fan_high_co2_limit'].push({x:timeNow,y:config.fan.high_co2_limit});
+        saveDataGraph('fan_high_co2_limit',timeNow,config.fan.high_co2_limit,true);
         if(data.co2Sensor!==undefined && data.co2Sensor.data!==undefined) {
             data.co2Sensor.data.data = Number(data.co2Sensor.data.data);
             if(data.co2Sensor.data.data>config.fan.high_co2_limit) {
@@ -1381,8 +1372,7 @@ async function runFan() {
                                     nibe.log(`Inget standard värde för CO2 valt, sätter 800 ppm.`,'fan','debug');
                                 }
                                 data.low_co2_limit = config.fan.low_co2_limit;
-                                if(savedGraph['fan_low_co2_limit']===undefined) savedGraph['fan_low_co2_limit'] = [];
-                                savedGraph['fan_low_co2_limit'].push({x:timeNow,y:config.fan.low_co2_limit});
+                                saveDataGraph('fan_low_co2_limit',timeNow,config.fan.low_co2_limit,true);
                                 if(data.co2Sensor.data.data<config.fan.low_co2_limit) {
                                     if(fan_mode=="low") {
                                         flow_set = config.fan.speed_low;
@@ -1460,7 +1450,7 @@ async function runFan() {
     
     
     // Start regulating only if not defrosting and vented air is above freezing temperatures.
-    if(dMboost===true || co2boost===true || (data.alarm.raw_data!==183 && data.vented.raw_data>0 && data.temp_fan_speed.raw_data===0)) {
+    if(dMboost===true || co2boost===true || (data.alarm.raw_data!==183 && data.evaporator.raw_data>0 && data.temp_fan_speed.raw_data===0)) {
         nibe.log(`Villkor uppfyllda för reglering av flöde.`,'fan','debug');
         if(data.bs1_flow.raw_data>(flow_set+10)) {
             nibe.log(`Luftflöde över gränsvärde: ${flow_set+10}, Flöde: ${data.bs1_flow.raw_data} m3/h, -1%`,'fan','debug');
@@ -1515,19 +1505,14 @@ async function runFan() {
         if(co2boost===false) nibe.log(`Villkor för reglering ej uppfyllt, CO2 boost inte över gränsvärde`,'fan','debug');
         if(dMboost===false) nibe.log(`Villkor för reglering ej uppfyllt, Gradminutboost inte under gränsvärde`,'fan','debug');
         if(data.alarm.raw_data===183) nibe.log(`Villkor för reglering ej uppfyllt, avfrostning pågår.`,'fan','debug');
-        if(data.vented.raw_data<0) nibe.log(`Villkor för reglering ej uppfyllt, avluft för kall (${data.vented.raw_data})`,'fan','debug');
+        if(data.evaporator.raw_data<0) nibe.log(`Villkor för reglering ej uppfyllt, förångaren för kall (${data.evaporator.raw_data})`,'fan','debug');
         if(data.temp_fan_speed.raw_data!==0) nibe.log(`Villkor för reglering ej uppfyllt, Tillfällig fläktforcering pågår. värde: ${data.temp_fan_speed.raw_data}`,'fan','debug');
     }
-    data.cpr_act = await nibe.reqDataAsync(hP['cpr_act']);
-    if(savedGraph['cpr_act']===undefined) savedGraph['cpr_act'] = [];
-    savedGraph['cpr_act'].push({x:timeNow,y:data.cpr_act.raw_data});
-    if(savedGraph['fan_setpoint']===undefined) savedGraph['fan_setpoint'] = [];
-    savedGraph['fan_setpoint'].push({x:timeNow,y:flow_set});
-    if(savedGraph['filter_eff']===undefined) savedGraph['filter_eff'] = [];
-    savedGraph['filter_eff'].push({x:timeNow,y:filter_eff});
+    data.cpr_act = await getNibeData(hP['cpr_act']);
+    saveDataGraph('fan_setpoint',timeNow,flow_set,true);
+    saveDataGraph('filter_eff',timeNow,filter_eff,true);
     data.filter_eff = filter_eff;
     data.setpoint = flow_set;
-    data.graph = savedGraph;
     nibeData.emit('pluginFan',data);
 }
 async function runRMU(result,array) {
@@ -1556,11 +1541,103 @@ async function runRMU(result,array) {
 
         }
     }
-    
+}
+async function getNibeData(register) {
+    const promise = new Promise((resolve,reject) => {
+    if(savedData[register]===undefined || Date.now()>(savedData[register].timestamp+10000)) {
+        nibe.reqDataAsync(register).then(atad => {
+            let data = Object.assign({}, atad);
+            resolve(data);
+        },err => {
+            reject(err);
+        });
+    } else {
+        resolve(savedData[register]);
+    }
+});
+return promise;
+}
+function saveDataGraph(name,ts,data,save=false) {
+    if(savedGraph[name]===undefined) savedGraph[name] = [];
+    let lastIndex = savedGraph[name].length-1;
+    if(savedGraph[name].length>=2) {
+        if(ts>=(savedGraph[name][lastIndex].x+55000)) {
+            if(data!==undefined && data>-3276) {
+                if((Math.abs(savedGraph[name][lastIndex].y-data)>0.1)) { //  || ts>=(savedGraph[name][lastIndex].x+(10*60*1000))
+                    savedGraph[name].push({x:ts,y:data});
+                } else {
+                    if(savedGraph[name][lastIndex-1].y===data) {
+                        savedGraph[name][lastIndex].x = ts;
+                    } else {
+                        savedGraph[name].push({x:ts,y:data});
+                    }
+                    
+                }
+            }
+        } else {
+            // Check if the timestamp match saved timestamp.
+            if(data!==undefined && data>-3276) {
+                let index = savedGraph[name].findIndex(i => i.x == ts);
+                if(index!==-1) {
+                    savedGraph[name][index].y = data;
+                } else {
+
+                }
+            }
+        }
+    } else {
+        if(data!==undefined && data>-3276) {
+            savedGraph[name].push({x:ts,y:data});
+            //First data, saving.
+        } else {
+            //Invalid first data, not saving.
+        }
+    }
+    if(save===true) {
+        savedData[name] = {data:data,raw_data:data,timestamp:ts};
+    }
     
 }
 const gethP  = () => {
     return hP;
+}
+function getSavedData() {
+    return savedData;
+}
+function getSavedGraph() {
+    return savedGraph;
+}
+function getSystems() {
+    return systems;
+}
+async function tenMinuteUpdate() {
+    let config = nibe.getConfig();
+    if(config.system.auto_update===undefined || config.system.auto_update===true) {
+        getNibeData(hP['inside_set_s1']);
+        if(systems!==undefined && systems.s2===true) {
+            getNibeData(hP['inside_set_s2']);
+        }
+    }
+}
+async function minuteUpdate() {
+    let config = nibe.getConfig();
+    if(config.system.auto_update===undefined) {
+        config.system.auto_update = true;
+        nibe.setConfig(config);
+    }
+    if(config.system.auto_update===true) {
+        getNibeData(hP['outside']);
+        getNibeData(hP['inside_s1']);
+        getNibeData(hP['curveadjust_s1']);
+        getNibeData(hP['setpoint_s1']);
+        getNibeData(hP['supply_s1']);
+        if(systems!==undefined && systems.s2===true) {
+            getNibeData(hP['inside_s2']);
+            getNibeData(hP['curveadjust_s2']);
+            getNibeData(hP['setpoint_s2']);
+            getNibeData(hP['supply_s2']);
+        }
+    }
 }
 const checkTranslation = () => {
     let config = nibe.getConfig();
@@ -1688,13 +1765,18 @@ const checkTranslation = () => {
         }
         
         var everyminute = cron.schedule('*/1 * * * *', () => {
-            
+            nibeData.emit('updateGraph');
+            minuteUpdate();
             hotwaterPlugin();
             runFan()
         })
         var threeminutes = cron.schedule('*/3 * * * *', () => {
             updateData();
         })
+        var tenminutes = cron.schedule('*/10 * * * *', () => {
+            tenMinuteUpdate()
+        })
+        
         var hourly = cron.schedule('0 * * * *', () => {
             //let graph = this.context().global.get(`graphs`);
             saveGraph();
@@ -1712,11 +1794,17 @@ const checkTranslation = () => {
         this.config = data;
         this.context().global.set(`config`, this.config);
     })
+
+    
     nibe.data.on('data',data => {
         nibeData.emit(data.register,data);
         nibeData.emit('data',data);
-        savedData[data.register] = data;  
+        savedData[data.register] = data;
+        saveDataGraph(data.register,Date.now(),data.raw_data)
         //console.log(`${data.register}, ${data.titel}: ${data.data} ${data.unit}`)
+    })
+    nibe.data.on('mqttData',data => {
+        saveDataGraph(data.register,data.timestamp,data.raw_data,true)
     })
     var rmu_ready = false;
     nibe.data.on('rmu_ready',data => {
@@ -1740,6 +1828,9 @@ const checkTranslation = () => {
         this.config = nibe.getConfig();
         this.saveGraph = saveGraph;
         this.suncalc = suncalc;
+        this.savedData = getSavedData;
+        this.savedGraph = getSavedGraph;
+        this.systems = getSystems;
         this.nibe = nibe;
         this.cron = cron;
         this.text = text;
@@ -1756,13 +1847,12 @@ const checkTranslation = () => {
         this.checkReady = checkReady;
         this.on('close', function() {
             console.log('Closing listeners');
-            //let graph = this.context().global.get(`graphs`);
-            //nibe.saveGraph(graph);
             nibeData.removeAllListeners();
             nibe.data.removeAllListeners();
-            threeminutes.stop();
-            hourly.stop();
             everyminute.stop();
+            threeminutes.stop();
+            tenminutes.stop();
+            hourly.stop();
         });
     }
     

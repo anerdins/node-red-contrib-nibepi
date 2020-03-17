@@ -74,25 +74,8 @@ module.exports = function(RED) {
         })
         server.nibeData.on('pluginWeather', (data) => {
             if(data.system===config.system) {
-                let conf = server.nibe.getConfig();
-                let inside;
-                if(conf.weather['sensor_'+data.system]!==undefined && conf.weather['sensor_'+data.system]!=="") {
-                    let index = data.array.findIndex(i => i.name == conf.weather['sensor_'+data.system]);
-                    if(index!==-1) {
-                        inside = data.array[index];
-                    }
-                }
-                if(inside===undefined) inside = data['inside_'+data.system];
-                if(inside===undefined || inside.data<-3276) {
-                    //server.sendError('Prognosreglering',`Inomhusgivare saknas (${data.system}).`);
-                }
-                data.weatherSensor = inside;
-                if(inside===undefined) inside = data['inside_'+data.system];
                 let outside = data['outside'];
-                if(inside!==undefined && inside.data>-3276) {
-                    this.send({topic:"Inomhustemperatur",payload:inside.data});
-                }
-                
+                //server.nibeData.emit('forecast_1',arr,config.system);
                 this.send({topic:"Utomhustemperatur",payload:outside.data});
                 this.send({topic:"Kurvjustering",payload:data.weatherOffset});
                 //if(data.predictedNow!==undefined) this.send({topic:"Nuvarande prognos",payload:data.predictedNow.payload,timestamp:data.predictedNow.timestamp});
