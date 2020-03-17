@@ -915,10 +915,10 @@ module.exports = function(RED) {
                     console.log(reject)
                 }));
             } else if(config.price.source=="nibe") {
-                data.price_level = await getNibeData('price_level');
-                data.price_enable = await getNibeData('price_enable');
+                data.price_level = await getNibeData(hP['price_level']);
+                data.price_enable = await getNibeData(hP['price_enable']);
                 priceAdjustCurve(data)
-                data.price_current = await getNibeData('price_current');
+                data.price_current = await getNibeData(hP['price_current']);
                 nibeData.emit('pluginPriceGraph',nibeBuildGraph(data,data.system));
                 nibeData.emit('pluginPrice',data);
             }
@@ -1239,7 +1239,7 @@ async function runFan() {
     }
     if(temporary_fan_speed===undefined) {
         temporary_fan_speed = await findRMU().catch(err => {
-
+            return;
         });
         data.temp_fan_speed = await getNibeData(hP[temporary_fan_speed]);
         if(data.temp_fan_speed===undefined) {
