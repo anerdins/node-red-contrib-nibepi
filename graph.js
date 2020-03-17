@@ -106,10 +106,12 @@ module.exports = function(RED) {
                     {name:"Kompressorfrekvens",register:server.hP()['cpr_act']},
                     {name:"Förångartemperatur",register:server.hP()['evaporator']}
                 ]
-                if(conf.fan.enable===true) {
+                if(conf.fan.enable_co2===true) {
                     arr.push({name:"CO2",register:['fan_co2Sensor']});
                     arr.push({name:"CO2 Gränsvärde för sänkt flöde",register:['fan_low_co2_limit']});
                     arr.push({name:"CO2 Gränsvärde för ökat flöde",register:['fan_high_co2_limit']});
+                }
+                if(conf.fan.enable_filter===true) {
                     arr.push({name:"Filtereffektivitet",register:['filter_eff']});
                 }
                 node.send({graph:config.select,payload:buildGraph(arr)});
