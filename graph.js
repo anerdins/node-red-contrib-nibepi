@@ -57,6 +57,10 @@ module.exports = function(RED) {
         function updateData() {
             let systems = server.systems();
             let conf = server.config;
+            if(conf.data===undefined || conf.data.graph===undefined) {
+                conf.data = {graph:[]};
+                server.nibe.setConfig(conf)
+            }
             if(config.select=="datagraph") {
                 let arr = [];
                 for( var i = 0; i < conf.data.graph.length; i++){
