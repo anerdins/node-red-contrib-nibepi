@@ -178,6 +178,7 @@ module.exports = function(RED) {
                     if(plugin=="rmu") {
                         nibe.reqDataAsync(hP['startHW_rmu_'+system]).then(data => {
                             if(data!==undefined) {
+                                
                                 let regN = getList.findIndex(regN => regN.system == 's1');
                                 if(regN!==-1) {
                                 for( var i = 0; i < arr.length; i=i+1){
@@ -199,15 +200,17 @@ module.exports = function(RED) {
                                     }
                                 }
                                 resolve(true)
+                            } else {
+                                return reject(false); 
                             }
                         },(error => {
                             //sendError('System',`System S${system.replace('s','')} ${text.sys_not_connected}`);
                             return reject(false);
                         }));
-                    }/* else {
-                        sendError('System',`System S${system.replace('s','')} ${text.sys_not_connected}`);
-                        return reject(false);
-                    }*/
+                    } else {
+                        //sendError('System',`System S${system.replace('s','')} ${text.sys_not_connected}`);
+                        //return reject(false);
+                    }
                 }
                 if(newSystem===true) {
                     let regN = getList.findIndex(regN => regN.system == system);
@@ -216,6 +219,7 @@ module.exports = function(RED) {
                         nibe.reqDataAsync(checkReg).then(data => {
                             if(data.data<-3276) {
                                 checkRMU();
+                                return reject(false);
                             } else {
                                 systems[system] = true;
                                 if(plugin=="fan") {
@@ -291,6 +295,7 @@ module.exports = function(RED) {
                             }
                         },(error => {
                             checkRMU();
+                            return reject(false);
                         }));
                         
                     } else {
@@ -298,6 +303,7 @@ module.exports = function(RED) {
                         nibe.reqDataAsync(checkReg).then(data => {
                             if(data.data<-3276) {
                                 checkRMU();
+                                return reject(false);
                             } else {
                                 systems[system] = true;
                                 if(plugin=="fan") {
@@ -316,6 +322,7 @@ module.exports = function(RED) {
                             }
                         },(error => {
                             checkRMU();
+                            return reject(false);
                         }));
                         
                     }
@@ -324,6 +331,7 @@ module.exports = function(RED) {
                     nibe.reqDataAsync(checkReg).then(data => {
                         if(data.data<-3276) {
                             checkRMU();
+                            return reject(false);
                         } else {
                             systems[system] = true;
                             if(plugin=="fan") {
@@ -342,6 +350,7 @@ module.exports = function(RED) {
                         }
                     },(error => {
                         checkRMU();
+                        return reject(false);
                     }));
                     
                 }
@@ -1238,14 +1247,21 @@ async function runFan() {
         return;
     }
     if(temporary_fan_speed===undefined) {
-        temporary_fan_speed = await findRMU().catch(err => {
-            return;
-        });
-        data.temp_fan_speed = await getNibeData(hP[temporary_fan_speed]);
-        if(data.temp_fan_speed===undefined) {
-            nibe.log('Ingen data från fläktforceringsregister. Avbryter...','fan','error');
-            return;
-        }
+        findRMU().then(async function(result) {
+            temporary_fan_speed = result;
+            data.temp_fan_speed = await getNibeData(hP[temporary_fan_speed]);
+            if(data.temp_fan_speed===undefined) {
+                nibe.log('Ingen data från fläktforceringsregister. Avbryter...','fan','error');
+                return;
+            }
+        },(err => {
+                nibe.log('Ingen data från fläktforceringsregister. Avbryter...','fan','error');
+                return;
+        }))
+        //temporary_fan_speed = await findRMU().catch(err => {
+        //    return;
+        //});
+        
     } else {
         data.temp_fan_speed = await getNibeData(hP[temporary_fan_speed]);
         if(data.temp_fan_speed===undefined) {
@@ -1450,7 +1466,7 @@ async function runFan() {
     
     
     // Start regulating only if not defrosting and vented air is above freezing temperatures.
-    if(dMboost===true || co2boost===true || (data.alarm.raw_data!==183 && data.evaporator.raw_data>0 && data.temp_fan_speed.raw_data===0)) {
+    if(dMboost===true || co2boost===true || (data.alarm.raw_data!==183 && data.evaporator.raw_data>0 && data.temp_fan_speed!==undefined && data.temp_fan_speed.raw_data===0)) {
         nibe.log(`Villkor uppfyllda för reglering av flöde.`,'fan','debug');
         if(data.bs1_flow.raw_data>(flow_set+10)) {
             nibe.log(`Luftflöde över gränsvärde: ${flow_set+10}, Flöde: ${data.bs1_flow.raw_data} m3/h, -1%`,'fan','debug');
@@ -1506,7 +1522,7 @@ async function runFan() {
         if(dMboost===false) nibe.log(`Villkor för reglering ej uppfyllt, Gradminutboost inte under gränsvärde`,'fan','debug');
         if(data.alarm.raw_data===183) nibe.log(`Villkor för reglering ej uppfyllt, avfrostning pågår.`,'fan','debug');
         if(data.evaporator.raw_data<0) nibe.log(`Villkor för reglering ej uppfyllt, förångaren för kall (${data.evaporator.raw_data})`,'fan','debug');
-        if(data.temp_fan_speed.raw_data!==0) nibe.log(`Villkor för reglering ej uppfyllt, Tillfällig fläktforcering pågår. värde: ${data.temp_fan_speed.raw_data}`,'fan','debug');
+        if(data.temp_fan_speed!==undefined && data.temp_fan_speed.raw_data!==0) nibe.log(`Villkor för reglering ej uppfyllt, Tillfällig fläktforcering pågår. värde: ${data.temp_fan_speed.raw_data}`,'fan','debug');
     }
     data.cpr_act = await getNibeData(hP['cpr_act']);
     saveDataGraph('fan_setpoint',timeNow,flow_set,true);

@@ -3,6 +3,7 @@ module.exports = function(RED) {
     function nibeRMU(config) {
         RED.nodes.createNode(this,config);
         const server = RED.nodes.getNode(config.server);
+        
         const startUp = () => {
             let system = config.system.replace('s','S');
             this.status({ fill: 'yellow', shape: 'dot', text: `RMU 40 ${system}` });
@@ -36,6 +37,7 @@ module.exports = function(RED) {
             this.send({enabled:false});
         }));
         }
+        this.send({enabled:false});
         this.on('input', function(msg) {
             let conf = server.nibe.getConfig();
             if(msg.topic=="update") {
@@ -57,6 +59,13 @@ module.exports = function(RED) {
             startUp();
         } else {
             server.nibeData.on('rmu_ready', (data) => {
+                startUp();
+            })
+        }
+        if(server.nibe.core!==undefined && server.nibe.core.connected!==undefined && server.nibe.core.connected===true) {
+            startUp();
+        } else {
+            server.nibeData.on('ready', (data) => {
                 startUp();
             })
         }
