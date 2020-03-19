@@ -763,7 +763,7 @@ module.exports = function(RED) {
                 if(heat_enable!==undefined && heat_enable===true) if(config.price['heat_expensive_'+system]!==undefined) heat_adjust = config.price['heat_expensive_'+system];
                 if(heat_adjust!==0) {
                         if(data.dM.data<data.dMstart.data+(-100)) {
-                            nibe.setData(hP['dM'],100);
+                            nibe.setData(hP['dM'],(data.dMstart.data/2));
                         }
                     }
                 }
@@ -774,7 +774,7 @@ module.exports = function(RED) {
                         if(config.price['heat_very_expensive_'+system]!==undefined) heat_adjust = config.price['heat_very_expensive_'+system];
                         if(heat_adjust!==0) {
                             if(data.dM.data<data.dMstart.data+(-100)) {
-                                nibe.setData(hP['dM'],100);
+                                nibe.setData(hP['dM'],(data.dMstart.data/2));
                             }
                         }
                     }
@@ -1084,11 +1084,13 @@ module.exports = function(RED) {
             }
             hwTriggerTemp = Number(hwTriggerTemp.toFixed(2));
             //console.log(bt6.data+"<"+hwTriggerTemp)
+            let hw_target_temp;
             if(hwON.raw_data!==4) {
                 //if((clock>=config.hotwater.priority_time_start1 && clock<config.hotwater.priority_time_stop1) || clock>=config.hotwater.priority_time_start2) {
                     if(bt6.data<=hwTriggerTemp) {
                         hwTargetValue = hwTriggerTemp+difference-5;
                         hwTargetValue = Number(hwTargetValue.toFixed(2));
+                        hw_target_temp = hwTargetValue;
                         //console.log(`Huge hotwater load. BT6 target value: ${hwTargetValue} °C, BT6 actual: ${bt6.data} °C`);
                         nibe.setData(hP['startHW'],4);
                     } else {
@@ -1109,10 +1111,14 @@ module.exports = function(RED) {
                     }
                 }
             }
+            if(hwTargetValue===undefined) {
+                hw_target_temp = bt6.data;
+            }
             data.hwTriggerTemp = hwTriggerTemp;
-            data.hwTargetValue = hwTargetValue;
+            data.hwTargetValue = hw_target_temp;
+
             saveDataGraph('hw_trigger_temp',time,hwTriggerTemp,true);
-            saveDataGraph('hw_target_temp',time,hwTargetValue,true);
+            saveDataGraph('hw_target_temp',time,hw_target_temp,true);
             nibeData.emit('pluginHotwaterAutoLuxury',data);
         }
         if(config.hotwater.enable_hw_priority===true) {
@@ -1258,9 +1264,6 @@ async function runFan() {
                 nibe.log('Ingen data från fläktforceringsregister. Avbryter...','fan','error');
                 return;
         }))
-        //temporary_fan_speed = await findRMU().catch(err => {
-        //    return;
-        //});
         
     } else {
         data.temp_fan_speed = await getNibeData(hP[temporary_fan_speed]);
@@ -1467,6 +1470,10 @@ async function runFan() {
     
     // Start regulating only if not defrosting and vented air is above freezing temperatures.
     if(dMboost===true || co2boost===true || (data.alarm.raw_data!==183 && data.evaporator.raw_data>0 && data.temp_fan_speed!==undefined && data.temp_fan_speed.raw_data===0)) {
+        if(flow_set<100) {
+            nibe.log(`För lågt luftflöde inställt, avbryter.`,'fan','error');
+            return;
+        }
         nibe.log(`Villkor uppfyllda för reglering av flöde.`,'fan','debug');
         if(data.bs1_flow.raw_data>(flow_set+10)) {
             nibe.log(`Luftflöde över gränsvärde: ${flow_set+10}, Flöde: ${data.bs1_flow.raw_data} m3/h, -1%`,'fan','debug');

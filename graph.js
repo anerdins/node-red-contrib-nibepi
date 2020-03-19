@@ -120,17 +120,12 @@ module.exports = function(RED) {
                 }
                 node.send({graph:config.select,payload:buildGraph(arr)});
             } else if(config.select=="hw_lux") {
-                let savedData = server.savedData();
                 let arr = [
                     {name:"BT7 Topp",register:server.hP()['bt7']},
                     {name:"BT6 Laddning",register:server.hP()['bt6']},
                     {name:"Startvärde",register:'hw_trigger_temp'}
                 ]
-                if(savedData['hw_target_temp']===undefined || savedData['hw_target_temp'].data===undefined) {
-                    arr.push({name:"Stoppvärde",register:server.hP()['bt6']});
-                } else {
-                    arr.push({name:"Stoppvärde",register:'hw_target_temp'});
-                }
+                arr.push({name:"Stoppvärde",register:'hw_target_temp'});
                 node.send({graph:config.select,payload:buildGraph(arr)});
             } else if(config.select=="hw_prio") {
                 let arr = [
