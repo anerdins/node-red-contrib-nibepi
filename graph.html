@@ -1,0 +1,97 @@
+<script type="text/javascript">
+    RED.nodes.registerType('nibe-graph',{
+        category: 'input',
+        color: '#e32222',
+        defaults: {
+            server: {value:"", type:"nibe-config"},
+            name: {value:""},
+            system: {value:"s1"},
+            select: {value:"none"}
+        },
+        inputs:1,
+        outputs:2,
+        inputLabels: ["Update"],
+        outputLabels: ["Graph","Info"],
+        icon: "inject.svg",
+        label: function() {
+            return this.name||"NibePi Graph";
+        },
+        oneditprepare: function() {
+            $.getJSON('/config', function(data) {
+                let system = $("#node-input-system").val();
+
+                $('#node-input-system').change(() => {
+                    system = $("#node-input-system").val();
+                });
+            })
+
+        },
+        oneditsave: function() {
+            let node =  this;
+            $.getJSON('/config', function(data) {
+                let system = $("#node-input-system").val();
+                let out = {data:node,config:data};
+                $.ajax({
+                contentType: 'application/json',
+                data: JSON.stringify(out),
+                dataType: 'json',
+                success: function(data){
+                    app.log("device control succeeded");
+                },
+                error: function(){
+                    app.log("Device control failed");
+                },
+                processData: false,
+                type: 'POST',
+                url: "config/"+node.id
+            });
+            })
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="nibe-graph">
+    <div class="form-row">
+        <label for="node-input-system"><i class="icon-bookmark"></i> System</label>
+        <select id="node-input-system">
+            <option value="s1">System 1</option>
+            <option value="s2">System 2</option>
+            <!-- <option value="s3">System 3</option> -->
+            <!-- <option value="s4">System 4</option> -->
+            <!-- <option value="s5">System 5</option> -->
+            <!-- <option value="s6">System 6</option> -->
+            <!-- <option value="s7">System 7</option> -->
+            <!-- <option value="s8">System 8</option> -->
+            </select>
+        </div>
+        <div class="form-row">
+            <label for="node-input-type"><i class="icon-bookmark"></i> Graph</label>
+            <select id="node-input-select">
+                <option value="none">None</option>
+                <option value="datagraph">Own datagraph</option>
+                <option value="start_1">Frontpage Heatgraph</option>
+                <option value="indoor_1">Indoor graph</option>
+                <option value="diagnostic_defrost">Diagnostic defrost</option>
+                <option value="efficiency_graph">Diagnostic efficiency</option>
+                <option value="forecast_1">Forecast graph</option>
+                <option value="fan_1">Fan graph</option>
+                <option value="hw_lux">Hotwater luxury graph</option>
+                <option value="hw_prio">Hotwater prio graph</option>
+                <option value="registers_selected">Selected registers</option>
+                <!-- <option value="s3">System 3</option> -->
+                <!-- <option value="s4">System 4</option> -->
+                <!-- <option value="s5">System 5</option> -->
+                <!-- <option value="s6">System 6</option> -->
+                <!-- <option value="s7">System 7</option> -->
+                <!-- <option value="s8">System 8</option> -->
+                </select>
+            </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="icon-tag"></i> Server</label>
+        <input type="text" id="node-input-server" placeholder="Server">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="nibe-graph">
+    <p>Graph helper</p>
+</script>

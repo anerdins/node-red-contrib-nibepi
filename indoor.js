@@ -84,6 +84,7 @@ module.exports = function(RED) {
                 let outside = data['outside'];
                 let dM = data.dM;
                 let inside = data.indoorSensor;
+                
                 if(inside===undefined) inside = data['inside_'+data.system];
                 if(inside!==undefined && inside.data>-3276) {
                     node.send({topic:"Inomhustemperatur",payload:inside.data});
