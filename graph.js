@@ -30,7 +30,9 @@ module.exports = function(RED) {
                         let index = array[0].series.findIndex(n => n == name);
                         if(index===-1) {
                             if(savedGraph[arr[i].register]!==undefined && savedGraph[arr[i].register].length!==0) {
-                                
+                                if(arr[i].chart==="pie") {
+                                    timeCut = timeNow-(timeFrame*24);
+                                }
                                 let cut = savedGraph[arr[i].register].findIndex(n => n.x >= timeCut);
                                 if(cut!==-1) {
                                     let newArr = savedGraph[arr[i].register].slice(cut,savedGraph[arr[i].register].length);
@@ -40,8 +42,25 @@ module.exports = function(RED) {
                                         }
                                     }
                                     if(newArr.length!==0) {
-                                        array[0].series.push(name);
-                                        array[0].data.push(newArr);
+                                        if(arr[i].chart==="pie") {
+                                            let value = 0;
+                                            for( var j = 0; j < newArr.length; j++){
+                                                value = value+newArr[j].y;
+                                            }
+                                            //array[0].series.push(name);
+                                            if(array[0].series.length===0) array[0].series.push("")
+                                            if(array[0].labels===undefined) array[0].labels = [];
+                                            array[0].labels.push(name);
+                                            if(array[0].data.length===0) {
+                                                array[0].data.push([Math.round(value/newArr.length)])
+                                            } else if(array[0].data.length===1) {
+                                                array[0].data[0].push(Math.round(value/newArr.length))
+                                            }
+                                        } else {
+                                            array[0].series.push(name);
+                                            array[0].data.push(newArr);
+                                        }
+                                        
                                     }
                                 }
                             }
@@ -102,6 +121,45 @@ module.exports = function(RED) {
                     arr.push({name:"Kurvjustering",register:['indoor_offset_'+config.system]});
                 }
                 node.send({graph:config.select,payload:buildGraph(arr)});
+            } else if(config.select=="diagnostic_defrost") {
+                if(conf.system.pump!==undefined && (conf.system.pump=="F730" || conf.system.pump=="F750")) {
+                    let arr = [
+                        {name:"Gångtid (m)",register:"cpr_runtime"},
+                        {name:"Avfrostningstid (m)",register:"defrosting"}
+                    ]
+                    node.send({graph:config.select,enabled:true,payload:buildGraph(arr)});
+                } else {
+                    node.send({graph:config.select,enabled:false});
+                }
+            } else if(config.select=="efficiency_graph") {
+                if(conf.system.pump!==undefined && (conf.system.pump=="F730" || conf.system.pump=="F750")) {
+                    let arr = [
+                        {name:"Gångtid (%)",register:"cpr_uptime",chart:"pie"},
+                        {name:"Avfrostningstid (%)",register:"cpr_downtime",chart:"pie"}
+                    ]
+                    let result = buildGraph(arr);
+                    let cpr_efficiency = result[0].data[0][0];
+                        if(100-cpr_efficiency>50) {
+                            node.send([null,{topic:"Resultat",payload:`Värmepumpens effektivitet är mycket dålig, långa avfrostningstider.<br>
+                            Trolig orsak är felaktigt placerad avluftsgivare eller igensatt filter med nedsmutsning av förångare.<br>
+                            Kompressorn har en effektivitet på endast ${cpr_efficiency} % och hela ${100-cpr_efficiency} % avfrostningstid.<br>`}])
+                        } else if(100-cpr_efficiency>35) {
+                            node.send([null,{topic:"Resultat",payload:`Värmepumpens effektivitet är dålig, långa avfrostningstider.<br>
+                            Trolig orsak är felaktigt placerad avluftsgivare eller igensatt filter med nedsmutsning av förångare.<br>
+                            Kompressorn har en effektivitet på ${cpr_efficiency} % och ${100-cpr_efficiency} % avfrostningstid.<br>`}])
+                        } else if(100-cpr_efficiency>25) {
+                            node.send([null,{topic:"Resultat",payload:`Värmepumpens effektivitet är är bra men kunde vara bättre.<br>
+                            Kontrollera luftfilter.<br>
+                            Kompressorn har en effektivitet på ${cpr_efficiency} % och ${100-cpr_efficiency} % avfrostningstid.<br>`}])
+                        } else {
+                            node.send([null,{topic:"Resultat",payload:`Värmepumpens effektivitet är mycket bra.<br>
+                            Kompressorn har en effektivitet på ${cpr_efficiency} % och endast ${100-cpr_efficiency} % avfrostningstid.<br>`}])
+                        }
+                    node.send({graph:config.select,enabled:true,payload:result});
+                    node.send({graph:config.select,enabled:true,payload:result});
+                } else {
+                    node.send({graph:config.select,enabled:false});
+                }
             } else if(config.select=="fan_1") {
                 let arr = [
                     {name:"Fläkthastighet",register:server.hP()['fan_speed']},

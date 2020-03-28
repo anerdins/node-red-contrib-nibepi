@@ -9,9 +9,9 @@
             select: {value:"none"}
         },
         inputs:1,
-        outputs:1,
+        outputs:2,
         inputLabels: ["Update"],
-        outputLabels: ["Graph"],
+        outputLabels: ["Graph","Info"],
         icon: "inject.svg",
         label: function() {
             return this.name||"NibePi Graph";
@@ -71,6 +71,8 @@
                 <option value="datagraph">Own datagraph</option>
                 <option value="start_1">Frontpage Heatgraph</option>
                 <option value="indoor_1">Indoor graph</option>
+                <option value="diagnostic_defrost">Diagnostic defrost</option>
+                <option value="efficiency_graph">Diagnostic efficiency</option>
                 <option value="forecast_1">Forecast graph</option>
                 <option value="fan_1">Fan graph</option>
                 <option value="hw_lux">Hotwater luxury graph</option>

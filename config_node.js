@@ -517,6 +517,7 @@ module.exports = function(RED) {
             return output;
         }
     const runWeather = (val) => {
+        nibe.log(`Startar Prognosreglering`,'weather','debug');
         let timeNow = Date.now();
         //var val = Object.assign({}, result);
         let config = nibe.getConfig();
@@ -526,10 +527,13 @@ module.exports = function(RED) {
         }
         if(config.weather!==undefined && config.weather['enable_'+val.system]===true) {
             let outside = val.outside.data;
+            nibe.log(`Aktuell utomhustemperatur: ${outside}`,'weather','debug');
             let heatcurve = val['heatcurve_'+val.system].data;
+            nibe.log(`Aktuell värmekurva: ${heatcurve}`,'weather','debug');
             let setOffset = val.weatherOffset;
             let lon = config.home.lon;
             let lat = config.home.lat;
+            nibe.log(`Koordinater: (Latitud: ${config.home.lat}, Longitud: ${config.home.lon})`,'weather','debug');
             if(lon!==undefined && lat!==undefined && lon!="" && lat!="") {
                 https.get(`https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/${lon}/lat/${lat}/data.json`, (resp) => {
                     let data = '';
@@ -546,8 +550,10 @@ module.exports = function(RED) {
                             var sunTime = Number((Date.now()/1000).toFixed())+(hours*3600);
                             let sun;
                             if(sunTime>sunrise && sunTime<sunset) {
+                                nibe.log(`När prognosen infaller är det dag.`,'weather','debug');
                                 sun = true;
                             } else {
+                                nibe.log(`När prognosen infaller är det inte dag.`,'weather','debug');
                                 sun = false;
                             }
                             data = JSON.parse(data);
@@ -560,6 +566,7 @@ module.exports = function(RED) {
                             weatherPredicted = Number(weatherPredicted.values[0]);
                             var sunFactor = 0;
                             if(config.weather.sun_enable!==undefined && config.weather.sun_enable===true) {
+                                nibe.log(`Solfaktor aktiverad`,'weather','debug');
                                 if(weatherPredicted===1 && sun===true) {
                                     if(config.weather.clear===undefined) { config.weather.clear = 0; nibe.setConfig(config); }
                                     sunFactor = config.weather.clear;
@@ -570,13 +577,15 @@ module.exports = function(RED) {
                                     if(config.weather.half_clear===undefined) { config.weather.half_clear = 0; nibe.setConfig(config); }
                                     sunFactor = config.weather.half_clear;
                                 }
+                                nibe.log(`Aktuell solfaktor är: ${sunFactor}`,'weather','debug');
                             }
                                     if(outside===undefined || heatcurve===undefined) {
-                                        sendError('Prognosreglering',`Saknar värde från utomhusgivaren eller värmekurvan.`);
+                                        if(outside===undefined) nibe.log(`Saknar värde från utomhusgivare`,'weather','error');
+                                        if(heatcurve===undefined) nibe.log(`Saknar värde från värmekurva`,'weather','error');
                                         return;
                                     }
                                     if(heatcurve===0) {
-                                        sendError('Prognosreglering',`Prognosreglering fungerar inte med egen värmekurva.`);
+                                        nibe.log(`Prognosreglering fungerar inte med egen värmekurva.`,'weather','error');
                                         return;
                                     }
                                     if(config.weather.forecast_adjust===undefined) {
@@ -590,10 +599,12 @@ module.exports = function(RED) {
                                         if(windSet!==undefined) windSet = Number(((outside-tempNow.values[0])+windSet).toFixed(2));
                                     }
                                     if(config.weather.wind_enable!==undefined && config.weather.wind_enable===true) {
+                                        nibe.log(`Vindstyrning aktiverad. Köldeffekt: ${windSet} grader`,'weather','debug');
                                         setOffset = Number(((outside-windSet-sunFactor)*(heatcurve*1.2/10)/((heatcurve/10)+1)).toFixed(2));
                                     } else {
                                         setOffset = Number(((outside-tempPredicted-sunFactor)*(heatcurve*1.2/10)/((heatcurve/10)+1)).toFixed(2));
                                     }
+                                    nibe.log(`Utför kurvjustering, värde: ${setOffset}`,'weather','debug');
                                     curveAdjust('weather',val.system,setOffset);
                                     val.windGraph = wind.graph;
                                     val.weatherOffset = setOffset;
@@ -601,7 +612,9 @@ module.exports = function(RED) {
                                     val.predictedNow = {payload:tempNow.values[0],timestamp:toTimestamp(data.timeSeries[0].validTime)};
                                     val.predictedLater = {payload:tempPredicted,timestamp:toTimestamp(data.timeSeries[hours].validTime)};
                                     saveDataGraph('weather_forecast_'+val.system,toTimestamp(data.timeSeries[hours].validTime),tempPredicted,true);
+                                    nibe.log(`Sparar värde för prognos. (${tempPredicted} grader)`,'weather','debug');
                                     saveDataGraph('weather_offset_'+val.system,timeNow,val.weatherOffset,true);
+                                    nibe.log(`Sparar värde för kurvjustering. (${val.weatherOffset})`,'weather','debug');
                                     let inside;
                                     if(config.weather['sensor_'+val.system]!==undefined && config.weather['sensor_'+val.system]!=="") {
                                         let index = val.array.findIndex(i => i.name == config.weather['sensor_'+val.system]);
@@ -611,19 +624,21 @@ module.exports = function(RED) {
                                     }
                                     if(inside===undefined) inside = val['inside_'+val.system];
                                     if(inside===undefined || inside.data<-3276) {
+                                        nibe.log(`Ingen inomhusgivare vald eller felaktigt värde.`,'weather','debug');
                                         //server.sendError('Prognosreglering',`Inomhusgivare saknas (${data.system}).`);
                                     }
                                     val.weatherSensor = inside;
                                     if(inside===undefined) inside = val['inside_'+val.system];
                                     if(inside!==undefined && inside.data>-3276) {
+                                        nibe.log(`Sparar värde för vald inomhusgivare (${inside.data} grader)`,'weather','debug');
                                         saveDataGraph('weather_sensor_'+val.system,timeNow,inside.data,true);
                                     }
 
                                     nibeData.emit('pluginWeather',val);
                         } else {
-                            sendError('Prognosreglering',`Ingen kontakt med väderleverantör.`);
-                            //this.error('Prognosreglering',{topic:"Prognosreglering",payload:"Får ej kontakt med Väderleverantören. Ställer in reglering till 0."});
+                            nibe.log(`Väderleverantör svarar inte, problem med uppkopplingen eller felaktigt angivna koordinater`,'weather','error');
                             if(weatherOffset[val.system]!==0) {
+                                nibe.log(`Sätter kurvjustering till 0`,'weather','debug');
                                 curveAdjust('weather',val.system,0);
                                 weatherOffset[val.system] = 0;
                             }
@@ -632,18 +647,21 @@ module.exports = function(RED) {
                     });
                 
                 }).on("error", (err) => {
-                    console.log("Error: " + err.message);
+                    nibe.log(err.message,'weather','error');
                 });
             } else {
-                sendError('Prognosreglering',`Inga koordinater inlagda.`);
+                nibe.log(`Inga koordinater inlagda.`,'weather','error');
                 if(weatherOffset[val.system]!==0) {
+                    nibe.log(`Sätter kurvjustering till 0`,'weather','debug');
                     curveAdjust('weather',val.system,0);
                     weatherOffset[val.system] = 0;
                 }
                 saveDataGraph('weather_offset_'+val.system,timeNow,0,true);
             }
         } else {
+            nibe.log(`Prognosreglering inte aktiverat`,'weather','debug');
             if(weatherOffset[val.system]!==0) {
+                nibe.log(`Sätter kurvjustering till 0`,'weather','debug');
                 curveAdjust('weather',val.system,0);
                 weatherOffset[val.system] = 0;
             }
@@ -739,8 +757,13 @@ module.exports = function(RED) {
         let inside = data.priceSensor;
         if(level!==undefined && level!==0) {
             let config = nibe.getConfig();
+            
             if(config.price===undefined) {
                 config.price = {};
+                nibe.setConfig(config);
+            }
+            if(config.price['temp_low_'+system]===undefined) {
+                config.price['temp_low_'+system] = 0;
                 nibe.setConfig(config);
             }
             let hw_enable = config.price.hotwater_enable;
@@ -759,7 +782,7 @@ module.exports = function(RED) {
                 if(heat_enable!==undefined && heat_enable===true) if(config.price['heat_normal_'+system]!==undefined) heat_adjust = config.price['heat_normal_'+system];
             } else if(level=="EXPENSIVE") {
                 if(hw_enable!==undefined && hw_enable===true) hw_adjust = Number(config.price.hotwater_expensive);
-                if(inside!==undefined && (inside.data>(data['inside_set_'+system].data+temp_diff)) || temp_diff===undefined || temp_diff=="") {
+                if(inside!==undefined && (inside.data>(data['inside_set_'+system].data+temp_diff)) || config.price['enable_temp_'+system]===undefined || config.price['enable_temp_'+system]===false) {
                 if(heat_enable!==undefined && heat_enable===true) if(config.price['heat_expensive_'+system]!==undefined) heat_adjust = config.price['heat_expensive_'+system];
                 if(heat_adjust!==0) {
                         if(data.dM.data<data.dMstart.data+(-100)) {
@@ -770,7 +793,7 @@ module.exports = function(RED) {
             } else if(level=="VERY_EXPENSIVE") {
                 if(hw_enable!==undefined && hw_enable===true) hw_adjust = Number(config.price.hotwater_very_expensive);
                 if(heat_enable!==undefined && heat_enable===true) {
-                    if(inside!==undefined && (inside.data>(data['inside_set_'+system].data+temp_diff)) || temp_diff===undefined || temp_diff=="") {
+                    if(inside!==undefined && (inside.data>(data['inside_set_'+system].data+temp_diff)) || config.price['enable_temp_'+system]===undefined || config.price['enable_temp_'+system]===false) {
                         if(config.price['heat_very_expensive_'+system]!==undefined) heat_adjust = config.price['heat_very_expensive_'+system];
                         if(heat_adjust!==0) {
                             if(data.dM.data<data.dMstart.data+(-100)) {
@@ -1580,13 +1603,33 @@ async function getNibeData(register) {
 });
 return promise;
 }
+isObject = function(a) {
+    return (!!a) && (a.constructor === Object);
+};
 function saveDataGraph(name,ts,data,save=false) {
+    function isValid(data) {
+        if(data!==undefined) {
+            //First data, saving.
+            if(isObject(data)===true) {
+                return true;
+            } else {
+                if(data>-3276) {
+                    return true;
+                } else {
+                    return false;
+                    //Invalid first data, not saving.
+                }
+            }
+        } else {
+            return false;
+        }
+    }
     if(savedGraph[name]===undefined) savedGraph[name] = [];
     let lastIndex = savedGraph[name].length-1;
     if(savedGraph[name].length>=2) {
         if(ts>=(savedGraph[name][lastIndex].x+55000)) {
-            if(data!==undefined && data>-3276) {
-                if((Math.abs(savedGraph[name][lastIndex].y-data)>0.1)) { //  || ts>=(savedGraph[name][lastIndex].x+(10*60*1000))
+            if(isValid(data)===true) {
+                if((Math.abs(savedGraph[name][lastIndex].y-data)>0.1)) {
                     savedGraph[name].push({x:ts,y:data});
                 } else {
                     if(savedGraph[name][lastIndex-1].y===data) {
@@ -1599,22 +1642,15 @@ function saveDataGraph(name,ts,data,save=false) {
             }
         } else {
             // Check if the timestamp match saved timestamp.
-            if(data!==undefined && data>-3276) {
+            if(isValid(data)===true) {
                 let index = savedGraph[name].findIndex(i => i.x == ts);
                 if(index!==-1) {
                     savedGraph[name][index].y = data;
-                } else {
-
                 }
             }
         }
     } else {
-        if(data!==undefined && data>-3276) {
-            savedGraph[name].push({x:ts,y:data});
-            //First data, saving.
-        } else {
-            //Invalid first data, not saving.
-        }
+        if(isValid(data)===true) savedGraph[name].push({x:ts,y:data});
     }
     if(save===true) {
         savedData[name] = {data:data,raw_data:data,timestamp:ts};
@@ -1632,6 +1668,104 @@ function getSavedGraph() {
 }
 function getSystems() {
     return systems;
+}
+let defrostTimer = 60000;
+let defrosting;
+let cpr_running;
+let defrost_saved;
+let runTime;
+let savedRunTime = Date.now();
+async function checkEfficiency(runtime,defrost) {
+    let time = Date.now();
+    let total = runtime+defrost;
+    let uptime = Number((runtime/total*100).toFixed(0));
+    let downtime = 100-uptime;
+    saveDataGraph('cpr_uptime',time,uptime,true);
+    saveDataGraph('cpr_downtime',time,downtime,true);
+}
+async function runDiagnostic() {
+    nibe.log(`Running diagnostic`,'diagnostic','debug');
+    async function uptimeCheck() {
+        getNibeData(hP['cpr_act']).then(cpr => {
+            if(cpr.data>=1) {
+                if(cpr_running===undefined) {
+                    saveDataGraph('cpr_runtime',Date.now(),Number(((Date.now()-savedRunTime)/60000).toFixed(0)),true);
+                } else if(cpr_running===false) {
+                    nibe.log(`Compressor just started.`,'diagnostic','debug');
+                    if(runTime!==undefined && defrost_saved!==undefined) {
+                        nibe.log(`Cycle completed. Run time: ${(runTime/60000).toFixed()} minutes, Defrost time: ${(defrost_saved/60).toFixed(0)}`,'diagnostic','debug');
+                        checkEfficiency(Number((runTime/1000).toFixed(0)),defrost_saved);
+                        saveDataGraph('cpr_efficiency',Date.now(),{uptime:Number((runTime/1000).toFixed(0)),defrost:defrost_saved},true);
+                        runTime = undefined;
+                        defrost_saved = undefined;
+                    }
+                    savedRunTime = Date.now();
+                    saveDataGraph('cpr_runtime',Date.now(),Number(((Date.now()-savedRunTime)/60000).toFixed(0)),true);
+                    cpr_running = true;
+                    
+                } else {
+                    nibe.log(`Compressor running.`,'diagnostic','debug');
+                    saveDataGraph('cpr_runtime',Date.now(),Number(((Date.now()-savedRunTime)/60000).toFixed(0)),true);
+                }
+            } else {
+                if(cpr_running===undefined) {
+                    nibe.log(`Compressor not running at startup`,'diagnostic','debug');
+                    cpr_running = false;
+                } else if(cpr_running===true) {
+                    runTime = Date.now()-savedRunTime;
+                    nibe.log(`Compressor just shutdown. Run time: ${(runTime/60000).toFixed(0)} minutes`,'diagnostic','debug');
+                    cpr_running = false;
+                }
+                saveDataGraph('cpr_runtime',Date.now(),0,true);
+            }
+        });
+    }
+    async function defrostCheck() {
+        if(timer.diagnostic!==undefined && timer.diagnostic._idleTimeout>0) {
+            clearTimeout(timer.diagnostic);
+        }
+        nibe.log(`Defrost timer running...`,'diagnostic','debug');
+        getNibeData(hP['defrost_time']).then(defrost => {
+            nibe.log(`Got defrost data: ${defrost.data} sec`,'diagnostic','debug');
+            if(defrost.data>0) {
+                defrostTimer = 10000;
+                defrost_saved = defrost.data;
+                nibe.log(`Defrost is active!, checking again in ${defrostTimer/1000} sec`,'diagnostic','debug');
+                saveDataGraph('defrosting',Date.now(),Number((defrost.data/60).toFixed(0)),true);
+                saveDataGraph('cpr_runtime',Date.now(),0,true);
+            } else {
+                if(defrost_saved===undefined) {
+                    defrost_saved = defrost.data;
+                }
+                saveDataGraph('defrosting',Date.now(),0,true);
+                defrostTimer = 60000;
+                nibe.log(`Defrost is inactive, checking again in ${defrostTimer/1000} sec`,'diagnostic','debug');
+            }
+            if(timer.diagnostic===undefined || timer.diagnostic._idleTimeout===-1) {
+                timer.diagnostic = setTimeout(defrostCheck, defrostTimer);
+            }
+        },(err => {
+            nibe.log(`No defrost data.`,'diagnostic','debug');
+            defrostTimer = 60000;
+            if(timer.diagnostic===undefined || timer.diagnostic._idleTimeout===-1) {
+                timer.diagnostic = setTimeout(defrostCheck, defrostTimer);
+            }
+        }))
+        uptimeCheck();
+    }
+    let config = nibe.getConfig();
+    if(config.system===undefined) {
+        config.system = {};
+        nibe.setConfig(config);
+    }
+    if(config.system.pump!==undefined && (config.system.pump=="F730" || config.system.pump=="F750")) {
+        nibe.log(`Heatpump is supported, starting defrost check timer, timer: ${defrostTimer/1000} sec`,'diagnostic','debug');
+        if(timer.diagnostic===undefined || timer.diagnostic._idleTimeout===-1) {
+            timer.diagnostic = setTimeout(defrostCheck, defrostTimer);
+        }
+    } else {
+        nibe.log(`Heatpump is not supported`,'diagnostic','error');
+    }
 }
 async function tenMinuteUpdate() {
     let config = nibe.getConfig();
@@ -1718,7 +1852,7 @@ const checkTranslation = () => {
                                 }
                                 if(config.system.pump=="F750") hP.supply_s1 = "40047";
                                 sendError('Kärnan',`Nibe ${config.system.pump} är ansluten`);
-                                console.log('Core is connected')
+                                console.log('Core is connected');
                                 updateData(true);
                                 nibe.redOn();
                                 this.register = nibe.getRegister();
@@ -1738,6 +1872,13 @@ const checkTranslation = () => {
                 cb(null,nibe.core.connected);
             }
         }
+        if(nibe.core!==undefined && nibe.core.connected!==undefined && nibe.core.connected===true) {
+            runDiagnostic();
+        } else {
+            nibeData.on('ready', (data) => {
+                runDiagnostic();
+            })
+        }
         handleCore(nibe.getConfig());
         handleMQTT(nibe.getConfig());
         nibe.requireGraph().then(result => {
@@ -1749,6 +1890,7 @@ const checkTranslation = () => {
         },(err => {
 
         }));
+        
         RED.httpAdmin.post("/config/:id", RED.auth.needsPermission("nibe-config.write"), function(req, res) {
             nibe.setConfig(req.body.config);
             handleCore(req.body.config);
@@ -1882,6 +2024,7 @@ const checkTranslation = () => {
             threeminutes.stop();
             tenminutes.stop();
             hourly.stop();
+            clearTimeout(timer.diagnostic);
         });
     }
     
