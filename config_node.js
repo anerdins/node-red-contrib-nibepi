@@ -1903,19 +1903,21 @@ const checkTranslation = () => {
         async function saveGraph() {
             const promise = new Promise((resolve,reject) => {
                 let config = nibe.getConfig();
-                if(config.system.save_graph!==undefined && config.system.save_graph===true) {
+                
                     trimGraph().then(data => {
-                        if(savedGraph!==undefined && savedGraph.length!==0) {
-                            nibe.saveGraph(savedGraph).then(result => {
-                                resolve(result);
-                            },(err => {
-                                reject(err);
-                            }));
+                        if(config.system.save_graph!==undefined && config.system.save_graph===true) {
+                            if(savedGraph!==undefined && savedGraph.length!==0) {
+                                nibe.saveGraph(savedGraph).then(result => {
+                                    resolve(result);
+                                },(err => {
+                                    reject(err);
+                                }));
+                            }
+                        } else {
+                            reject('Not saving graphs')
                         }
                     })
-                } else {
-                    reject('Not saving graphs')
-                }
+                
             
         });
         return promise
