@@ -138,6 +138,7 @@ module.exports = function(RED) {
                         {name:"Avfrostningstid (%)",register:"cpr_downtime",chart:"pie"}
                     ]
                     let result = buildGraph(arr);
+                    if(result[0]===undefined) return;
                     let cpr_efficiency = result[0].data[0][0];
                         if(100-cpr_efficiency>50) {
                             node.send([null,{topic:"Resultat",payload:`Värmepumpens effektivitet är mycket dålig, långa avfrostningstider.<br>
