@@ -6,18 +6,20 @@ module.exports = function(RED) {
         const server = RED.nodes.getNode(config.server);
         async function startUp() {
             let system = config.system.replace('s','S');
+            let conf = server.nibe.getConfig();
             node.status({ fill: 'yellow', shape: 'dot', text: `System ${system}` });
             let arr = [
                 //{topic:"inside_"+config.system,source:"nibe"},
                 {topic:"inside_set_"+config.system,source:"nibe"},
                 {topic:"inside_enable_"+config.system,source:"nibe"},
                 {topic:"inside_factor_"+config.system,source:"nibe"},
-                {topic:"dM",source:"nibe"},
-                {topic:"dMstart",source:"nibe"},
                 {topic:"exhaust",source:"nibe"},
                 {topic:"outside",source:"nibe"}
             ];
-            let conf = server.nibe.getConfig();
+            if(conf.system.pump!=="F370" && conf.system.pump!=="F470") {
+                arr.push({topic:"dM",source:"nibe"});
+                arr.push({topic:"dMstart",source:"nibe"})
+            }
             if(conf.indoor===undefined) {
                 conf.indoor = {};
                 server.nibe.setConfig(conf);
@@ -82,7 +84,6 @@ module.exports = function(RED) {
         server.nibeData.on('pluginIndoor', (data) => {
             if(data.system===config.system) {
                 let outside = data['outside'];
-                let dM = data.dM;
                 let inside = data.indoorSensor;
                 
                 if(inside===undefined) inside = data['inside_'+data.system];
@@ -92,9 +93,7 @@ module.exports = function(RED) {
                 if(data.indoorOffset!==undefined) {
                     node.send({topic:"Kurvjustering",payload:data.indoorOffset});
                 }
-                node.send({topic:"Utomhustemperatur",payload:outside.data});
-                node.send({topic:"Gradminuter",payload:dM.data});
-                node.send({topic:"Tid",payload:dM.timestamp});
+                node.send({topic:"Tid",payload:outside.timestamp});
                 node.send({topic:"Avvikelse",payload:data.accuracy});
             }
         })

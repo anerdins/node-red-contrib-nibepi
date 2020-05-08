@@ -5,17 +5,16 @@ module.exports = function(RED) {
         const server = RED.nodes.getNode(config.server);
         const startUp = () => {
             let system = config.system.replace('s','S');
+            let conf = server.nibe.getConfig();
             this.status({ fill: 'yellow', shape: 'dot', text: `System ${system}` });
             let arr = [
                 {topic:"inside_set_"+config.system,source:"nibe"},
-                {topic:"dM",source:"nibe"},
-                {topic:"dMstart",source:"nibe"},
-                {topic:"outside",source:"nibe"},
-                //{topic:"price_current",source:"nibe"},
-                //{topic:"price_level",source:"nibe"},
-                //{topic:"price_enable",source:"nibe"}
+                {topic:"outside",source:"nibe"}
             ];
-            let conf = server.nibe.getConfig();
+            if(conf.system.pump!=="F370" && conf.system.pump!=="F470") {
+                arr.push({topic:"dM",source:"nibe"});
+                arr.push({topic:"dMstart",source:"nibe"})
+            }
             
             if(conf.price===undefined) {
                 conf.price = {};
@@ -95,19 +94,6 @@ module.exports = function(RED) {
         });
         server.nibeData.on('pluginPrice', (data) => {
             if(data.system===config.system) {
-                /*let outside = data['outside'];
-                let dM = data.dM;
-                let inside = data.priceSensor;
-                if(inside===undefined) inside = data['inside_'+data.system];
-                if(inside!==undefined && inside.data>-3276) {
-                    this.send({topic:"Inomhustemperatur",payload:inside.data});
-                }
-                if(data.priceOffset!==undefined) {
-                    this.send({topic:"Kurvjustering",payload:data.priceOffset});
-                }
-                this.send({topic:"Utomhustemperatur",payload:outside.data});
-                this.send({topic:"Gradminuter",payload:dM.data});
-                this.send({topic:"Tid",payload:dM.timestamp});*/
                 this.send({topic:"Nuvarande Elprisnivå",payload:data.price_level.data});
                 this.send({topic:"Nuvarande Elpris",payload:data.price_current.data});
                 this.send([null,{topic:"test",payload:data}]);
