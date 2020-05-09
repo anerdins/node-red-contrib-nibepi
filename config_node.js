@@ -1477,7 +1477,7 @@ async function runFan() {
             nibe.log(`Luftflöde stabilt (${data.bs1_flow.raw_data} m3/h)`,'fan','debug');
             dMboost = false;
             co2boost = false;
-            fan_mode = undefined;
+            
             if(config.fan.enable_filter===true) {
                 nibe.log(`Filterkontroll är aktiverad`,'fan','debug');
             // Value is stable, save fan speeds if calibration is active.
@@ -1503,6 +1503,7 @@ async function runFan() {
                     
                 }
             }
+            fan_mode = undefined;
             if(fan_filter_low_eff!==undefined && fan_filter_normal_eff===undefined) {
                 filter_eff = Number((fan_filter_low_eff).toFixed(0));
                 if(filter_eff>100) filter_eff = 100;
