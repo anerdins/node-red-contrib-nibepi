@@ -1,5 +1,10 @@
 # node-red-contrib-nibepi
 Node-RED plugins for NibePi interface for connecting to Nibe F series heatpump
+Link to downloadable image: 
+Download the NibePi clean image file. Burn it to a 16GB SD-card and load it to the Raspberry Pi with the RS485 transciever.
+The image file contains a Raspbian setup, MQTT Broker (no auth), Node-RED, preinstalled NibePi nodes for Node-RED with a read-only filesystem (writemode is possible from Node-RED)<br>
+Please edit the wpa_supplicant.conf file on the boot partion with your country and wifi credentials.<br>
+The Node-RED interface will be available on http://IP_ADDRESS:1880 or http://nibepi:1880<br>
 
 Example flow here:<br>
 
