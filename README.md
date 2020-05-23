@@ -7,6 +7,10 @@ Please edit the wpa_supplicant.conf file on the boot partion with your country a
 The Node-RED interface will be available on http://IP_ADDRESS:1880 or http://nibepi:1880<br>
 </p>
 
+<p>If you already have Node-RED set up, install my Node-RED nodes with this command from inside the Node-RED folder.
+    ```
+    npm install --save anerdins/node-red-contrib-nibepi#master
+    ```
 ![Flow 1](/example/example_flow1.png)
 ![Flow 2](/example/example_flow2.png)
 
