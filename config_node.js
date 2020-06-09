@@ -1,11 +1,12 @@
 module.exports = function(RED) {
     const EventEmitter = require('events').EventEmitter;
-    require('events').EventEmitter.defaultMaxListeners = 150;
+    require('events').EventEmitter.defaultMaxListeners = 400;
     const https = require('https');
     const nibeData = new EventEmitter()
     const nibe = require('nibepi')
     var serialPort = "";
     let text = require('./language-SE.json')
+    let translate = require('./translate.json')
     var series = "";
     var systems = {};
     let adjust = [];
@@ -360,6 +361,14 @@ module.exports = function(RED) {
 }
     async function updateData(hourly=false) {
         let timeNow = Date.now();
+        /*
+        Check emitters
+        let events = nibeData.eventNames()
+        console.log(JSON.stringify(events,null,2));
+        for (const item of events) {
+            let count = nibeData.listenerCount(item)
+            console.log(`Eventname: ${item}, Count: ${count}`);
+        }*/
         for (const item of getList) {
             const array = [];
             let result = {timestamp:timeNow};
@@ -1767,7 +1776,7 @@ async function minuteUpdate() {
         }
     }
 }
-const checkTranslation = () => {
+const checkTranslation = (node) => {
     let config = nibe.getConfig();
     if(config.update!==undefined && config.update.release!==undefined) {
         if(config.update.release.includes('english') || config.update.release.includes('snapshot-EN')) {
@@ -1776,6 +1785,15 @@ const checkTranslation = () => {
             text = require('./language-SE.json')
         }
     }
+    if(config.system===undefined) {
+        config.system = {language:"SE"};
+        nibe.setConfig(config);
+    }
+    if(config.system.language===undefined) {
+        config.system.language = "SE";
+        nibe.setConfig(config);
+    }
+    node.context().global.set(`translate`, translate);
 }
     console.log(text.starting)
 
@@ -1783,7 +1801,7 @@ const checkTranslation = () => {
         RED.nodes.createNode(this,n);
         var cron = require('node-cron');
         nibeData.emit('config',nibe.getConfig());
-        checkTranslation();
+        checkTranslation(this);
         const handleMQTT = (config) => {
             if(config.mqtt===undefined) config.mqtt = {};
             nibe.handleMQTT(config.mqtt.enable,config.mqtt.host,config.mqtt.port,config.mqtt.user,config.mqtt.pass, (err,result) => {
@@ -1955,7 +1973,9 @@ const checkTranslation = () => {
         rmu_ready = true;
         nibeData.emit('rmu_ready',data);
     });
-
+    function checkRMU() {
+        return rmu_ready;
+    }
     nibe.data.on('updateSensor',data => {
         nibeData.emit('ready',true);
     })
@@ -1978,7 +1998,7 @@ const checkTranslation = () => {
         this.nibe = nibe;
         this.cron = cron;
         this.text = text;
-        this.rmu_ready = rmu_ready;
+        this.checkRMU = checkRMU;
         this.nibeData = nibeData;
         this.initiatePlugin = initiatePlugin;
         this.updateData = updateData;
