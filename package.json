@@ -19,6 +19,7 @@
   "node-red": {
     "nodes": {
       "nibe-config": "config_node.js",
+      "nibe-config-req": "config_req.js",
       "nibe-output": "output.js",
       "nibe-input": "input.js",
       "nibe-request": "request.js",

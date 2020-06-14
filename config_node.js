@@ -33,6 +33,17 @@ module.exports = function(RED) {
         });
     }
     let timer = {};
+    function updateConfig(category,parameter,data) {
+        let config = nibe.getConfig();
+        if(config[category]!==undefined && config[category][parameter]!==undefined) {
+            if(config[category][parameter]!==data) {
+                config[category][parameter] = data;
+                // Config has changed
+                nibeData.emit(`config_${category}`,config[category]);
+                nibe.setConfig(config);
+            }
+        }
+    }
     const curveAdjust = (type,system,data) => {
         let curveadjust;
         if(hP!==undefined) {
@@ -1995,6 +2006,7 @@ const checkTranslation = (node) => {
         this.savedData = getSavedData;
         this.savedGraph = getSavedGraph;
         this.systems = getSystems;
+        this.updateConfig = updateConfig;
         this.nibe = nibe;
         this.cron = cron;
         this.text = text;
@@ -2009,6 +2021,7 @@ const checkTranslation = (node) => {
         this.curveAdjust = curveAdjust;
         this.hP = gethP;
         this.checkReady = checkReady;
+        this.translate = translate;
         this.on('close', function() {
             console.log('Closing listeners');
             nibeData.removeAllListeners();
