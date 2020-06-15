@@ -1208,6 +1208,7 @@ module.exports = function(RED) {
     }
 let fan_mode;
 let flow_set;
+let flow_saved;
 let fan_saved;
 let fan_filter_normal_eff;
 let fan_filter_low_eff;
@@ -1487,7 +1488,9 @@ async function runFan() {
             return;
         }
         nibe.log(`Villkor uppfyllda för reglering av flöde.`,'fan','debug');
-        if(data.bs1_flow.raw_data>(flow_set+10)) {
+        if(data.bs1_flow.raw_data>(flow_set+25) && (flow_saved===undefined || data.bs1_flow.raw_data>flow_saved+25)) {
+            nibe.log(`Luftflöde långt över börvärde: ${flow_set}, Flöde: ${data.bs1_flow.raw_data} m3/h, Forcering pågår`,'fan','debug');
+        } else if(data.bs1_flow.raw_data>(flow_set+10)) {
             nibe.log(`Luftflöde över gränsvärde: ${flow_set+10}, Flöde: ${data.bs1_flow.raw_data} m3/h, -1%`,'fan','debug');
             if(data.fan_speed.raw_data>0) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
         } else if(data.bs1_flow.raw_data<(flow_set-10)) {
@@ -1497,7 +1500,7 @@ async function runFan() {
             nibe.log(`Luftflöde stabilt (${data.bs1_flow.raw_data} m3/h)`,'fan','debug');
             dMboost = false;
             co2boost = false;
-            
+            flow_saved = data.bs1_flow.raw_data;
             if(config.fan.enable_filter===true) {
                 nibe.log(`Filterkontroll är aktiverad`,'fan','debug');
             // Value is stable, save fan speeds if calibration is active.
