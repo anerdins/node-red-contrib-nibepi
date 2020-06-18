@@ -27,6 +27,12 @@
         },"adjust_s2": {
             "SE":"<p><b>Kurvjustering S2</b><br></p>",
             "EN":"<p><b>Curve adjustment S2</b><br></p>"
+        },"intro": {
+            "SE":"<h2>NibePi</h2><p>NibePi är IoT produkten som både gör värmepumpen smartare och effektivare. Med hjälp av MQTT så kan värmepumpen övervakas och styras direkt från det smarta hemmet.<br>Det finns flera inbyggda funktioner som kan förbättra komforten och ekonomin. Mer information finns under varje funktion.<br><p>NibePi stödjer alla värmepumpar i Nibes F serie, samt elpannor med tillhörande utedel i VVM serien.<br>Nibe F370,F470,F730,F750,F1145,F1155,F1245,F1255,F1345,F1355<br>VVM 225,310,320,325,500</p>"
+        },"information": {
+            "SE":"<p><b>Information</b></p>"
+        },"system": {
+            "SE":"<p><b>System</b></p>"
         },"rmu_label": {
             "SE":"<p><b>RMU-40</b></p>",
             "EN":"<p><b>RMU-40</b></p>"
@@ -268,13 +274,25 @@
         },"start_info": {
             "SE":"<p><b>Husinformation</b></p><br><p>För att använda Prognosreglering behöver husets koordinater anges.<br>Fastighetens storlek anges i kvm (Uppvärmd yta) och används för att beräkna rätt flöde för frånluftsvärmepumpar med automatiskt luftflöde</p>"
         },"cpr_info": {
-            "SE":"<p><b>Kompressorförbrukning</b></p><br><p>Kompressorns förbrukning för värme eller varmvatten<br><i>OBS. Notera att detta kan skilja sig avsevärt från en extern elmätare som mäter hela värmepumpens förbrukning</i></p>"
+            "SE":"<p><b>Kompressorförbrukning</b></p><br><p>Kompressorns förbrukning för värme och varmvatten<br><i>OBS. Notera att detta kan skilja sig avsevärt från en extern elmätare som mäter hela värmepumpens förbrukning</i></p>"
         },"register_info": {
             "SE":"<p><b>Registerhantering</b></p><br><p>Välj vilka register som ska hämtas från värmepumpen<br>Register aktiverade med LOG.SET är förvalda och går ej ta bort.<br>Alla valda register syns till höger och det senaste aktuella hämtade värdet visas.<br><i>OBS. Ju fler register som väljs kommer göra att registerna uppdateras mindre ofta. Detta eftersom att värmepumpen endast kan hantera ett visst antal meddelanden i sekunden.</i></p>"
         },"data_info": {
             "SE":"<p><b>Datahantering</b></p><br><p>Alla valda register visas här under, inkl. nuvarande värde.<br>För att visa data i graf nedan, markera register i denna lista.<br><i>Historik sparas alltid för valda register, och finns tillgängliga att visas i grafen nedan.<br>För att historiken ska sparas efter omstart behöver funktionen \"Spara grafer\" aktiveras under Inställingar</p>"
         },"remove_register": {
             "SE":"<b>Ta bort register</b>"
+        },"hw_auto_lux_info": {
+            "SE":"<p><b>Automatisk tillfällig lyx</b></p><br>Vid stort uttag av varmvatten så kan tillfällig lyx startas automatiskt.<br>Injustering sker nedan med två värden, det ena är differens som bestämmer hur mycket botten på varmvattentanken ska sjunka i temperatur innan funktionen aktiveras<br>Tidfaktor anger hur lång bak i tiden differensen ska gälla. Se exempel under grafen"
+        },"hw_priority_info": {
+            "SE":"<p><b>Varmvatten prioritet</b></p><br>Om tappvarmvattnet (BT7) understiger den minsta inställda nivån så startar varmvattenproduktion direkt.<br><i>Denna funktion hjälper till att prioritera varmvattnet under vinterperioden där värmen ofta prioriteras</i>"
+        },"hw_auto_lux_info2": {
+            "SE":"<i>Exempel för badkar<br>För att kalibrera in funktionen så ställ grafen att visa 1 timma, det ger en detaljerad graf.<br>Notera vad klockan är och börja tappa upp badkaret, fyll upp badkaret rejält och kolla grafen efteråt. Du kommer se en ljusblå linje som dyker ner mot en orange linje som också dyker. Detta är samma linje men den nedre linjen är förskjuten med tidfaktorn, och avståndet mellan linjerna i höjdled är differensen. Om linjerna möts kommer funktionen att triggas och en grön linje kommer visa sig, när den ljusblå linjen har överstigit denna så stängs funktionen av.<br>Om linjerna precis missar varandra under tappningen så behöver tidfaktorn justeras till ett högre värde, om den ljusblåa linjen aldrig når ner till den orangea så behöver differensen sänkas.<br>Om funktionen triggas för enklare saker som dusch eller diskning så ska man höja differensen lite.<br>OBS. Grundinställningarna är i många fall tillräckliga och kan endast behöva justeras lite i tid för att fånga upp trögheten i olika system</i>"
+        },"hw_diff": {
+            "SE":"<b>Differens</b>"
+        },"hw_time": {
+            "SE":"<b>Tidfaktor</b>"
+        },"result": {
+            "SE":"<b>Resultat</b>"
         }
     }
 }

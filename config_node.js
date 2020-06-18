@@ -1,6 +1,6 @@
 module.exports = function(RED) {
     const EventEmitter = require('events').EventEmitter;
-    require('events').EventEmitter.defaultMaxListeners = 400;
+    require('events').EventEmitter.defaultMaxListeners = 600;
     const https = require('https');
     const nibeData = new EventEmitter()
     const nibe = require('nibepi')
