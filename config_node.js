@@ -80,7 +80,7 @@ module.exports = function(RED) {
                                 out = out+adjust[i].data[o].data;
                             }
                             out = out;
-                            nibe.reqDataAsync(curveadjust).then(result => {
+                            nibe.reqData(curveadjust).then(result => {
                                 let config = nibe.getConfig();
                                 if(config.home===undefined) {
                                     config.home = {};
@@ -188,7 +188,7 @@ module.exports = function(RED) {
                 let checkReg = hP['supply_'+system];
                 function checkRMU() {
                     if(plugin=="rmu") {
-                        nibe.reqDataAsync(hP['startHW_rmu_'+system]).then(data => {
+                        nibe.reqData(hP['startHW_rmu_'+system]).then(data => {
                             if(data!==undefined) {
                                 
                                 let regN = getList.findIndex(regN => regN.system == 's1');
@@ -228,14 +228,14 @@ module.exports = function(RED) {
                     let regN = getList.findIndex(regN => regN.system == system);
                     if(regN===-1) {
                         checkRMU();
-                        nibe.reqDataAsync(checkReg).then(data => {
+                        nibe.reqData(checkReg).then(data => {
                             if(data.data<-3276) {
                                 checkRMU();
                                 return reject(false);
                             } else {
                                 systems[system] = true;
                                 if(plugin=="fan") {
-                                    nibe.reqDataAsync(hP.bs1_flow).then(data => {
+                                    nibe.reqData(hP.bs1_flow).then(data => {
                                         if(data.data<-3276) {
                                             return reject(false);
                                         } else {
@@ -312,14 +312,14 @@ module.exports = function(RED) {
                         
                     } else {
                         checkRMU();
-                        nibe.reqDataAsync(checkReg).then(data => {
+                        nibe.reqData(checkReg).then(data => {
                             if(data.data<-3276) {
                                 checkRMU();
                                 return reject(false);
                             } else {
                                 systems[system] = true;
                                 if(plugin=="fan") {
-                                    nibe.reqDataAsync(hP.bs1_flow).then(data => {
+                                    nibe.reqData(hP.bs1_flow).then(data => {
                                         if(data.data<-3276) {
                                             return reject(false);
                                         } else {
@@ -340,14 +340,14 @@ module.exports = function(RED) {
                     }
                 } else {
                     checkRMU();
-                    nibe.reqDataAsync(checkReg).then(data => {
+                    nibe.reqData(checkReg).then(data => {
                         if(data.data<-3276) {
                             checkRMU();
                             return reject(false);
                         } else {
                             systems[system] = true;
                             if(plugin=="fan") {
-                                nibe.reqDataAsync(hP.bs1_flow).then(data => {
+                                nibe.reqData(hP.bs1_flow).then(data => {
                                     if(data.data<-3276) {
                                         return reject(false);
                                     } else {
@@ -842,7 +842,7 @@ module.exports = function(RED) {
             priceOffset[system] = heat_adjust;
             curveAdjust('price',system,heat_adjust);
             if(hw_adjust!==undefined) {
-                nibe.reqDataAsync(hP.hw_mode).then(result => {
+                nibe.reqData(hP.hw_mode).then(result => {
                     if(result.raw_data!==hw_adjust) nibe.setData(hP.hw_mode,hw_adjust);
                 },(error => {
                     console.log(error)
@@ -1585,7 +1585,7 @@ async function runRMU(result,array) {
 async function getNibeData(register) {
     const promise = new Promise((resolve,reject) => {
     if(savedData[register]===undefined || Date.now()>(savedData[register].timestamp+10000)) {
-        nibe.reqDataAsync(register).then(atad => {
+        nibe.reqData(register).then(atad => {
             let data = Object.assign({}, atad);
             resolve(data);
         },err => {
