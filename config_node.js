@@ -26,7 +26,7 @@ module.exports = function(RED) {
         return Number((datum).toFixed());
     }
     const initiateCore = (serialPort,cb) => {
-        nibe.initiateCore(serialPort, (err,data) => {
+        nibe.initiateCore(null,serialPort, (err,data) => {
             if(err) console.log(err);
             nibe.core = data;
             cb(null,true);
