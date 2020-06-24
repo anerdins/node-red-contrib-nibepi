@@ -5,8 +5,6 @@ module.exports = function(RED) {
     const nibeData = new EventEmitter()
     const nibe = require('nibepi')
     var serialPort = "";
-    var tcp_host = "";
-    var tcp_port = "";
     let text = require('./language-SE.json')
     let translate = require('./translate.json')
     var series = "";
@@ -27,8 +25,8 @@ module.exports = function(RED) {
         var datum = Date.parse(strDate);
         return Number((datum).toFixed());
     }
-    const initiateCore = (serialPort,cb) => {
-        nibe.initiateCore(null,serialPort, (err,data) => {
+    const initiateCore = (host,port,cb) => {
+        nibe.initiateCore(host,port, (err,data) => {
             if(err) console.log(err);
             nibe.core = data;
             cb(null,true);
@@ -1842,7 +1840,7 @@ const checkTranslation = (node) => {
             } else {
                 hP;
             }
-            if(tcp_host!==config.tcp.host || tcp_port!==config.tcp.port || serialPort!==config.serial.port || series!==config.connection.series || force===true) {
+            if(serialPort!==config.serial.port || series!==config.connection.series || force===true) {
                 nibe.stopCore(nibe.core).then(result => {
                     nibe.resetCore();
                     if(config.connection.series=="fSeries") {
@@ -1866,33 +1864,11 @@ const checkTranslation = (node) => {
                             })
                         }
                     }
-                } else if(config.connection.series=="sSeries") {
-                    if(config.tcp.host!==undefined && config.tcp.host!=="" && config.tcp.port!==undefined && config.tcp.port!=="" && config.connection.enable==="tcp") {
-                        if(nibe.core===undefined || nibe.core.connected===undefined || nibe.core.connected===false) {
-                            initiateCore(config.tcp.host,config.tcp.port, (err,result)=> {
-                                if(err) console.log(err);
-                                let config = nibe.getConfig();
-                                if(config.system===undefined) {
-                                    config.system = {};
-                                    nibe.setConfig(config);
-                                }
-                                sendError('Kärnan',`Nibe ${config.tcp.pump} är ansluten`);
-                                console.log('Core is connected');
-                                updateData(true);
-                                nibe.redOn();
-                                this.register = nibe.getRegister();
-                                this.context().global.set(`register`, this.register);
-                                nibeData.emit('ready',true);
-                            })
-                        }
-                    }
                 }
                 });
                 }
             serialPort = config.serial.port;
             series = config.connection.series;
-            tcp_host = config.tcp.host;
-            tcp_port = config.tcp.port;
         }
         const checkReady = (cb) => {
             if(nibe.core!==undefined && nibe.core.connected!==undefined && nibe.core.connected===true) {
