@@ -293,6 +293,8 @@
             "SE":"<b>Tidfaktor</b>"
         },"result": {
             "SE":"<b>Resultat</b>"
+        },"register_add": {
+            "SE":"<b>Lägg till register</b>"
         }
     }
 }
