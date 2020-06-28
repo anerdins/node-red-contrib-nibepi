@@ -294,7 +294,9 @@
         },"result": {
             "SE":"<b>Resultat</b>"
         },"register_add": {
-            "SE":"<b>Lägg till register</b>"
+            "SE":"Lägg till register"
+        },"register_remove": {
+            "SE":"Ta bort register"
         }
     }
 }
