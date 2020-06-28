@@ -297,6 +297,8 @@
             "SE":"Lägg till register"
         },"register_remove": {
             "SE":"Ta bort register"
+        },"testmode": {
+            "SE":"<b>Testläge</b><br><i>Aktiverar testläge, det är då möjligt att hämta data från register som inte finns med i registerlistan.</i>"
         }
     }
 }
