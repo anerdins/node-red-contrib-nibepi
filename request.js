@@ -36,7 +36,7 @@ module.exports = function(RED) {
                     if(reqOn===false) {
                         reqOn = true;
                         this.status({ fill: 'yellow', shape: 'dot', text: `Requesting data` });
-                        nibe.reqDataAsync(register).then(result => {
+                        nibe.reqData(register).then(result => {
                             this.status({ fill: 'green', shape: 'dot', text: `Value: ${result.data}${result.unit}` });
                             clearTimeout(timer);
                             msg[config.name+"_raw"] = result;

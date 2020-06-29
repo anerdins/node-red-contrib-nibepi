@@ -1,0 +1,54 @@
+
+<script type="text/javascript">
+    RED.nodes.registerType('nibe-config-req',{
+        category: 'function',
+        color: '#e32222',
+        defaults: {
+            server: {value:"", type:"nibe-config"},
+            category: {value:""},
+            system: {value:""},
+            parameter: {value:""},
+            label: {value:""}
+        },
+        inputs:1,
+        outputs:2,
+        icon: "fa-bars",
+        label: function() {
+            return this.name||"NibePi Config";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="nibe-config-req">
+    <div class="form-row">
+        <label for="node-input-system"><i class="icon-bookmark"></i> System</label>
+        <select id="node-input-system">
+            <option value="">None</option>
+            <option value="s1">System 1</option>
+            <option value="s2">System 2</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-category"><i class="icon-tag"></i> Category</label>
+        <input type="text" id="node-input-category" placeholder="Category">
+    </div>
+    <div class="form-row">
+        <label for="node-input-parameter"><i class="icon-tag"></i> Parameter</label>
+        <input type="text" id="node-input-parameter" placeholder="Parameter">
+    </div>
+    <div class="form-row">
+        <label for="node-input-label"><i class="icon-tag"></i> Label</label>
+        <input type="text" id="node-input-label" placeholder="Label">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="icon-tag"></i> Server</label>
+        <input type="text" id="node-input-server" placeholder="Server">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="nibe-config-req">
+    <p>NibePi Config node</p>
+    <div>
+</div>
+</script>

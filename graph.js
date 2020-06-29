@@ -5,6 +5,7 @@ module.exports = function(RED) {
         const server = RED.nodes.getNode(config.server);
         let node = this;
         let timeFrame;
+        let translate = server.translate.dash;
         function buildGraph(arr) {
             let timeNow = Date.now();
             if(timeFrame===undefined) timeFrame = (24*60*60*1000);

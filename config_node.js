@@ -1,11 +1,12 @@
 module.exports = function(RED) {
     const EventEmitter = require('events').EventEmitter;
-    require('events').EventEmitter.defaultMaxListeners = 150;
+    require('events').EventEmitter.defaultMaxListeners = 600;
     const https = require('https');
     const nibeData = new EventEmitter()
     const nibe = require('nibepi')
     var serialPort = "";
     let text = require('./language-SE.json')
+    let translate = require('./translate.json')
     var series = "";
     var systems = {};
     let adjust = [];
@@ -32,6 +33,17 @@ module.exports = function(RED) {
         });
     }
     let timer = {};
+    function updateConfig(category,parameter,data) {
+        let config = nibe.getConfig();
+        if(config[category]!==undefined && config[category][parameter]!==undefined) {
+            if(config[category][parameter]!==data) {
+                config[category][parameter] = data;
+                // Config has changed
+                nibeData.emit(`config_${category}`,config[category]);
+                nibe.setConfig(config);
+            }
+        }
+    }
     const curveAdjust = (type,system,data) => {
         let curveadjust;
         if(hP!==undefined) {
@@ -68,7 +80,7 @@ module.exports = function(RED) {
                                 out = out+adjust[i].data[o].data;
                             }
                             out = out;
-                            nibe.reqDataAsync(curveadjust).then(result => {
+                            nibe.reqData(curveadjust).then(result => {
                                 let config = nibe.getConfig();
                                 if(config.home===undefined) {
                                     config.home = {};
@@ -176,7 +188,7 @@ module.exports = function(RED) {
                 let checkReg = hP['supply_'+system];
                 function checkRMU() {
                     if(plugin=="rmu") {
-                        nibe.reqDataAsync(hP['startHW_rmu_'+system]).then(data => {
+                        nibe.reqData(hP['startHW_rmu_'+system]).then(data => {
                             if(data!==undefined) {
                                 
                                 let regN = getList.findIndex(regN => regN.system == 's1');
@@ -216,14 +228,14 @@ module.exports = function(RED) {
                     let regN = getList.findIndex(regN => regN.system == system);
                     if(regN===-1) {
                         checkRMU();
-                        nibe.reqDataAsync(checkReg).then(data => {
+                        nibe.reqData(checkReg).then(data => {
                             if(data.data<-3276) {
                                 checkRMU();
                                 return reject(false);
                             } else {
                                 systems[system] = true;
                                 if(plugin=="fan") {
-                                    nibe.reqDataAsync(hP.bs1_flow).then(data => {
+                                    nibe.reqData(hP.bs1_flow).then(data => {
                                         if(data.data<-3276) {
                                             return reject(false);
                                         } else {
@@ -300,14 +312,14 @@ module.exports = function(RED) {
                         
                     } else {
                         checkRMU();
-                        nibe.reqDataAsync(checkReg).then(data => {
+                        nibe.reqData(checkReg).then(data => {
                             if(data.data<-3276) {
                                 checkRMU();
                                 return reject(false);
                             } else {
                                 systems[system] = true;
                                 if(plugin=="fan") {
-                                    nibe.reqDataAsync(hP.bs1_flow).then(data => {
+                                    nibe.reqData(hP.bs1_flow).then(data => {
                                         if(data.data<-3276) {
                                             return reject(false);
                                         } else {
@@ -328,14 +340,14 @@ module.exports = function(RED) {
                     }
                 } else {
                     checkRMU();
-                    nibe.reqDataAsync(checkReg).then(data => {
+                    nibe.reqData(checkReg).then(data => {
                         if(data.data<-3276) {
                             checkRMU();
                             return reject(false);
                         } else {
                             systems[system] = true;
                             if(plugin=="fan") {
-                                nibe.reqDataAsync(hP.bs1_flow).then(data => {
+                                nibe.reqData(hP.bs1_flow).then(data => {
                                     if(data.data<-3276) {
                                         return reject(false);
                                     } else {
@@ -360,6 +372,14 @@ module.exports = function(RED) {
 }
     async function updateData(hourly=false) {
         let timeNow = Date.now();
+        /*
+        Check emitters
+        let events = nibeData.eventNames()
+        console.log(JSON.stringify(events,null,2));
+        for (const item of events) {
+            let count = nibeData.listenerCount(item)
+            console.log(`Eventname: ${item}, Count: ${count}`);
+        }*/
         for (const item of getList) {
             const array = [];
             let result = {timestamp:timeNow};
@@ -712,6 +732,7 @@ module.exports = function(RED) {
             data.accuracy = result;
         }
         // Restore degree minutes if the inside conditions are good.
+        if(conf.system.pump!=="F370" && conf.system.pump!=="F470") {
             if(conf.indoor.dm_reset_enable===true) {
                 if(conf.indoor.dm_reset_value===undefined) {
                     conf.indoor.dm_reset_value = -200;
@@ -727,6 +748,17 @@ module.exports = function(RED) {
                     }
                 }
             }
+        } else {
+            // Non compatible heatpump
+            if(conf.indoor.dm_reset_enable===true) {
+                conf.indoor.dm_reset_enable = false;
+                nibe.setConfig(conf);
+            }
+            if(conf.indoor.dm_reset_enable_stop===true) {
+                conf.indoor.dm_reset_enable_stop = false;
+                nibe.setConfig(conf);
+            }
+        }
             if(conf.indoor['enable_'+data.system]!==undefined && conf.indoor['enable_'+data.system]===true) {
                 var setOffset = Number((((inside_set.data)-inside.data)*factor.data).toFixed(2));
                 data.indoorOffset = setOffset;
@@ -784,20 +816,24 @@ module.exports = function(RED) {
                 if(hw_enable!==undefined && hw_enable===true) hw_adjust = Number(config.price.hotwater_expensive);
                 if(inside!==undefined && (inside.data>(data['inside_set_'+system].data+temp_diff)) || config.price['enable_temp_'+system]===undefined || config.price['enable_temp_'+system]===false) {
                 if(heat_enable!==undefined && heat_enable===true) if(config.price['heat_expensive_'+system]!==undefined) heat_adjust = config.price['heat_expensive_'+system];
-                if(heat_adjust!==0) {
+                if(config.system.pump!=="F370" && config.system.pump!=="F470") {
+                    if(heat_adjust!==0) {
                         if(data.dM.data<data.dMstart.data+(-100)) {
                             nibe.setData(hP['dM'],(data.dMstart.data/2));
                         }
                     }
+                }
                 }
             } else if(level=="VERY_EXPENSIVE") {
                 if(hw_enable!==undefined && hw_enable===true) hw_adjust = Number(config.price.hotwater_very_expensive);
                 if(heat_enable!==undefined && heat_enable===true) {
                     if(inside!==undefined && (inside.data>(data['inside_set_'+system].data+temp_diff)) || config.price['enable_temp_'+system]===undefined || config.price['enable_temp_'+system]===false) {
                         if(config.price['heat_very_expensive_'+system]!==undefined) heat_adjust = config.price['heat_very_expensive_'+system];
-                        if(heat_adjust!==0) {
-                            if(data.dM.data<data.dMstart.data+(-100)) {
-                                nibe.setData(hP['dM'],(data.dMstart.data/2));
+                        if(config.system.pump!=="F370" && config.system.pump!=="F470") {
+                            if(heat_adjust!==0) {
+                                if(data.dM.data<data.dMstart.data+(-100)) {
+                                    nibe.setData(hP['dM'],(data.dMstart.data/2));
+                                }
                             }
                         }
                     }
@@ -806,7 +842,7 @@ module.exports = function(RED) {
             priceOffset[system] = heat_adjust;
             curveAdjust('price',system,heat_adjust);
             if(hw_adjust!==undefined) {
-                nibe.reqDataAsync(hP.hw_mode).then(result => {
+                nibe.reqData(hP.hw_mode).then(result => {
                     if(result.raw_data!==hw_adjust) nibe.setData(hP.hw_mode,hw_adjust);
                 },(error => {
                     console.log(error)
@@ -1172,18 +1208,21 @@ module.exports = function(RED) {
     }
 let fan_mode;
 let flow_set;
+let flow_saved;
 let fan_saved;
 let fan_filter_normal_eff;
 let fan_filter_low_eff;
 let filter_eff;
 let dMboost = false;
 let co2boost = false;
-let temporary_fan_speed;
 async function runFan() {
-    function checkBoost(data) {
-        const promise = new Promise((resolve,reject) => {
+    async function checkBoost(data) {
+        const promise = new Promise(async function (resolve,reject) {
         let config = nibe.getConfig();
-        if(config.fan.enable_dm_boost!==undefined && config.fan.enable_dm_boost===true) {
+        if(config.fan.enable_dm_boost!==undefined && config.fan.enable_dm_boost===true && config.system.pump!=="F370" && config.system.pump!=="F470") {
+        data.dMadd = await getNibeData(hP['dMadd']);
+        data.dMstart = await getNibeData(hP['dMstart']);
+        data.dM = await getNibeData(hP['dM']);
             nibe.log(`Luftflödes boost vid låga gradminuter aktiverat.`,'fan','debug');
             if(config.fan.dm_boost_start===undefined || config.fan.dm_boost_start=="" || config.fan.dm_boost_start===0) {
                 config.fan.dm_boost_start = 300;
@@ -1234,38 +1273,6 @@ async function runFan() {
     });
     return promise;
     }
-    function findRMU() {
-        const promise = new Promise((resolve,reject) => {
-        let register = nibe.getRegister();
-        let index = register.findIndex(index => index.register == hP['fan_rmu_s1']);
-        if(index!==-1) {
-            nibe.log('RMU S1 används i automatiskt luftflöde','fan','info');
-            resolve("fan_rmu_s1");
-        } else {
-            let index = register.findIndex(index => index.register == hP['fan_rmu_s2']);
-            if(index!==-1) {
-                nibe.log('RMU 2 används i automatiskt luftflöde','fan','info');
-                resolve("fan_rmu_s2");
-            } else {
-                let index = register.findIndex(index => index.register == hP['fan_rmu_s3']);
-                if(index!==-1) {
-                    nibe.log('RMU S3 används i automatiskt luftflöde','fan','info');
-                    resolve("fan_rmu_s3");
-                } else {
-                    let index = register.findIndex(index => index.register == hP['fan_rmu_s4']);
-                    if(index!==-1) {
-                        nibe.log('RMU S4 används i automatiskt luftflöde','fan','info');
-                        resolve("fan_rmu_s4");
-                    } else {
-                        nibe.log('Virtuell RMU krävs för automatiskt luftflöde','fan','error');
-                        reject('rmu missing');
-                    }
-                }
-            }
-        }
-    });
-        return promise;
-    }
     let config = nibe.getConfig();
     var data = {};
     var timeNow = Date.now();
@@ -1275,25 +1282,10 @@ async function runFan() {
         // Function turned off, stopping.
         return;
     }
-    if(temporary_fan_speed===undefined) {
-        findRMU().then(async function(result) {
-            temporary_fan_speed = result;
-            data.temp_fan_speed = await getNibeData(hP[temporary_fan_speed]);
-            if(data.temp_fan_speed===undefined) {
-                nibe.log('Ingen data från fläktforceringsregister. Avbryter...','fan','error');
-                return;
-            }
-        },(err => {
-                nibe.log('Ingen data från fläktforceringsregister. Avbryter...','fan','error');
-                return;
-        }))
-        
-    } else {
-        data.temp_fan_speed = await getNibeData(hP[temporary_fan_speed]);
-        if(data.temp_fan_speed===undefined) {
-            nibe.log('Ingen data från fläktforceringsregister. Avbryter...','fan','error');
-            return;
-        }
+    data.temp_fan_speed = await getNibeData(hP['fan_mode']);
+    if(data.temp_fan_speed===undefined) {
+        nibe.log('Ingen data från fläktforceringsregister. Avbryter...','fan','error');
+        return;
     }
     
     data.co2Sensor;
@@ -1303,9 +1295,6 @@ async function runFan() {
     data.alarm = await getNibeData(hP['alarm']);
     data.evaporator = await getNibeData(hP['evaporator']);
     data.cpr_set = await getNibeData(hP['cpr_set']);
-    data.dMadd = await getNibeData(hP['dMadd']);
-    data.dMstart = await getNibeData(hP['dMstart']);
-    data.dM = await getNibeData(hP['dM']);
     
     if(config.fan.enable_co2===true) {
     if(config.fan.sensor===undefined || config.fan.sensor=="Ingen") {
@@ -1355,38 +1344,39 @@ async function runFan() {
     // Check if co2 wants boosting
         if(config.fan.enable_co2===true && config.fan.enable_high) {
             if(data.alarm.raw_data!==183) {
-            nibe.log(`CO2 boosting aktiverad`,'fan','debug');
-        if(config.fan.high_co2_limit===undefined || config.fan.high_co2_limit=="" || config.fan.high_co2_limit===0) {
-            nibe.log(`Inget standard värde för boosting, ställer in 1000 ppm`,'fan','debug');
-            config.fan.high_co2_limit = 1000;
-            nibe.setConfig(config);
-        }
-        data.high_co2_limit = config.fan.high_co2_limit;
-        saveDataGraph('fan_high_co2_limit',timeNow,config.fan.high_co2_limit,true);
-        if(data.co2Sensor!==undefined && data.co2Sensor.data!==undefined) {
-            data.co2Sensor.data.data = Number(data.co2Sensor.data.data);
-            if(data.co2Sensor.data.data>config.fan.high_co2_limit) {
-                nibe.log(`CO2 givares värde (${data.co2Sensor.data.data}) över gränsvärde ${config.fan.high_co2_limit}`,'fan','debug');
-                if(config.fan.speed_high!==undefined && config.fan.speed_high!="" && config.fan.speed_high!==0) {
-                    if(fan_mode!='co2boost') {
-                        fan_mode = 'co2boost'
-                        co2boost = true;
+                nibe.log(`CO2 boosting aktiverad`,'fan','debug');
+                if(config.fan.high_co2_limit===undefined || config.fan.high_co2_limit=="" || config.fan.high_co2_limit===0) {
+                    nibe.log(`Inget standard värde för boosting, ställer in 1000 ppm`,'fan','debug');
+                    config.fan.high_co2_limit = 1000;
+                    nibe.setConfig(config);
+                }
+                data.high_co2_limit = config.fan.high_co2_limit;
+                saveDataGraph('fan_high_co2_limit',timeNow,config.fan.high_co2_limit,true);
+                if(data.co2Sensor!==undefined && data.co2Sensor.data!==undefined) {
+                    data.co2Sensor.data.data = Number(data.co2Sensor.data.data);
+                    if(data.co2Sensor.data.data>config.fan.high_co2_limit) {
+                        nibe.log(`CO2 givares värde (${data.co2Sensor.data.data}) över gränsvärde ${config.fan.high_co2_limit}`,'fan','debug');
+                        if(config.fan.speed_high!==undefined && config.fan.speed_high!="" && config.fan.speed_high!==0) {
+                            if(fan_mode!='co2boost') {
+                                fan_mode = 'co2boost'
+                                co2boost = true;
+                            }
+                            flow_set = config.fan.speed_high;
+                            nibe.log(`Ställer in högt luftflöde: ${config.fan.speed_high} m3/h`,'fan','debug');
+                            dMboost = false;
+                        } else {
+                            nibe.log(`Inget luftflöde valt för boosting.`,'fan','error');
+                        }
+                    } else {
+                        nibe.log(`CO2 givares värde (${data.co2Sensor.data.data}) under gränsvärde ${config.fan.high_co2_limit}`,'fan','debug');
+
                     }
-                    flow_set = config.fan.speed_high;
-                    nibe.log(`Ställer in högt luftflöde: ${config.fan.speed_high} m3/h`,'fan','debug');
-                    dMboost = false;
                 } else {
-                    nibe.log(`Inget luftflöde valt för boosting.`,'fan','error');
+                    nibe.log(`Inget värde på CO2 givare`,'fan','error');
                 }
             } else {
-                nibe.log(`CO2 givares värde (${data.co2Sensor.data.data}) under gränsvärde ${config.fan.high_co2_limit}`,'fan','debug');
+                nibe.log(`Avfrostning pågår. Avvaktar.`,'fan','debug');
             }
-        } else {
-            nibe.log(`Inget värde på CO2 givare`,'fan','error');
-        }
-    } else {
-        nibe.log(`Avfrostning pågår. Avvaktar.`,'fan','debug');
-    }
     } else {
         nibe.log(`CO2 boosting ej aktiverad.`,'fan','debug');
     }
@@ -1498,7 +1488,9 @@ async function runFan() {
             return;
         }
         nibe.log(`Villkor uppfyllda för reglering av flöde.`,'fan','debug');
-        if(data.bs1_flow.raw_data>(flow_set+10)) {
+        if(data.bs1_flow.raw_data>(flow_set+25) && (flow_saved===undefined || data.bs1_flow.raw_data>flow_saved+25)) {
+            nibe.log(`Luftflöde långt över börvärde: ${flow_set}, Flöde: ${data.bs1_flow.raw_data} m3/h, Forcering pågår`,'fan','debug');
+        } else if(data.bs1_flow.raw_data>(flow_set+10)) {
             nibe.log(`Luftflöde över gränsvärde: ${flow_set+10}, Flöde: ${data.bs1_flow.raw_data} m3/h, -1%`,'fan','debug');
             if(data.fan_speed.raw_data>0) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
         } else if(data.bs1_flow.raw_data<(flow_set-10)) {
@@ -1508,6 +1500,7 @@ async function runFan() {
             nibe.log(`Luftflöde stabilt (${data.bs1_flow.raw_data} m3/h)`,'fan','debug');
             dMboost = false;
             co2boost = false;
+            flow_saved = data.bs1_flow.raw_data;
             if(config.fan.enable_filter===true) {
                 nibe.log(`Filterkontroll är aktiverad`,'fan','debug');
             // Value is stable, save fan speeds if calibration is active.
@@ -1533,6 +1526,7 @@ async function runFan() {
                     
                 }
             }
+            fan_mode = undefined;
             if(fan_filter_low_eff!==undefined && fan_filter_normal_eff===undefined) {
                 filter_eff = Number((fan_filter_low_eff).toFixed(0));
                 if(filter_eff>100) filter_eff = 100;
@@ -1591,7 +1585,7 @@ async function runRMU(result,array) {
 async function getNibeData(register) {
     const promise = new Promise((resolve,reject) => {
     if(savedData[register]===undefined || Date.now()>(savedData[register].timestamp+10000)) {
-        nibe.reqDataAsync(register).then(atad => {
+        nibe.reqData(register).then(atad => {
             let data = Object.assign({}, atad);
             resolve(data);
         },err => {
@@ -1796,7 +1790,7 @@ async function minuteUpdate() {
         }
     }
 }
-const checkTranslation = () => {
+const checkTranslation = (node) => {
     let config = nibe.getConfig();
     if(config.update!==undefined && config.update.release!==undefined) {
         if(config.update.release.includes('english') || config.update.release.includes('snapshot-EN')) {
@@ -1805,6 +1799,15 @@ const checkTranslation = () => {
             text = require('./language-SE.json')
         }
     }
+    if(config.system===undefined) {
+        config.system = {language:"SE"};
+        nibe.setConfig(config);
+    }
+    if(config.system.language===undefined) {
+        config.system.language = "SE";
+        nibe.setConfig(config);
+    }
+    node.context().global.set(`translate`, translate);
 }
     console.log(text.starting)
 
@@ -1812,7 +1815,7 @@ const checkTranslation = () => {
         RED.nodes.createNode(this,n);
         var cron = require('node-cron');
         nibeData.emit('config',nibe.getConfig());
-        checkTranslation();
+        checkTranslation(this);
         const handleMQTT = (config) => {
             if(config.mqtt===undefined) config.mqtt = {};
             nibe.handleMQTT(config.mqtt.enable,config.mqtt.host,config.mqtt.port,config.mqtt.user,config.mqtt.pass, (err,result) => {
@@ -1903,19 +1906,21 @@ const checkTranslation = () => {
         async function saveGraph() {
             const promise = new Promise((resolve,reject) => {
                 let config = nibe.getConfig();
-                if(config.system.save_graph!==undefined && config.system.save_graph===true) {
+                
                     trimGraph().then(data => {
-                        if(savedGraph!==undefined && savedGraph.length!==0) {
-                            nibe.saveGraph(savedGraph).then(result => {
-                                resolve(result);
-                            },(err => {
-                                reject(err);
-                            }));
+                        if(config.system.save_graph!==undefined && config.system.save_graph===true) {
+                            if(savedGraph!==undefined && savedGraph.length!==0) {
+                                nibe.saveGraph(savedGraph).then(result => {
+                                    resolve(result);
+                                },(err => {
+                                    reject(err);
+                                }));
+                            }
+                        } else {
+                            reject('Not saving graphs')
                         }
                     })
-                } else {
-                    reject('Not saving graphs')
-                }
+                
             
         });
         return promise
@@ -1982,7 +1987,9 @@ const checkTranslation = () => {
         rmu_ready = true;
         nibeData.emit('rmu_ready',data);
     });
-
+    function checkRMU() {
+        return rmu_ready;
+    }
     nibe.data.on('updateSensor',data => {
         nibeData.emit('ready',true);
     })
@@ -2002,10 +2009,11 @@ const checkTranslation = () => {
         this.savedData = getSavedData;
         this.savedGraph = getSavedGraph;
         this.systems = getSystems;
+        this.updateConfig = updateConfig;
         this.nibe = nibe;
         this.cron = cron;
         this.text = text;
-        this.rmu_ready = rmu_ready;
+        this.checkRMU = checkRMU;
         this.nibeData = nibeData;
         this.initiatePlugin = initiatePlugin;
         this.updateData = updateData;
@@ -2016,6 +2024,7 @@ const checkTranslation = () => {
         this.curveAdjust = curveAdjust;
         this.hP = gethP;
         this.checkReady = checkReady;
+        this.translate = translate;
         this.on('close', function() {
             console.log('Closing listeners');
             nibeData.removeAllListeners();

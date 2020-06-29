@@ -40,6 +40,7 @@
         "fan_rmu_s2":"10110",
         "fan_rmu_s3":"10210",
         "fan_rmu_s4":"10310",
+        "fan_mode":"47260",
         "rmu_sensor_s1":"10060",
         "rmu_sensor_s2":"10160",
         "rmu_sensor_s3":"10260",

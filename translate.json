@@ -1,0 +1,298 @@
+{
+    "dash":{
+        "readonly": {
+            "SE":"<b>Read-only</b><br><i>NibePi kör med ett läsbart filsystem</i>",
+            "EN":"<b>Read-only</b><br><i>NibePi runs on a read-only filesystem</i>"
+        },"language": {
+            "SE":"<b>Språk</b>",
+            "EN":"<b>Language</b>"
+        },"auto_update": {
+            "SE":"<b>Uppdatera grafer</b><br><i>Aktiverar att hämta registerdata och uppdatera NibePis interna grafer.</i>",
+            "EN":"<b>Update graphs</b><br><i>If activated, this function keeps the common graphs in NibePi updated.</i>"
+        },"save_graph": {
+            "SE":"<b>Spara grafer</b><br><i>Sparar ner grafer till SD-kortet varje timma och vid omstart/uppdatering</i>",
+            "EN":"<b>Save graphs</b><br><i>Saves graphs to the SD-card every hour and when restarting/updating</i>"
+        },"heatcurve_info": {
+            "SE":"<p><b>Ställ in värmepumpens värmekurva och kurvjustering</b><br><i>OBS. Ställer man in kurvjustering manuellt i värmepumpen kommer den att skrivas över av NibePi, ställ den därför här</i><br></p>",
+            "EN":"<p><b>Set the heatcurve and the curve adjustment here</b><br><i>If you set it directly in the heatpump, NibePi will overwrite it</i><br></p>"
+        },"heatcurve_s1": {
+            "SE":"<p><b>Värmekurva S1</b><br></p>",
+            "EN":"<p><b>Heatcurve S1</b><br></p>"
+        },"heatcurve_s2": {
+            "SE":"<p><b>Värmekurva S2</b><br></p>",
+            "EN":"<p><b>Heatcurve S2</b><br></p>"
+        },"adjust_s1": {
+            "SE":"<p><b>Kurvjustering S1</b><br></p>",
+            "EN":"<p><b>Curve adjustment S1</b><br></p>"
+        },"adjust_s2": {
+            "SE":"<p><b>Kurvjustering S2</b><br></p>",
+            "EN":"<p><b>Curve adjustment S2</b><br></p>"
+        },"intro": {
+            "SE":"<h2>NibePi</h2><p>NibePi är IoT produkten som både gör värmepumpen smartare och effektivare. Med hjälp av MQTT så kan värmepumpen övervakas och styras direkt från det smarta hemmet.<br>Det finns flera inbyggda funktioner som kan förbättra komforten och ekonomin. Mer information finns under varje funktion.<br><p>NibePi stödjer alla värmepumpar i Nibes F serie, samt elpannor med tillhörande utedel i VVM serien.<br>Nibe F370,F470,F730,F750,F1145,F1155,F1245,F1255,F1345,F1355<br>VVM 225,310,320,325,500</p>"
+        },"information": {
+            "SE":"<p><b>Information</b></p>"
+        },"system": {
+            "SE":"<p><b>System</b></p>"
+        },"rmu_label": {
+            "SE":"<p><b>RMU-40</b></p>",
+            "EN":"<p><b>RMU-40</b></p>"
+        },"rmu_info": {
+            "SE":"<p><b>Virtuell RMU-40</b><br><i>Aktivera en virtuell RMU-40 för att kunna simulera en riktig inomhusgivare via MQTT<br>OBS. har du en riktig RMU-40 går det inte att simulera</i><br></p>"
+        },"rmu_s1": {
+            "SE":"<b>RMU-40 S1</b>",
+            "EN":"<b>RMU-40 S1</b>"
+        },"rmu_s2": {
+            "SE":"<b>RMU-40 S2</b>",
+            "EN":"<b>RMU-40 S2</b>"
+        },"rmu_s3": {
+            "SE":"<b>RMU-40 S3</b>",
+            "EN":"<b>RMU-40 S3</b>"
+        },"samba_stop": {
+            "SE":"<b>Stoppa Samba</b>"
+        },"samba_start": {
+            "SE":"<b>Starta Samba</b>"
+        },"nodered_restart": {
+            "SE":"<b>Starta om Node-RED</b>"
+        },"nodered_restart_info": {
+            "SE":"<p><b>Startar om Node-RED</b></p>"
+        },"hw_restart": {
+            "SE":"<b>Starta om hårdvaran</b>"
+        },"hw_restart_info": {
+            "SE":"<p><b>Startar om NibePi hårdvara</b></p>"
+        },"hw_shutdown": {
+            "SE":"<b>Stäng av NibePi hårdvaran</b>"
+        },"hw_shutdown_info": {
+            "SE":"<p><b>Stänger av NibePi hårdvaran</b></p>"
+        },"mqtt_info": {
+            "SE":"<p><b>MQTT</b></p><br>Aktivera åtkomst till MQTT broker.<br>NibePi har en inbyggd broker på 127.0.0.1:1883<br>Välj annars en extern broker.<br>Aktivera HA Discovery om Home Assistant automatiskt ska upptäcka aktiverade givare från NibePi"
+        },"lat": {
+            "SE":"<b>Latitud</b>"
+        },"lon": {
+            "SE":"<b>Longitud</b>"
+        },"home_size": {
+            "SE":"<b>Fastighetens storlek   </b>"
+        },"update_info": {
+            "SE":"<p><b>Uppdateringar</b></p><br>Välj vilken version av NibePi som uppdateringar ska visas för.</p><p>Det finns flera olika utgåvor, Stable release är den senaste tillgängliga versionen.<br>Beta versionen är en test version som anses tillräckligt stabil att kunna provas.<br>Snapshot versionen är experimentell och används för att prova fram lösningar på olika problem som uppstår för användare<br><br>Efter färdig uppdatering startar NibePi om och Modbus kommunikationslarm kan genereras."
+        },"update_check": {
+            "SE":"<b>Kolla efter Uppdateringar</b>"
+        },"update_run": {
+            "SE":"<b>Uppdatera</b>"
+        },"extra_sensor_info": {
+            "SE":"<p><b>Extra givare</b></p><br>Här kan du lägga till extra givare som kan användas i funktionerna<br>Det går att välja givare från register i värmepumpen eller via ett MQTT Topic"
+        },"sensor_timeout": {
+            "SE":"<b>Timeout tid för MQTT givare</b><br><i>Givaren måste uppdateras inom detta interval annars ignoreras den. OBS \"0\" inaktiverar timeout.</i>"
+        },"extra_sensor_remove": {
+            "SE":"<b>Ta bort</b><br><i>Ta bort en extra givare genom att markera den i listan</i>"
+        },"loging_info": {
+            "SE":"<p><b>Loggning</b></p><br><i>Loggning sker  till \"/tmp/nibepi.log\"<br>I SSH kör kommando \"tail -f /tmp/nibepi.log\"</i>"
+        },"forecast_s1_info": {
+            "SE":"<p><b>Prognosreglering klimatsystem 1</b></p><br><i>Styr värmeproduktionen efter prognostemperatur istället.<br>Rekommenderas framför allt för golvvärme.</i>"
+        },"forecast_s2_info": {
+            "SE":"<p><b>Prognosreglering klimatsystem 2</b></p><br><i>Styr värmeproduktionen efter prognostemperatur istället.<br>Rekommenderas framför allt för golvvärme.</i>"
+        },"forecast_update_info": {
+            "SE":"<i>Begär ny väderdata och uppdatera grafen med nya värden.</i>"
+        },"forecast_sensor_s1": {
+            "SE":"<b>Välj inomhusgivare S1</b>"
+        },"enable": {
+            "SE":"<b>Aktivera</b>",
+            "EN":"<b>Activate</b>"
+        },"forecast_time": {
+            "SE":"<b>Prognostid</b>",
+            "EN":"<b>Forecast time</b>"
+        },"forecast_correction": {
+            "SE":"<p><b>Inställningar</b></p><br>Prognoskorrigering jämför nuvarande utomhustemperatur mot nuvarande prognostemperatur.<br>Samma avvikelse appliceras även på framtida prognostemperatur."
+        },"forecast_adjust": {
+            "SE":"<b>Aktivera Prognoskorrigering</b>"
+        },"sunfactor_info": {
+            "SE":"<p><b>Solfaktor</b></p><br>Vid mycket solinstrålning så går det att ställa en solfaktor.<br>Värdet som valts läggs till på prognostemperaturen."
+        },"wind_direction_info": {
+            "SE":"<i>Riktning: Norr: -1, Söder: -2, Väst: -3, Öst: -4</i>"
+        },"windfactor_info": {
+            "SE":"<p><b>Vindfaktor</b></p><br>Om fastigheten är utsatt för mycket vind kan man ta med detta i prognosen och kompensera med höjt börvärde.<br>Justeringsfaktorn är ställbart från varje väderstreck."
+        },"wind_factor_n": {
+            "SE":"<b>Norr</b>"
+        },"wind_factor_s": {
+            "SE":"<b>Söder</b>"
+        },"wind_factor_e": {
+            "SE":"<b>Öst</b>"
+        },"wind_factor_w": {
+            "SE":"<b>Väst</b>"
+        },"clear": {
+            "SE":"<b>Klart väder</b>"
+        },"mostly_clear": {
+            "SE":"<b>Mestadels klart väder</b>"
+        },"half_clear": {
+            "SE":"<b>Halvklart väder</b>"
+        },"indoor_info_s1": {
+            "SE":"<p><b>Inomhusreglering S1</b></p><br>Inomhusreglering rekommenderas främst för högtempererade system (Radiatorer), det går att använda med lågtempererade system med mindre faktor<br><i>OBS golvvärme i betong anses väldigt trögt och en faktor över 2 är aldrig att rekommendera</i>"
+        },"indoor_info_s2": {
+            "SE":"<p><b>Inomhusreglering S2</b></p><br>Inomhusreglering rekommenderas främst för högtempererade system (Radiatorer), det går att använda med lågtempererade system med mindre faktor<br><i>OBS golvvärme i betong anses väldigt trögt och en faktor över 2 är aldrig att rekommendera</i>"
+        },"indoor_options_label": {
+            "SE":"<b>Inomhusreglering</b>"
+        },"indoor_options_off": {
+            "SE":"Avaktiverat"
+        },"indoor_options_nibe": {
+            "SE":"Nibes Inomhusreglering"
+        },"indoor_options_nibepi": {
+            "SE":"NibePis Inomhusreglering"
+        },"indoor_set": {
+            "SE":"<b>Inomhus börvärde</b><br><i>Ställ rumsbörvärdet här. Samma värde visas/ändras i värmepumpen</i>"
+        },"indoor_diff": {
+            "SE":"<b>Avvikelse</b><br><i>Ungefärlig uträkning för hur mycket temperaturen avviker från börvärdet.</i>"
+        },"indoor_temp": {
+            "SE":"<b>Inomhustemperatur</b>"
+        },"indoor_curveadjust": {
+            "SE":"<b>Kurvjustering</b><br><i>Aktuell kurvjustering vid NibePis reglering</i>"
+        },"indoor_factor": {
+            "SE":"<b>Faktor för rumsgivare</b><br><i>Ställ in hur mycket rumsgivaren ska påverka framledningstemperaturen.</i>"
+        },"indoor_info_sensor": {
+            "SE":"<p>Välj en temperaturgivare som ska användas i grafen och för ekvationen<br><i>OBS. Endast för reglering via NibePi</i></p>"
+        },"indoor_sensor_label": {
+            "SE":"<b>Välj rumsgivare</b>"
+        },"indoor_settings_info": {
+            "SE":"<p><b>Inställningar</b></p><br>Övergripande inställningar för inomhusregleringen"
+        },"indoor_settings_outside": {
+            "SE":"<b>Utomhustemperatur blockering</b><br><i>Välj vid vilken utomhustemperatur som värmen ska blockeras</i>"
+        },"indoor_data_dm": {
+            "SE":"<b>Gradminuter</b>"
+        },"indoor_outside": {
+            "SE":"<b>Utomhustemperatur</b>"
+        },"last_updated": {
+            "SE":"<b>Senast uppdaterad</b>"
+        },"indoor_data_info": {
+            "SE":"<p><b>Data</b></p>"
+        },"dm_reset_enable": {
+            "SE":"<b>Gradminut återställning</b><br><i>När inomhusbörvärdet är uppnått så återställs gradminuter till startvärdet<br>Ställ in hur många grader över inomhusbörvärdet det ska aktiveras vid</i>"
+        },"dm_reset_enable_stop": {
+            "SE":"<b>Stoppa värmeproduktion</b><br><i>När inomhusbörvärdet är uppnått så återställs gradminuter till 100 och värmepumpen stannar<br>Ställ in hur många grader över inomhusbörvärdet det ska aktiveras vid</i>"
+        },"diff": {
+            "SE":"<p><b>Differens</b></p>"
+        },"co2_limit": {
+            "SE":"<b>Gränsvärde CO2</b>"
+        },"airflow": {
+            "SE":"<b>Luftflöde</b>"
+        },"low_cpr_freq": {
+            "SE":"<b>Kompressorfrekvens</b>"
+        },"enable_co2": {
+            "SE":"<b>Aktivera CO2 givare</b>"
+        },"filter_value": {
+            "SE":"<b>Kalibrera</b>"
+        },"fan_efficiency": {
+            "SE":"<b>Effektivitet</b>"
+        },"fan_low_info": {
+            "SE":"<p><b>Sänk luftflöde</b></p><br>Sänk luftflödet vid låg kompressorfrekvens<br><i>Ange under vilken kompressorfrekvens det aktiveras, samt vilket luftflöde som ska hållas, om CO2 givare är aktiverad välj ett värde som nivån måste understiga"
+        },"fan_co2_force_info": {
+            "SE":"<p><b>CO2 Forcering av luftflöde</b></p><br>Vid högt CO2 värde kan ventilationen forceras, ange vilket värde som ska överstigas och vilket luftflöde som ska hållas"
+        },"fan_filter_info": {
+            "SE":"<p><b>Filterövervakning</b></p><br>Aktivera övervakning av filter, vid rengöring av filter behöver anläggningen kalibreras första gången<br><i>Under uppbyggnad...</i>"
+        },"fan_degree_info": {
+            "SE":"<p><b>Forcering vid låga gradminuter</b></p><br>För att öka effektiviteten på kompressorn så kan luftflödet öka när gradminuterna börjar närma sig start för tillsats."
+        },"fan_sensor_label": {
+            "SE":"<b>Välj CO2 givare</b>"
+        },"fan_last_cal": {
+            "SE":"<b>Senaste kalibrering</b>"
+        },"fan_info": {
+            "SE":"<p><b>Automatiskt luftflöde</b></p><br>Justerar automatiskt fläkthastigheten och kompenserar för smutsigt filter eller andra tillfälliga variationer i luftflödet.<br><i>OBS. Ingen justering utförs under avfrostning/forcering/låg förångartemperatur. Detta för att undvika ökning av luftflödet medans påisning pågår"
+        },"fan_size": {
+            "SE":"<b>Rekommenderat luftflöde</b><br><i>Det minsta rekommenderade flödet enligt angiven yta</i>"
+        },"log_enable": {
+            "SE":"<b>Loggning på</b><br><i>Aktiverar loggning, OBS loggning sparas endast i arbetsminnet</i>"
+        },"log_info": {
+            "SE":"<b>INFO</b>"
+        },"log_error": {
+            "SE":"<b>ERROR</b>"
+        },"log_debug": {
+            "SE":"<b>DEBUG</b>"
+        },"log_core": {
+            "SE":"<b>CORE</b>"
+        },"log_fan": {
+            "SE":"<b>Automatiskt Luftflöde</b>"
+        },"log_diag": {
+            "SE":"<b>Diagnostik</b>"
+        },"log_weather": {
+            "SE":"<b>Prognosreglering</b>"
+        },"price_very_high": {
+            "SE":"<b>Väldigt högt pris</b>"
+        },"price_high": {
+            "SE":"<b>Högt pris</b>"
+        },"price_normal": {
+            "SE":"<b>Normalt pris</b>"
+        },"price_low": {
+            "SE":"<b>Lågt pris</b>"
+        },"price_very_low": {
+            "SE":"<b>Väldigt lågt pris</b>"
+        },"price_nibe_label": {
+            "SE":"<b>Nibes Elprisreglering</b><br><i>För att kunna använda sig av Nibe Uplinks elprisnivåer behöver det aktiveras i värmepumpen först</i>"
+        },"price_nibepi_label": {
+            "SE":"<b>NibePis Elprisreglering</b><br><i>Aktiverar NibePis elprisreglering och alla parametrar ställs in här</i>"
+        },"economy": {
+            "SE":"Ekonomi"
+        },"normal": {
+            "SE":"Normal"
+        },"luxury": {
+            "SE":"Lyx"
+        },"tooltip": {
+            "SE":"Välj",
+            "EN":"Select"
+        },"price_info": {
+            "SE":"<p><b>Information</b></p><br>NibePi kan reglera efter elprisnivån. Uppgifter kan hämtas från antingen Nibe Uplink eller Tibber.<br>För att säkerställa komfort tas alltid inomhustemperaturen i beaktning vid reglering"
+        },"price_now": {
+            "SE":"<b>Nuvarande Elpris</b>"
+        },"price_now_level": {
+            "SE":"<b>Nuvarande Elprisnivå</b>"
+        },"unknown": {
+            "SE":"<b>Okänt</b>"
+        },"currency": {
+            "SE":"öre"
+        },"price_hw_settings": {
+            "SE":"<p><b>Inställningar för varmvatten</b></p><br>Välj vilken varmvatten inställning det ska vara vid olika elprisnivåer"
+        },"price_settings": {
+            "SE":"<p><b>Inställningar</b></p><br>Välj vilken reglering som ska gälla. Med styrning av NibePi så välj datakälla. För integrering mot Tibber, använd din personliga token som finns att hämta från https://developer.tibber.com/"
+        },"price_enable_hw": {
+            "SE":"<b>Aktivera varmvattenreglering</b>"
+        },"price_smart1_info": {
+            "SE":"<i>OBS. För att kunna använda prisnivåer från Nibe Uplink måste Nibes SmartPrice vara aktiverat i värmepumpen manuellt under meny 4.1.6 Smart Price Adaption.<br>Alla åtgärder ska däremot nollställas för att NibePi ska kunna styra.</i>"
+        },"price_sensor_info": {
+            "SE":"Begränsa elprisregleringens påverkan med hjälp av en rumsgivare.<br>Ställ in en differens för den lägsta temperaturen som tillåts vid högt elpris för reglering mot ditt rumsbörvärde."
+        },"price_s1_info": {
+            "SE":"<p><b>Elprisreglering S1</b></p><br>Välj hur mycket kurvjusteringen ska justeras vid olika prisnivåer.<br>Reglering mot rumsgivare rekommenderas starkt, ibland förekommer det längre perioder av samma låga eller höga pris"
+        },"price_s2_info": {
+            "SE":"<p><b>Elprisreglering S2</b></p><br>Välj hur mycket kurvjusteringen ska justeras vid olika prisnivåer.<br>Reglering mot rumsgivare rekommenderas starkt, ibland förekommer det längre perioder av samma låga eller höga pris"
+        },"indoor_sensor": {
+            "SE":"<b>Rumsgivare</b>"
+        },"difference": {
+            "SE":"<b>Differens</b>"
+        },"price_s1_graph": {
+            "SE":"<p><b>Graf S1</b></p>"
+        },"price_s2_graph": {
+            "SE":"<p><b>Graf S2</b></p>"
+        },"time": {
+            "SE":"<b>Tid</b>",
+            "EN":"<b>Time</b>"
+        },"start_heat_info": {
+            "SE":"<p><b>Värmeinformation</b></p>"
+        },"start_info": {
+            "SE":"<p><b>Husinformation</b></p><br><p>För att använda Prognosreglering behöver husets koordinater anges.<br>Fastighetens storlek anges i kvm (Uppvärmd yta) och används för att beräkna rätt flöde för frånluftsvärmepumpar med automatiskt luftflöde</p>"
+        },"cpr_info": {
+            "SE":"<p><b>Kompressorförbrukning</b></p><br><p>Kompressorns förbrukning för värme och varmvatten<br><i>OBS. Notera att detta kan skilja sig avsevärt från en extern elmätare som mäter hela värmepumpens förbrukning</i></p>"
+        },"register_info": {
+            "SE":"<p><b>Registerhantering</b></p><br><p>Välj vilka register som ska hämtas från värmepumpen<br>Register aktiverade med LOG.SET är förvalda och går ej ta bort.<br>Alla valda register syns till höger och det senaste aktuella hämtade värdet visas.<br><i>OBS. Ju fler register som väljs kommer göra att registerna uppdateras mindre ofta. Detta eftersom att värmepumpen endast kan hantera ett visst antal meddelanden i sekunden.</i></p>"
+        },"data_info": {
+            "SE":"<p><b>Datahantering</b></p><br><p>Alla valda register visas här under, inkl. nuvarande värde.<br>För att visa data i graf nedan, markera register i denna lista.<br><i>Historik sparas alltid för valda register, och finns tillgängliga att visas i grafen nedan.<br>För att historiken ska sparas efter omstart behöver funktionen \"Spara grafer\" aktiveras under Inställingar</p>"
+        },"remove_register": {
+            "SE":"<b>Ta bort register</b>"
+        },"hw_auto_lux_info": {
+            "SE":"<p><b>Automatisk tillfällig lyx</b></p><br>Vid stort uttag av varmvatten så kan tillfällig lyx startas automatiskt.<br>Injustering sker nedan med två värden, det ena är differens som bestämmer hur mycket botten på varmvattentanken ska sjunka i temperatur innan funktionen aktiveras<br>Tidfaktor anger hur lång bak i tiden differensen ska gälla. Se exempel under grafen"
+        },"hw_priority_info": {
+            "SE":"<p><b>Varmvatten prioritet</b></p><br>Om tappvarmvattnet (BT7) understiger den minsta inställda nivån så startar varmvattenproduktion direkt.<br><i>Denna funktion hjälper till att prioritera varmvattnet under vinterperioden där värmen ofta prioriteras</i>"
+        },"hw_auto_lux_info2": {
+            "SE":"<i>Exempel för badkar<br>För att kalibrera in funktionen så ställ grafen att visa 1 timma, det ger en detaljerad graf.<br>Notera vad klockan är och börja tappa upp badkaret, fyll upp badkaret rejält och kolla grafen efteråt. Du kommer se en ljusblå linje som dyker ner mot en orange linje som också dyker. Detta är samma linje men den nedre linjen är förskjuten med tidfaktorn, och avståndet mellan linjerna i höjdled är differensen. Om linjerna möts kommer funktionen att triggas och en grön linje kommer visa sig, när den ljusblå linjen har överstigit denna så stängs funktionen av.<br>Om linjerna precis missar varandra under tappningen så behöver tidfaktorn justeras till ett högre värde, om den ljusblåa linjen aldrig når ner till den orangea så behöver differensen sänkas.<br>Om funktionen triggas för enklare saker som dusch eller diskning så ska man höja differensen lite.<br>OBS. Grundinställningarna är i många fall tillräckliga och kan endast behöva justeras lite i tid för att fånga upp trögheten i olika system</i>"
+        },"hw_diff": {
+            "SE":"<b>Differens</b>"
+        },"hw_time": {
+            "SE":"<b>Tidfaktor</b>"
+        },"result": {
+            "SE":"<b>Resultat</b>"
+        }
+    }
+}

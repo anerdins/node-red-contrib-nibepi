@@ -55,10 +55,11 @@ module.exports = function(RED) {
             }
             
         });
-        if(server.rmu_ready===true) {
+
+        if(server.checkRMU()===true) {
             startUp();
         } else {
-            server.nibeData.on('rmu_ready', (data) => {
+            server.nibeData.once('rmu_ready', (data) => {
                 startUp();
             })
         }
