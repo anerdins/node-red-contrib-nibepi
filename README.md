@@ -1,4 +1,7 @@
 # node-red-contrib-nibepi
+
+THIS IS A TEST VERSION FOR INTEGRATION WITH SMO20 AND SMO40!
+
 Node-RED plugins for NibePi interface for connecting to Nibe F series heatpump<br>
 <p>Link to downloadable image: http://anerdins.se/NibePi/nibepi_1.1_clean.rar</p>
 <p>Download the NibePi clean image file. Burn it to a 16GB SD-card and load it to the Raspberry Pi with the RS485 transciever.
