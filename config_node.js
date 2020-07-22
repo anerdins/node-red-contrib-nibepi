@@ -1792,13 +1792,6 @@ async function minuteUpdate() {
 }
 const checkTranslation = (node) => {
     let config = nibe.getConfig();
-    if(config.update!==undefined && config.update.release!==undefined) {
-        if(config.update.release.includes('english') || config.update.release.includes('snapshot-EN')) {
-            text = require('./language-EN.json')
-        } else {
-            text = require('./language-SE.json')
-        }
-    }
     if(config.system===undefined) {
         config.system = {language:"SE"};
         nibe.setConfig(config);
@@ -1807,6 +1800,7 @@ const checkTranslation = (node) => {
         config.system.language = "SE";
         nibe.setConfig(config);
     }
+    text = require(`./language-${config.system.language}.json`)
     node.context().global.set(`translate`, translate);
 }
     console.log(text.starting)
