@@ -192,7 +192,7 @@ module.exports = function(RED) {
                     if(plugin=="rmu") {
                         nibe.reqData(hP['startHW_rmu_'+system]).then(data => {
                             if(data!==undefined) {
-                                
+                                console.log(data)
                                 let regN = getList.findIndex(regN => regN.system == 's1');
                                 if(regN!==-1) {
                                 for( var i = 0; i < arr.length; i=i+1){
@@ -1846,7 +1846,7 @@ const checkTranslation = (node) => {
                 nibe.stopCore(nibe.core).then(result => {
                     nibe.resetCore();
                     if(config.connection.series=="fSeries") {
-                    if(config.serial.port!=="" && config.serial.port!==undefined && config.connection.enable==="serial") {
+                    if(config.serial.port!=="" && config.serial.port!==undefined && (config.connection.enable==="serial" || config.connection.enable==="nibegw")) {
                         if(nibe.core===undefined || nibe.core.connected===undefined || nibe.core.connected===false) {
                             initiateCore(null,config.serial.port, (err,result)=> {
                                 if(err) console.log(err);
@@ -1965,23 +1965,32 @@ const checkTranslation = (node) => {
         }
         
         var everyminute = cron.schedule('*/1 * * * *', () => {
-            nibeData.emit('updateGraph');
-            minuteUpdate();
-            hotwaterPlugin();
-            runFan()
+            if(nibe.core!==undefined && nibe.core.connected!==undefined && nibe.core.connected===true) {
+                nibeData.emit('updateGraph');
+                minuteUpdate();
+                hotwaterPlugin();
+                runFan()
+            }
+            
         })
         var threeminutes = cron.schedule('*/3 * * * *', () => {
-            updateData();
+            if(nibe.core!==undefined && nibe.core.connected!==undefined && nibe.core.connected===true) {
+                updateData();
+            }
+            
         })
         var tenminutes = cron.schedule('*/10 * * * *', () => {
-            tenMinuteUpdate()
+            if(nibe.core!==undefined && nibe.core.connected!==undefined && nibe.core.connected===true) {
+                tenMinuteUpdate()
+            }
         })
         
         var hourly = cron.schedule('0 * * * *', () => {
+            if(nibe.core!==undefined && nibe.core.connected!==undefined && nibe.core.connected===true) {
             //let graph = this.context().global.get(`graphs`);
             saveGraph();
             updateData(true);
-            
+            }
         })
 
     nibe.data.on('config',data => {

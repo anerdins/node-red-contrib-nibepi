@@ -13,6 +13,7 @@
             connection_series: {value:"fSeries",required:true},
             connection: {value:"serial",required:true},
             serial_port: {value:"/dev/ttyAMA0",required:false},
+            nibegw: {value:"",required:false},
             tcp_server: {value:"",required:false},
             tcp_port: {value:"",required:false}
             
@@ -33,14 +34,46 @@
                 $("#node-config-input-connection").val(data.connection.enable)
                 $("#node-config-input-connection_series").val(data.connection.series)
                 $("#node-config-input-serial_port").val(data.serial.port);
+                $("#node-config-input-nibegw").val(data.serial.port);
                 $("#node-config-input-tcp_server").val(data.tcp.server);
                 $("#node-config-input-tcp_port").val(data.tcp.port);
+                showHide();
+                $("#node-config-input-connection_series").change(showHide);
+                $("#node-config-input-connection").change(showHide);
             })
-
+            function showHide() {
+                    if($("#node-config-input-connection_series").val()=="sSeries") {
+                        $("#node-config-input-connection").val('tcp')
+                        $("#node-config-input-serial_port").hide()
+                        $("#node-config-input-nibegw").hide();
+                        $("#node-config-input-tcp_server").show();
+                        $("#node-config-input-tcp_port").show();
+                        $('#node-config-input-connection option[value="serial"]').hide();
+                        $('#node-config-input-connection option[value="nibegw"]').hide();
+                        $('#node-config-input-connection option[value="tcp"]').show();
+                    } else if($("#node-config-input-connection_series").val()=="fSeries") {
+                        if($("#node-config-input-connection").val()=="tcp") {
+                            $("#node-config-input-connection").val('serial')
+                        }
+                        if($("#node-config-input-connection").val()=="nibegw") {
+                            $("#node-config-input-nibegw").show();
+                            $("#node-config-input-serial_port").hide()
+                        } else if($("#node-config-input-connection").val()=="serial") {
+                            $("#node-config-input-nibegw").hide();
+                            $("#node-config-input-serial_port").show()
+                        }
+                        $("#node-config-input-tcp_server").hide();
+                        $("#node-config-input-tcp_port").hide();
+                        $('#node-config-input-connection option[value="serial"]').show();
+                        $('#node-config-input-connection option[value="nibegw"]').show();
+                        $('#node-config-input-connection option[value="tcp"]').hide();
+                    }
+                }
         },
         oneditsave: function() {
             let node = this;
             $.getJSON('/config', function(data) {
+                if(data===undefined) return;
                 if(data.mqtt===undefined) data.mqtt = {};
                 if(data.connection===undefined) data.connection = {};
                 if(data.serial===undefined) data.serial = {};
@@ -61,16 +94,20 @@
                     data.mqtt.discovery = false;
                 }
                 //data.mqtt.enable = $("#node-config-input-mqtt").val();
-                data.mqtt.topic = $("#node-config-input-mqtt_topic").val();
-                data.mqtt.host = $("#node-config-input-mqtt_host").val();
-                data.mqtt.port = $("#node-config-input-mqtt_port").val();
-                data.mqtt.user = $("#node-config-input-mqtt_user").val();
-                data.mqtt.pass = $("#node-config-input-mqtt_pass").val();
-                data.connection.enable = $("#node-config-input-connection").val();
-                data.connection.series = $("#node-config-input-connection_series").val();
-                data.serial.port = $("#node-config-input-serial_port").val();
-                data.tcp.server = $("#node-config-input-tcp_server").val();
-                data.tcp.port = $("#node-config-input-tcp_port").val();
+                if($("#node-config-input-mqtt_topic").val()!==undefined) data.mqtt.topic = $("#node-config-input-mqtt_topic").val();
+                if($("#node-config-input-mqtt_host").val()!==undefined) data.mqtt.host = $("#node-config-input-mqtt_host").val();
+                if($("#node-config-input-mqtt_port").val()!==undefined) data.mqtt.port = $("#node-config-input-mqtt_port").val();
+                if($("#node-config-input-mqtt_user").val()!==undefined) data.mqtt.user = $("#node-config-input-mqtt_user").val();
+                if($("#node-config-input-mqtt_pass").val()!==undefined) data.mqtt.pass = $("#node-config-input-mqtt_pass").val();
+                if($("#node-config-input-connection").val()!==undefined) data.connection.enable = $("#node-config-input-connection").val();
+                if($("#node-config-input-connection_series").val()!==undefined) data.connection.series = $("#node-config-input-connection_series").val();
+                if(data.connection.enable=="nibegw") {
+                    if($("#node-config-input-nibegw").val()!==undefined) data.serial.port = $("#node-config-input-nibegw").val();
+                } else {
+                    if($("#node-config-input-serial_port").val()!==undefined) data.serial.port = $("#node-config-input-serial_port").val();
+                }
+                if($("#node-config-input-tcp_server").val()!==undefined) data.tcp.server = $("#node-config-input-tcp_server").val();
+                if($("#node-config-input-tcp_port").val()!==undefined) data.tcp.port = $("#node-config-input-tcp_port").val();
                 let out = {data:node,config:data};
                 $.ajax({
                 contentType: 'application/json',
@@ -97,26 +134,31 @@
         <label for="node-config-input-connection_series"><i class="icon-bookmark"></i> Nibe Series</label>
         <select id="node-config-input-connection_series">
             <option value="fSeries">F-series</option>
-            <!-- <option value="sSeries">S-series</option> -->
+            <option value="sSeries">S-series</option>
         </select>
     </div>
     <div class="form-row">
-        <label for="node-config-input-connection"><i class="icon-bookmark"></i> Connection</label>
+        <label for="node-config-input-connection"> Connection</label>
         <select id="node-config-input-connection">
             <option value="serial">Serial</option>
-            <!-- <option value="tcp">TCP</option> -->
+            <option value="tcp">TCP</option>
+            <option value="nibegw">NibeGW</option>
         </select>
     </div>
     <div class="form-row">
-            <label for="node-config-input-serial_port"><i class="icon-bookmark"></i> Serialport</label>
+            <label for="node-config-input-serial_port"></i> Serialport</label>
         <input type="text" id="node-config-input-serial_port" placeholder="/dev/ttyAMA0">
     </div>
-    <!-- <div class="form-row">
+    <div class="form-row">
+        <label for="node-config-input-nibegw"> NibeGW Host</label>
+        <input type="text" id="node-config-input-nibegw">
+    </div>
+    <div class="form-row">
         <label for="node-config-input-tcp_server"><i class="icon-bookmark"></i> TCP Server</label>
         <input type="text" id="node-config-input-tcp_server">
         <label for="node-config-input-tcp_port"><i class="icon-bookmark"></i> TCP Port</label>
         <input type="text" id="node-config-input-tcp_port">
-    </div> -->
+    </div>
     <div class="form-row">
         <label for="node-config-input-readonly"><i class="icon-bookmark"></i> Use read-only mode</label>
         <input type="checkbox" id="node-config-input-readonly">
