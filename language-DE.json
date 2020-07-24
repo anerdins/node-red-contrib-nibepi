@@ -1,0 +1,8 @@
+{
+    "starting":"Startet",
+    "sys_not_connected":"nicht verbunden.",
+    "sys_connected":"verbunden",
+    "extra_sensor":"Zusätzlicher Sensor",
+    "not_updated":"wurde noch nicht empfangen. Ignoriert.",
+    "no_values":"hat noch keine Werte"
+}
