@@ -552,6 +552,37 @@
             "SE":"<b>Resultat</b>",
             "EN":"<b>Result</b>",
             "DE":"<b>Ergebnis</b>"
+        },"register_add": {
+            "SE":"Lägg till register"
+        },"register_remove": {
+            "SE":"Ta bort register"
+        },"testmode": {
+            "SE":"<b>Testläge</b><br><i>Aktiverar testläge, det är då möjligt att hämta data från register som inte finns med i registerlistan.</i>"
+        },"advanced_2": {
+            "SE":"<p><b>Anslutning</b></p><br><p>Välj vilken typ av anslutning värmepumpen är ansluten till.<br>Efter ändring så behöver Node-RED startas om.   </p>"
+        },"con_serialport": {
+            "SE":"<b>Serieport</b>"
+        },"con_nibegw": {
+            "SE":"<b>NibeGW IP-adress</b>"
+        },"con_type": {
+            "SE":"<b>Anslutningsmetod</b>"
+        },"con_series": {
+            "SE":"<b>Värmepumpserie</b>"
+        },"tcp_server": {
+            "SE":"<b>Modbus-TCP/IP Server</b>"
+        },"tcp_port": {
+            "SE":"<b>Modbus-TCP/IP Port</b></i>"
+        },"serial": {
+            "SE":"Serieport"
+        },"modbus": {
+            "SE":"Modbus TCP/IP"
+        },"nibegw": {
+            "SE":"NibeGW"
+        },"fSeries": {
+            "SE":"F-Serien"
+        },"sSeries": {
+            "SE":"S-Serien"
         }
+
     }
 }
