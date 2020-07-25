@@ -37,9 +37,9 @@
             "EN":"<p><b>Curve adjustment S2</b><br></p>",
             "DE":"<p><b>Parrallelverschiebung S2</b><br></p>"
         },"intro": {
-            "SE":"<h2>NibePi</h2><p>NibePi är IoT produkten som både gör värmepumpen smartare och effektivare. Med hjälp av MQTT så kan värmepumpen övervakas och styras direkt från det smarta hemmet.<br>Det finns flera inbyggda funktioner som kan förbättra komforten och ekonomin. Mer information finns under varje funktion.<br><p>NibePi stödjer alla värmepumpar i Nibes F serie, samt elpannor med tillhörande utedel i VVM serien.<br>Nibe F370,F470,F730,F750,F1145,F1155,F1245,F1255,F1345,F1355<br>VVM 225,310,320,325,500</p>",
-            "EN":"<h2>NibePi</h2><p>NibePi is an IoT appliance that makes your heatpump smarter and more efficient. Thanks to MQTT you can control your heatpump directly from your smart home system.<br>NibePi's integrated features can increase comfort and efficiency. You can find additional information directly in the menus for the invidivual features.<br><p>NibePi works with all F series heatpumps, as well as the outdoor units of the VVM series.<br>Nibe F370,F470,F730,F750,F1145,F1155,F1245,F1255,F1345,F1355<br>VVM 225,310,320,325,500</p>",
-            "DE":"<h2>NibePi</h2><p>NibePi ist ein IoT Gerät, dass deine Wärmepumpe intelligenter und effizenter macht. Dank MQTT kannst du deine Wärmepumpe direkt aus deinem SmartHome System steuern.<br>NibePi's integrierte Funktionen können den Komfort und die Effizienz der Wärmepumpe steigern. Du findest weitere Informationen in den Menüs der einzelnen Funktionen.<br><p>NibePi ist kompatibel mit allen Wärmepumpen der F-Serie und den Außengeräten der VVM Serie.<br>Nibe F370,F470,F730,F750,F1145,F1155,F1245,F1255,F1345,F1355<br>VVM 225,310,320,325,500</p>"
+            "SE":"<h2>NibePi</h2><p>NibePi är IoT produkten som både gör värmepumpen smartare och effektivare. Med hjälp av MQTT så kan värmepumpen övervakas och styras direkt från det smarta hemmet.<br>Det finns flera inbyggda funktioner som kan förbättra komforten och ekonomin. Mer information finns under varje funktion.<br><p>NibePi stödjer alla värmepumpar i Nibes F serie, samt elpannor med tillhörande utedel i VVM serien.<br>Nibe F370,F470,F730,F750,F1145,F1155,F1245,F1255,F1345,F1355<br>VVM 225,310,320,325,500<br>SMO 20/40</p>",
+            "EN":"<h2>NibePi</h2><p>NibePi is an IoT appliance that makes your heatpump smarter and more efficient. Thanks to MQTT you can control your heatpump directly from your smart home system.<br>NibePi's integrated features can increase comfort and efficiency. You can find additional information directly in the menus for the invidivual features.<br><p>NibePi works with all F series heatpumps, as well as the outdoor units of the VVM series.<br>Nibe F370,F470,F730,F750,F1145,F1155,F1245,F1255,F1345,F1355<br>VVM 225,310,320,325,500<br>SMO 20/40</p>",
+            "DE":"<h2>NibePi</h2><p>NibePi ist ein IoT Gerät, dass deine Wärmepumpe intelligenter und effizenter macht. Dank MQTT kannst du deine Wärmepumpe direkt aus deinem SmartHome System steuern.<br>NibePi's integrierte Funktionen können den Komfort und die Effizienz der Wärmepumpe steigern. Du findest weitere Informationen in den Menüs der einzelnen Funktionen.<br><p>NibePi ist kompatibel mit allen Wärmepumpen der F-Serie und den Außengeräten der VVM Serie.<br>Nibe F370,F470,F730,F750,F1145,F1155,F1245,F1255,F1345,F1355<br>VVM 225,310,320,325,500<br>SMO 20/40</p>"
         },"information": {
             "SE":"<p><b>Information</b></p>",
             "EN":"<p><b>Informations</b></p>",
@@ -81,25 +81,25 @@
             "EN":"<b>Restart Node-RED</b>",
             "DE":"<b>Node-RED neu starten</b>"
         },"nodered_restart_info": {
-            "SE":"<p><b>Startar om Node-RED</b></p>",
-            "EN":"<p><b>Trigger a restart of Node-RED.</b></p>",
-            "DE":"<p><b>Neustart von Node-RED auslösen.</b></p>"
+            "SE":"Startar om Node-RED",
+            "EN":"Trigger a restart of Node-RED.",
+            "DE":"Neustart von Node-RED auslösen."
         },"hw_restart": {
             "SE":"<b>Starta om hårdvaran</b>",
             "EN":"<b>Restart NibePi hardware</b>",
             "DE":"<b>NibePi hardware neu starten</b>"
         },"hw_restart_info": {
-            "SE":"<p><b>Startar om NibePi hårdvara</b></p>",
-            "EN":"<p><b>Triggers a restart of the NibePi hardware.</b></p>",
-            "DE":"<p><b>Neustart der NibePi Hardware auslösen.</b></p>"
+            "SE":"Startar om NibePi hårdvara",
+            "EN":"Triggers a restart of the NibePi hardware.",
+            "DE":"Neustart der NibePi Hardware auslösen."
         },"hw_shutdown": {
             "SE":"<b>Stäng av NibePi hårdvaran</b>",
             "EN":"<b>Shutdown NibePi</b>",
             "DE":"<b>NibePi herunterfahren</b>"
         },"hw_shutdown_info": {
-            "SE":"<p><b>Stänger av NibePi hårdvaran</b></p>",
-            "EN":"<p><b>Triggers a shutdown of the NibePi hardware.</b></p>",
-            "DE":"<p><b>Herunterfahren der NibePi Hardware auslösen.</b></p>"
+            "SE":"Stänger av NibePi hårdvaran",
+            "EN":"Triggers a shutdown of the NibePi hardware.",
+            "DE":"Herunterfahren der NibePi Hardware auslösen."
         },"mqtt_info": {
             "SE":"<p><b>MQTT</b></p><br>Aktivera åtkomst till MQTT broker.<br>NibePi har en inbyggd broker på 127.0.0.1:1883<br>Det går även att använda en extern broker, ändra bara anslutningsdetaljerna. <br>Aktivera HA Discovery om Home Assistant automatiskt ska upptäcka aktiverade givare från NibePi",
             "EN":"<p><b>MQTT</b></p><br>Activate the MQTT broker.<br>NibePi has an internal MQTT broker that runs on 127.0.0.1:1883, You can also use an external broker just by changing the connection details. Activate HA auto discovery, if Home Assistant should detect NibePi's sensors automatically.",
@@ -553,35 +553,52 @@
             "EN":"<b>Result</b>",
             "DE":"<b>Ergebnis</b>"
         },"register_add": {
-            "SE":"Lägg till register"
+            "SE":"Lägg till register",
+            "EN":"Add register"
         },"register_remove": {
-            "SE":"Ta bort register"
+            "SE":"Ta bort register",
+            "EN":"Remove register"
         },"testmode": {
-            "SE":"<b>Testläge</b><br><i>Aktiverar testläge, det är då möjligt att hämta data från register som inte finns med i registerlistan.</i>"
+            "SE":"<b>Testläge</b><br><i>Aktiverar testläge, det är då möjligt att hämta data från register som inte finns med i registerlistan.</i>",
+            "EN":"<b>Testmode</b><br><i>Activates testmode, experimental feature which makes it possible to get data that are not in the registerlist.</i>"
         },"advanced_2": {
-            "SE":"<p><b>Anslutning</b></p><br><p>Välj vilken typ av anslutning värmepumpen är ansluten till.<br>Efter ändring så behöver Node-RED startas om.   </p>"
+            "SE":"<p><b>Anslutning</b></p><br><p>Välj vilken typ av anslutning värmepumpen är ansluten till.<br>Efter ändring så behöver Node-RED startas om.</p>",
+            "EN":"<p><b>Connection</b></p><br><p>Select the connection to the heatpump.<br>After changing connection details, Node-RED needs to be restarted.</p>"
         },"con_serialport": {
-            "SE":"<b>Serieport</b>"
+            "SE":"<b>Serieport</b>",
+            "EN":"<b>Serialport</b>"
         },"con_nibegw": {
-            "SE":"<b>NibeGW IP-adress</b>"
+            "SE":"<b>NibeGW IP-adress</b>",
+            "EN":"<b>NibeGW IP-address</b>"
         },"con_type": {
-            "SE":"<b>Anslutningsmetod</b>"
+            "SE":"<b>Anslutningsmetod</b>",
+            "EN":"<b>Connection type</b>"
         },"con_series": {
-            "SE":"<b>Värmepumpserie</b>"
+            "SE":"<b>Värmepumpserie</b>",
+            "EN":"<b>Heatpump series</b>"
         },"tcp_server": {
-            "SE":"<b>Modbus-TCP/IP Server</b>"
+            "SE":"<b>Modbus-TCP/IP Server</b>",
+            "EN":"<b>Modbus-TCP/IP Host</b>"
         },"tcp_port": {
-            "SE":"<b>Modbus-TCP/IP Port</b></i>"
+            "SE":"<b>Modbus-TCP/IP Port</b></i>",
+            "EN":"<b>Modbus-TCP/IP Port</b></i>"
         },"serial": {
-            "SE":"Serieport"
+            "SE":"Serieport",
+            "EN":"Serialport"
         },"modbus": {
-            "SE":"Modbus TCP/IP"
+            "SE":"Modbus TCP/IP",
+            "EN":"Modbus TCP/IP"
         },"nibegw": {
-            "SE":"NibeGW"
+            "SE":"NibeGW",
+            "EN":"NibeGW"
         },"fSeries": {
-            "SE":"F-Serien"
+            "SE":"F-Serien",
+            "EN":"F-Series",
+            "DE":"F-Serie"
         },"sSeries": {
-            "SE":"S-Serien"
+            "SE":"S-Serien",
+            "EN":"S-Series",
+            "DE":"S-Serie"
         }
 
     }
