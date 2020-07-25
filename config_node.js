@@ -1293,7 +1293,7 @@ async function runFan() {
     data.co2Sensor;
     data.fan_speed = await getNibeData(hP['fan_speed']);
     data.bs1_flow = await getNibeData(hP['bs1_flow']);
-    if(flow_set===undefined) flow_set = data.bs1_flow.raw_data;
+    // Check if bug with saving 0% resolves if(flow_set===undefined) flow_set = data.bs1_flow.raw_data;
     data.alarm = await getNibeData(hP['alarm']);
     data.evaporator = await getNibeData(hP['evaporator']);
     data.cpr_set = await getNibeData(hP['cpr_set']);
@@ -1489,7 +1489,12 @@ async function runFan() {
             nibe.log(`För lågt luftflöde inställt, avbryter.`,'fan','error');
             return;
         }
+        if(flow_set===undefined) {
+            nibe.log(`Inget börvärde på flöde, avvaktar...`,'fan','error');
+            return;
+        }
         nibe.log(`Villkor uppfyllda för reglering av flöde.`,'fan','debug');
+        nibe.log(`Flowset: ${flow_set}, Flöde: ${data.bs1_flow.raw_data}, Flowsaved: ${flow_saved}`,'fan','debug');
         if(data.bs1_flow.raw_data>(flow_set+25) && (flow_saved===undefined || data.bs1_flow.raw_data>flow_saved+25)) {
             nibe.log(`Luftflöde långt över börvärde: ${flow_set}, Flöde: ${data.bs1_flow.raw_data} m3/h, Forcering pågår`,'fan','debug');
         } else if(data.bs1_flow.raw_data>(flow_set+10)) {
