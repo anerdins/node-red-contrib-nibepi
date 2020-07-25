@@ -580,8 +580,11 @@
             "SE":"<b>Modbus-TCP/IP Server</b>",
             "EN":"<b>Modbus-TCP/IP Host</b>"
         },"tcp_port": {
-            "SE":"<b>Modbus-TCP/IP Port</b></i>",
-            "EN":"<b>Modbus-TCP/IP Port</b></i>"
+            "SE":"<b>Modbus-TCP/IP Port</b>",
+            "EN":"<b>Modbus-TCP/IP Port</b>"
+        },"tcp_pump": {
+            "SE":"<b>Modell</b>",
+            "EN":"<b>Model</b>"
         },"serial": {
             "SE":"Serieport",
             "EN":"Serialport"
