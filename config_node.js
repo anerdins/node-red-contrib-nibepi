@@ -5,6 +5,8 @@ module.exports = function(RED) {
     const nibeData = new EventEmitter()
     const nibe = require('nibepi')
     var serialPort = "";
+    var tcp_host = "";
+    var tcp_port = "";
     let text = require('./language-SE.json')
     let translate = require('./translate.json')
     var series = "";
@@ -25,8 +27,8 @@ module.exports = function(RED) {
         var datum = Date.parse(strDate);
         return Number((datum).toFixed());
     }
-    const initiateCore = (serialPort,cb) => {
-        nibe.initiateCore(serialPort, (err,data) => {
+    const initiateCore = (host,port,cb) => {
+        nibe.initiateCore(host,port, (err,data) => {
             if(err) console.log(err);
             nibe.core = data;
             cb(null,true);
@@ -190,7 +192,7 @@ module.exports = function(RED) {
                     if(plugin=="rmu") {
                         nibe.reqData(hP['startHW_rmu_'+system]).then(data => {
                             if(data!==undefined) {
-                                
+                                console.log(data)
                                 let regN = getList.findIndex(regN => regN.system == 's1');
                                 if(regN!==-1) {
                                 for( var i = 0; i < arr.length; i=i+1){
@@ -1291,7 +1293,7 @@ async function runFan() {
     data.co2Sensor;
     data.fan_speed = await getNibeData(hP['fan_speed']);
     data.bs1_flow = await getNibeData(hP['bs1_flow']);
-    if(flow_set===undefined) flow_set = data.bs1_flow.raw_data;
+    // Check if bug with saving 0% resolves if(flow_set===undefined) flow_set = data.bs1_flow.raw_data;
     data.alarm = await getNibeData(hP['alarm']);
     data.evaporator = await getNibeData(hP['evaporator']);
     data.cpr_set = await getNibeData(hP['cpr_set']);
@@ -1487,7 +1489,12 @@ async function runFan() {
             nibe.log(`För lågt luftflöde inställt, avbryter.`,'fan','error');
             return;
         }
+        if(flow_set===undefined) {
+            nibe.log(`Inget börvärde på flöde, avvaktar...`,'fan','error');
+            return;
+        }
         nibe.log(`Villkor uppfyllda för reglering av flöde.`,'fan','debug');
+        nibe.log(`Flowset: ${flow_set}, Flöde: ${data.bs1_flow.raw_data}, Flowsaved: ${flow_saved}`,'fan','debug');
         if(data.bs1_flow.raw_data>(flow_set+25) && (flow_saved===undefined || data.bs1_flow.raw_data>flow_saved+25)) {
             nibe.log(`Luftflöde långt över börvärde: ${flow_set}, Flöde: ${data.bs1_flow.raw_data} m3/h, Forcering pågår`,'fan','debug');
         } else if(data.bs1_flow.raw_data>(flow_set+10)) {
@@ -1792,13 +1799,6 @@ async function minuteUpdate() {
 }
 const checkTranslation = (node) => {
     let config = nibe.getConfig();
-    if(config.update!==undefined && config.update.release!==undefined) {
-        if(config.update.release.includes('english') || config.update.release.includes('snapshot-EN')) {
-            text = require('./language-EN.json')
-        } else {
-            text = require('./language-SE.json')
-        }
-    }
     if(config.system===undefined) {
         config.system = {language:"SE"};
         nibe.setConfig(config);
@@ -1807,6 +1807,7 @@ const checkTranslation = (node) => {
         config.system.language = "SE";
         nibe.setConfig(config);
     }
+    text = require(`./language-${config.system.language}.json`)
     node.context().global.set(`translate`, translate);
 }
     console.log(text.starting)
@@ -1840,13 +1841,13 @@ const checkTranslation = (node) => {
             } else {
                 hP;
             }
-            if(serialPort!==config.serial.port || series!==config.connection.series || force===true) {
+            if(tcp_host!==config.tcp.host || tcp_port!==config.tcp.port || serialPort!==config.serial.port || series!==config.connection.series || force===true) {
                 nibe.stopCore(nibe.core).then(result => {
                     nibe.resetCore();
                     if(config.connection.series=="fSeries") {
-                    if(config.serial.port!=="" && config.serial.port!==undefined && config.connection.enable==="serial") {
+                    if(config.serial.port!=="" && config.serial.port!==undefined && (config.connection.enable==="serial" || config.connection.enable==="nibegw")) {
                         if(nibe.core===undefined || nibe.core.connected===undefined || nibe.core.connected===false) {
-                            initiateCore(config.serial.port, (err,result)=> {
+                            initiateCore(null,config.serial.port, (err,result)=> {
                                 if(err) console.log(err);
                                 let config = nibe.getConfig();
                                 if(config.system===undefined) {
@@ -1864,11 +1865,33 @@ const checkTranslation = (node) => {
                             })
                         }
                     }
+                } else if(config.connection.series=="sSeries") {
+                    if(config.tcp.host!==undefined && config.tcp.host!=="" && config.tcp.port!==undefined && config.tcp.port!=="" && config.connection.enable==="tcp") {
+                        if(nibe.core===undefined || nibe.core.connected===undefined || nibe.core.connected===false) {
+                            initiateCore(config.tcp.host,config.tcp.port, (err,result)=> {
+                                if(err) console.log(err);
+                                let config = nibe.getConfig();
+                                if(config.system===undefined) {
+                                    config.system = {};
+                                    nibe.setConfig(config);
+                                }
+                                sendError('Kärnan',`Nibe ${config.tcp.pump} är ansluten`);
+                                console.log('Core is connected');
+                                updateData(true);
+                                nibe.redOn();
+                                this.register = nibe.getRegister();
+                                this.context().global.set(`register`, this.register);
+                                nibeData.emit('ready',true);
+                            })
+                        }
+                    }
                 }
                 });
                 }
             serialPort = config.serial.port;
             series = config.connection.series;
+            tcp_host = config.tcp.host;
+            tcp_port = config.tcp.port;
         }
         const checkReady = (cb) => {
             if(nibe.core!==undefined && nibe.core.connected!==undefined && nibe.core.connected===true) {
@@ -1941,23 +1964,32 @@ const checkTranslation = (node) => {
         }
         
         var everyminute = cron.schedule('*/1 * * * *', () => {
-            nibeData.emit('updateGraph');
-            minuteUpdate();
-            hotwaterPlugin();
-            runFan()
+            if(nibe.core!==undefined && nibe.core.connected!==undefined && nibe.core.connected===true) {
+                nibeData.emit('updateGraph');
+                minuteUpdate();
+                hotwaterPlugin();
+                runFan()
+            }
+            
         })
         var threeminutes = cron.schedule('*/3 * * * *', () => {
-            updateData();
+            if(nibe.core!==undefined && nibe.core.connected!==undefined && nibe.core.connected===true) {
+                updateData();
+            }
+            
         })
         var tenminutes = cron.schedule('*/10 * * * *', () => {
-            tenMinuteUpdate()
+            if(nibe.core!==undefined && nibe.core.connected!==undefined && nibe.core.connected===true) {
+                tenMinuteUpdate()
+            }
         })
         
         var hourly = cron.schedule('0 * * * *', () => {
+            if(nibe.core!==undefined && nibe.core.connected!==undefined && nibe.core.connected===true) {
             //let graph = this.context().global.get(`graphs`);
             saveGraph();
             updateData(true);
-            
+            }
         })
 
     nibe.data.on('config',data => {

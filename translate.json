@@ -2,297 +2,607 @@
     "dash":{
         "readonly": {
             "SE":"<b>Read-only</b><br><i>NibePi kör med ett läsbart filsystem</i>",
-            "EN":"<b>Read-only</b><br><i>NibePi runs on a read-only filesystem</i>"
+            "EN":"<b>Read-only</b><br><i>NibePi runs on a read-only filesystem</i>",
+            "DE":"<b>Schreibschutz</b><br><i>NibePi läuft auf einem schreibgeschützen Dateisystem</i>"
         },"language": {
             "SE":"<b>Språk</b>",
-            "EN":"<b>Language</b>"
+            "EN":"<b>Language</b>",
+            "DE":"<b>Sprache</b>"
         },"auto_update": {
             "SE":"<b>Uppdatera grafer</b><br><i>Aktiverar att hämta registerdata och uppdatera NibePis interna grafer.</i>",
-            "EN":"<b>Update graphs</b><br><i>If activated, this function keeps the common graphs in NibePi updated.</i>"
+            "EN":"<b>Update graphs</b><br><i>If activated, this updates NibePi's internal diagrams based on register data.</i>",
+            "DE":"<b>Diagramme aktualisieren</b><br><i>Aktivieren um NibePi's Diagramme auf Basis der Registerdaten zu aktualisieren.</i>"
         },"save_graph": {
             "SE":"<b>Spara grafer</b><br><i>Sparar ner grafer till SD-kortet varje timma och vid omstart/uppdatering</i>",
-            "EN":"<b>Save graphs</b><br><i>Saves graphs to the SD-card every hour and when restarting/updating</i>"
+            "EN":"<b>Save graphs</b><br><i>Saves graphs to the SD-card every hour and when restarting/updating</i>",
+            "DE":"<b>Diagramme speichern</b><br><i>Speichert die Diagramme stündlich und bei Neustart und Update auf die SD-Karte.</i>"
         },"heatcurve_info": {
             "SE":"<p><b>Ställ in värmepumpens värmekurva och kurvjustering</b><br><i>OBS. Ställer man in kurvjustering manuellt i värmepumpen kommer den att skrivas över av NibePi, ställ den därför här</i><br></p>",
-            "EN":"<p><b>Set the heatcurve and the curve adjustment here</b><br><i>If you set it directly in the heatpump, NibePi will overwrite it</i><br></p>"
+            "EN":"<p><b>Set the heatcurve and the curve adjustment here</b><br><i>If you set it directly in the heatpump, NibePi will overwrite it</i><br></p>",
+            "DE":"<p><b>Stelle die Heizkurve und Parrallelverschiebung hier ein</b><br><i>Direkt in der Wärmepumpe eingestellte Werte werden überschrieben.</i><br></p>"
         },"heatcurve_s1": {
             "SE":"<p><b>Värmekurva S1</b><br></p>",
-            "EN":"<p><b>Heatcurve S1</b><br></p>"
+            "EN":"<p><b>Heatcurve S1</b><br></p>",
+            "DE":"<p><b>Heizkurve S1</b><br></p>"
         },"heatcurve_s2": {
             "SE":"<p><b>Värmekurva S2</b><br></p>",
-            "EN":"<p><b>Heatcurve S2</b><br></p>"
+            "EN":"<p><b>Heatcurve S2</b><br></p>",
+            "DE":"<p><b>Heizkurve S2</b><br></p>"
         },"adjust_s1": {
             "SE":"<p><b>Kurvjustering S1</b><br></p>",
-            "EN":"<p><b>Curve adjustment S1</b><br></p>"
+            "EN":"<p><b>Curve adjustment S1</b><br></p>",
+            "DE":"<p><b>Parrallelverschiebung S1</b><br></p>"
         },"adjust_s2": {
             "SE":"<p><b>Kurvjustering S2</b><br></p>",
-            "EN":"<p><b>Curve adjustment S2</b><br></p>"
+            "EN":"<p><b>Curve adjustment S2</b><br></p>",
+            "DE":"<p><b>Parrallelverschiebung S2</b><br></p>"
         },"intro": {
-            "SE":"<h2>NibePi</h2><p>NibePi är IoT produkten som både gör värmepumpen smartare och effektivare. Med hjälp av MQTT så kan värmepumpen övervakas och styras direkt från det smarta hemmet.<br>Det finns flera inbyggda funktioner som kan förbättra komforten och ekonomin. Mer information finns under varje funktion.<br><p>NibePi stödjer alla värmepumpar i Nibes F serie, samt elpannor med tillhörande utedel i VVM serien.<br>Nibe F370,F470,F730,F750,F1145,F1155,F1245,F1255,F1345,F1355<br>VVM 225,310,320,325,500</p>"
+            "SE":"<h2>NibePi</h2><p>NibePi är IoT produkten som både gör värmepumpen smartare och effektivare. Med hjälp av MQTT så kan värmepumpen övervakas och styras direkt från det smarta hemmet.<br>Det finns flera inbyggda funktioner som kan förbättra komforten och ekonomin. Mer information finns under varje funktion.<br><p>NibePi stödjer alla värmepumpar i Nibes F serie, samt elpannor med tillhörande utedel i VVM serien.<br>Nibe F370,F470,F730,F750,F1145,F1155,F1245,F1255,F1345,F1355<br>VVM 225,310,320,325,500<br>SMO 20/40</p>",
+            "EN":"<h2>NibePi</h2><p>NibePi is an IoT appliance that makes your heatpump smarter and more efficient. Thanks to MQTT you can control your heatpump directly from your smart home system.<br>NibePi's integrated features can increase comfort and efficiency. You can find additional information directly in the menus for the invidivual features.<br><p>NibePi works with all F series heatpumps, as well as the outdoor units of the VVM series.<br>Nibe F370,F470,F730,F750,F1145,F1155,F1245,F1255,F1345,F1355<br>VVM 225,310,320,325,500<br>SMO 20/40</p>",
+            "DE":"<h2>NibePi</h2><p>NibePi ist ein IoT Gerät, dass deine Wärmepumpe intelligenter und effizenter macht. Dank MQTT kannst du deine Wärmepumpe direkt aus deinem SmartHome System steuern.<br>NibePi's integrierte Funktionen können den Komfort und die Effizienz der Wärmepumpe steigern. Du findest weitere Informationen in den Menüs der einzelnen Funktionen.<br><p>NibePi ist kompatibel mit allen Wärmepumpen der F-Serie und den Außengeräten der VVM Serie.<br>Nibe F370,F470,F730,F750,F1145,F1155,F1245,F1255,F1345,F1355<br>VVM 225,310,320,325,500<br>SMO 20/40</p>"
         },"information": {
-            "SE":"<p><b>Information</b></p>"
+            "SE":"<p><b>Information</b></p>",
+            "EN":"<p><b>Informations</b></p>",
+            "DE":"<p><b>Informationen</b></p>"
         },"system": {
-            "SE":"<p><b>System</b></p>"
+            "SE":"<p><b>System</b></p>",
+            "EN":"<p><b>System</b></p>",
+            "DE":"<p><b>System</b></p>"
         },"rmu_label": {
             "SE":"<p><b>RMU-40</b></p>",
-            "EN":"<p><b>RMU-40</b></p>"
+            "EN":"<p><b>RMU-40</b></p>",
+            "DE":"<p><b>RMU-40</b></p>"
         },"rmu_info": {
-            "SE":"<p><b>Virtuell RMU-40</b><br><i>Aktivera en virtuell RMU-40 för att kunna simulera en riktig inomhusgivare via MQTT<br>OBS. har du en riktig RMU-40 går det inte att simulera</i><br></p>"
+            "SE":"<p><b>Virtuell RMU-40</b><br><i>Aktivera en virtuell RMU-40 för att kunna simulera en riktig inomhusgivare via MQTT<br>OBS. har du en riktig RMU-40 går det inte att simulera</i><br></p>",
+            "EN":"<p><b>Virtual RMU-40</b><br><i>Activate a virtual RMU-40 to integrate any room temperature sensor via MQTT<br>Attention: Does not work if a physical RMU-40 is connected!</i><br></p>",
+            "DE":"<p><b>Virtuelle RMU-40</b><br><i>Aktiviere eine virtuelle RMU-40 um einen beliebigen Raumtemperatursensor per MQTT einzubinden.<br>Hinweis: Funktioniert nicht, wenn eine RMU-40 mit der Wärmepumpe verbunden ist!</i><br></p>"
         },"rmu_s1": {
             "SE":"<b>RMU-40 S1</b>",
-            "EN":"<b>RMU-40 S1</b>"
+            "EN":"<b>RMU-40 S1</b>",
+            "DE":"<b>RMU-40 S1</b>"
         },"rmu_s2": {
             "SE":"<b>RMU-40 S2</b>",
-            "EN":"<b>RMU-40 S2</b>"
+            "EN":"<b>RMU-40 S2</b>",
+            "DE":"<b>RMU-40 S2</b>"
         },"rmu_s3": {
             "SE":"<b>RMU-40 S3</b>",
-            "EN":"<b>RMU-40 S3</b>"
+            "EN":"<b>RMU-40 S3</b>",
+            "DE":"<b>RMU-40 S3</b>"
         },"samba_stop": {
-            "SE":"<b>Stoppa Samba</b>"
+            "SE":"<b>Stoppa Samba</b>",
+            "EN":"<b>Stop Samba</b>",
+            "DE":"<b>Samba Stoppen</b>"
         },"samba_start": {
-            "SE":"<b>Starta Samba</b>"
+            "SE":"<b>Starta Samba</b>",
+            "EN":"<b>Start Samba</b>",
+            "DE":"<b>Samba starten</b>"
         },"nodered_restart": {
-            "SE":"<b>Starta om Node-RED</b>"
+            "SE":"<b>Starta om Node-RED</b>",
+            "EN":"<b>Restart Node-RED</b>",
+            "DE":"<b>Node-RED neu starten</b>"
         },"nodered_restart_info": {
-            "SE":"<p><b>Startar om Node-RED</b></p>"
+            "SE":"Startar om Node-RED",
+            "EN":"Trigger a restart of Node-RED.",
+            "DE":"Neustart von Node-RED auslösen."
         },"hw_restart": {
-            "SE":"<b>Starta om hårdvaran</b>"
+            "SE":"<b>Starta om hårdvaran</b>",
+            "EN":"<b>Restart NibePi hardware</b>",
+            "DE":"<b>NibePi hardware neu starten</b>"
         },"hw_restart_info": {
-            "SE":"<p><b>Startar om NibePi hårdvara</b></p>"
+            "SE":"Startar om NibePi hårdvara",
+            "EN":"Triggers a restart of the NibePi hardware.",
+            "DE":"Neustart der NibePi Hardware auslösen."
         },"hw_shutdown": {
-            "SE":"<b>Stäng av NibePi hårdvaran</b>"
+            "SE":"<b>Stäng av NibePi hårdvaran</b>",
+            "EN":"<b>Shutdown NibePi</b>",
+            "DE":"<b>NibePi herunterfahren</b>"
         },"hw_shutdown_info": {
-            "SE":"<p><b>Stänger av NibePi hårdvaran</b></p>"
+            "SE":"Stänger av NibePi hårdvaran",
+            "EN":"Triggers a shutdown of the NibePi hardware.",
+            "DE":"Herunterfahren der NibePi Hardware auslösen."
         },"mqtt_info": {
-            "SE":"<p><b>MQTT</b></p><br>Aktivera åtkomst till MQTT broker.<br>NibePi har en inbyggd broker på 127.0.0.1:1883<br>Välj annars en extern broker.<br>Aktivera HA Discovery om Home Assistant automatiskt ska upptäcka aktiverade givare från NibePi"
+            "SE":"<p><b>MQTT</b></p><br>Aktivera åtkomst till MQTT broker.<br>NibePi har en inbyggd broker på 127.0.0.1:1883<br>Det går även att använda en extern broker, ändra bara anslutningsdetaljerna. <br>Aktivera HA Discovery om Home Assistant automatiskt ska upptäcka aktiverade givare från NibePi",
+            "EN":"<p><b>MQTT</b></p><br>Activate the MQTT broker.<br>NibePi has an internal MQTT broker that runs on 127.0.0.1:1883, You can also use an external broker just by changing the connection details. Activate HA auto discovery, if Home Assistant should detect NibePi's sensors automatically.",
+            "DE":"<p><b>MQTT</b></p><br>Aktiviert den MQTT broker.<br>NibePi hat einen internen MQTT Broker, der auf 127.0.0.1:1883 läuft.<br>Wenn deaktiviert, kann hier ein externer Broker angegeben werden.<br>Aktiviere HA Auto Discovery, wenn HomeAssistant die NibePi Sensoren automatisch erkennen soll."
         },"lat": {
-            "SE":"<b>Latitud</b>"
+            "SE":"<b>Latitud</b>",
+            "EN":"<b>Latitude</b>",
+            "DE":"<b>Breitengrad</b>"
         },"lon": {
-            "SE":"<b>Longitud</b>"
+            "SE":"<b>Longitud</b>",
+            "EN":"<b>Longitude</b>",
+            "DE":"<b>Längengrad</b>"
         },"home_size": {
-            "SE":"<b>Fastighetens storlek   </b>"
+            "SE":"<b>Fastighetens storlek</b>",
+            "EN":"<b>Building size (sqm)</b>",
+            "DE":"<b>Gebäudegröße (m²)</b>"
         },"update_info": {
-            "SE":"<p><b>Uppdateringar</b></p><br>Välj vilken version av NibePi som uppdateringar ska visas för.</p><p>Det finns flera olika utgåvor, Stable release är den senaste tillgängliga versionen.<br>Beta versionen är en test version som anses tillräckligt stabil att kunna provas.<br>Snapshot versionen är experimentell och används för att prova fram lösningar på olika problem som uppstår för användare<br><br>Efter färdig uppdatering startar NibePi om och Modbus kommunikationslarm kan genereras."
+            "SE":"<p><b>Uppdateringar</b></p><br>Välj vilken version av NibePi som uppdateringar ska visas för.</p><p>Det finns flera olika utgåvor, Stable release är den senaste tillgängliga versionen.<br>Beta versionen är en test version som anses tillräckligt stabil att kunna provas.<br>Snapshot versionen är experimentell och används för att prova fram lösningar på olika problem som uppstår för användare<br><br>Efter färdig uppdatering startar NibePi om och Modbus kommunikationslarm kan genereras.",
+            "EN":"<p><b>Updates</b></p><br>Choose update channel.</p><p>There are several update channels available: Stable releases are the latest relased versions.<br>Beta versions are not released yet, but considered stable enough for testing.<br>Snapshot releases are experimental versions which can contain not thoroughly tested fixes for specific problems. These versions can be unstable.<br><br>NibePi restarts after the update. This can lead to a Modbus alarm being raised by the heatpump.",
+            "DE":"<p><b>Updates</b></p><br>Update Kanal auswählen.</p><p>Es stehen mehrere Update Kanäle zur Verfügung: Stable Versionen sind die jeweils neusten veröffentlichten Versionen.<br>Beta Versionen sind noch nicht offizell veröffentlicht. Sie sind aber bereits stabil genug zum Testen.<br>Snapshot Versionen können nicht intensiv getestete Patches enthalten um speziefische Probleme zu beheben. Diese Versionen können eventuell instabil sein.<br><br>Nach dem Update führt NibePi einen Neustart durch. Dies kann zu einem Modbus Alarm an der Wärmepumpe führen."
         },"update_check": {
-            "SE":"<b>Kolla efter Uppdateringar</b>"
+            "SE":"<b>Kolla efter Uppdateringar</b>",
+            "EN":"<b>Check for updates</b>",
+            "DE":"<b>Auf Updates prüfen</b>"
         },"update_run": {
-            "SE":"<b>Uppdatera</b>"
+            "SE":"<b>Uppdatera</b>",
+            "EN":"<b>Update</b>",
+            "DE":"<b>Aktualisieren</b>"
         },"extra_sensor_info": {
-            "SE":"<p><b>Extra givare</b></p><br>Här kan du lägga till extra givare som kan användas i funktionerna<br>Det går att välja givare från register i värmepumpen eller via ett MQTT Topic"
+            "SE":"<p><b>Extra givare</b></p><br>Här kan du lägga till extra givare som kan användas i funktionerna<br>Det går att välja givare från register i värmepumpen eller via ett MQTT Topic",
+            "EN":"<p><b>Additional sensors</b></p><br>Here you can add additional sensors to be used in the different features.<br>You can select a sensor from a Modbus register or from MQTT topic",
+            "DE":"<p><b>Zusätzliche Sensoren</b></p><br>Hier kannst du zusätzliche Sensoren hinzufügen, die in den verschiedenen Funktionen genutzt werden können.<br>Du kannst einen Sensor entweder über ein Modbus Register hinzufügen oder über ein MQTT Topic."
         },"sensor_timeout": {
-            "SE":"<b>Timeout tid för MQTT givare</b><br><i>Givaren måste uppdateras inom detta interval annars ignoreras den. OBS \"0\" inaktiverar timeout.</i>"
+            "SE":"<b>Timeout tid för MQTT givare</b><br><i>Givaren måste uppdateras inom detta interval annars ignoreras den. OBS \"0\" inaktiverar timeout.</i>",
+            "EN":"<b>Timeout for MQTT sensors.</b><br><i>The sensor values must be updated within this time, otherwise they are ignored. Note: \"0\" deactivates the timeout.</i>",
+            "DE":"<b>Timeout für MQTT Sensoren.</b><br><i>Sensorwerte müssen innerhalb dieser Zeit aktualisiert werden, ansonsten werden sie ignoriert. Hinweis: \"0\" deaktiviert den Timeout.</i>"
         },"extra_sensor_remove": {
-            "SE":"<b>Ta bort</b><br><i>Ta bort en extra givare genom att markera den i listan</i>"
+            "SE":"<b>Ta bort</b><br><i>Ta bort en extra givare genom att markera den i listan</i>",
+            "EN":"<b>Remove</b><br><i>Remove an additional sensor by selecting it from the list.</i>",
+            "DE":"<b>Entfernen</b><br><i>Entfernt einen zusätzlichen Sensor durch Auswählen in der Liste.</i>"
         },"loging_info": {
-            "SE":"<p><b>Loggning</b></p><br><i>Loggning sker  till \"/tmp/nibepi.log\"<br>I SSH kör kommando \"tail -f /tmp/nibepi.log\"</i>"
+            "SE":"<p><b>Loggning</b></p><br><i>Loggning sker  till \"/tmp/nibepi.log\"<br>I SSH kör kommando \"tail -f /tmp/nibepi.log\"</i>",
+            "EN":"<p><b>Logging</b></p><br><i>Log will be written to \"/tmp/nibepi.log\"<br>In SSH session, run \"tail -f /tmp/nibepi.log\" to read the log.</i>",
+            "DE":"<p><b>Protkollierung</b></p><br><i>Protokoll wird nach \"/tmp/nibepi.log\" geschrieben.<br>Zum Lesen des Protokolls in einer SSH Verbindung \"tail -f /tmp/nibepi.log\" ausführen.</i>"
         },"forecast_s1_info": {
-            "SE":"<p><b>Prognosreglering klimatsystem 1</b></p><br><i>Styr värmeproduktionen efter prognostemperatur istället.<br>Rekommenderas framför allt för golvvärme.</i>"
+            "SE":"<p><b>Prognosreglering klimatsystem 1</b></p><br><i>Styr värmeproduktionen efter prognostemperatur istället.<br>Rekommenderas framför allt för golvvärme.</i>",
+            "EN":"<p><b>Forecast control climate system 1</b></p><br><i>Controls heat production based on temperature forecast. Recommended for floor heating systems.</i>",
+            "DE":"<p><b>Prognoseregelung Klimasystem 1</b></p><br><i>Regelt die Wärmeerzeugung auf Basis der Temperaturvorhersage.<br>Empfohlen für Fußbodenheizungen.</i>"
         },"forecast_s2_info": {
-            "SE":"<p><b>Prognosreglering klimatsystem 2</b></p><br><i>Styr värmeproduktionen efter prognostemperatur istället.<br>Rekommenderas framför allt för golvvärme.</i>"
+            "SE":"<p><b>Prognosreglering klimatsystem 2</b></p><br><i>Styr värmeproduktionen efter prognostemperatur istället.<br>Rekommenderas framför allt för golvvärme.</i>",
+            "EN":"<p><b>Forecast control climate system 2</b></p><br><i>Controls heat production based on temperature forecast. Recommended for floor heating systems.</i>",
+            "DE":"<p><b>Prognoseregelung Klimasystem 2</b></p><br><i>Regelt die Wärmeerzeugung auf Basis der Temperaturvorhersage.<br>Empfohlen für Fußbodenheizungen.</i>"
         },"forecast_update_info": {
-            "SE":"<i>Begär ny väderdata och uppdatera grafen med nya värden.</i>"
+            "SE":"<i>Begär ny väderdata och uppdatera grafen med nya värden.</i>",
+            "EN":"<i>Fetch new weather data and update the graph with new values.</i>",
+            "DE":"<i>Neue Wetterdaten anfordern und Diagramm mit neuen Werten aktualisieren.</i>"
         },"forecast_sensor_s1": {
-            "SE":"<b>Välj inomhusgivare S1</b>"
+            "SE":"<b>Välj inomhusgivare S1</b>",
+            "EN":"<b>Select indoor sensor S1</b>",
+            "DE":"<b>Innenraum-Temperatursensor S1</b>"
         },"enable": {
             "SE":"<b>Aktivera</b>",
-            "EN":"<b>Activate</b>"
+            "EN":"<b>Activate</b>",
+            "DE":"<b>Aktivieren</b>"
         },"forecast_time": {
             "SE":"<b>Prognostid</b>",
-            "EN":"<b>Forecast time</b>"
+            "EN":"<b>Forecast time</b>",
+            "DE":"<b>Vorhersagezeit</b>"
         },"forecast_correction": {
-            "SE":"<p><b>Inställningar</b></p><br>Prognoskorrigering jämför nuvarande utomhustemperatur mot nuvarande prognostemperatur.<br>Samma avvikelse appliceras även på framtida prognostemperatur."
+            "SE":"<p><b>Inställningar</b></p><br>Prognoskorrigering jämför nuvarande utomhustemperatur mot nuvarande prognostemperatur.<br>Samma avvikelse appliceras även på framtida prognostemperatur.",
+            "EN":"<p><b>Settings</b></p><br>Forecast correction compares the current outdoor temperature to the current forecast temperature. The same deviation is then also applied to future forecast temperatures.",
+            "DE":"<p><b>Einstellungen</b></p><br>Die Progrnosekorrektur vergleicht die aktuelle Außentemperatur mit der aktuellen Prognosetemperatur.<br>Die gleiche Abweichung wird auch auf zukünftige, prognostierte Temperaturen angewendet."
         },"forecast_adjust": {
-            "SE":"<b>Aktivera Prognoskorrigering</b>"
+            "SE":"<b>Aktivera Prognoskorrigering</b>",
+            "EN":"<b>Activate forecast correction</b>",
+            "DE":"<b>Prognosekorrektur aktivieren</b>"
         },"sunfactor_info": {
-            "SE":"<p><b>Solfaktor</b></p><br>Vid mycket solinstrålning så går det att ställa en solfaktor.<br>Värdet som valts läggs till på prognostemperaturen."
+            "SE":"<p><b>Solfaktor</b></p><br>Vid mycket solinstrålning så går det att ställa en solfaktor.<br>Värdet som valts läggs till på prognostemperaturen.",
+            "EN":"<p><b>Solar factor</b></p><br>In case of high solar radiation, it is possible to set a solar factor.<br>This value is added to the forecast temperature.",
+            "DE":"<p><b>Sonnenfaktor</b></p><br>Bei starker Sonneneinstrahlung kann ein Sonnenfaktor angegeben werden.<br>Dieser Wert wird zur prognostizierten Temperatur addiert."
         },"wind_direction_info": {
-            "SE":"<i>Riktning: Norr: -1, Söder: -2, Väst: -3, Öst: -4</i>"
+            "SE":"<i>Riktning: Norr: -1, Söder: -2, Väst: -3, Öst: -4</i>",
+            "EN":"<i>Direction: North: -1, South: -2, West: -3, East: -4</i>",
+            "DE":"<i>Richtung: Nord: -1, Süd: -2, West: -3, Ost: -4</i>"
         },"windfactor_info": {
-            "SE":"<p><b>Vindfaktor</b></p><br>Om fastigheten är utsatt för mycket vind kan man ta med detta i prognosen och kompensera med höjt börvärde.<br>Justeringsfaktorn är ställbart från varje väderstreck."
+            "SE":"<p><b>Vindfaktor</b></p><br>Om fastigheten är utsatt för mycket vind kan man ta med detta i prognosen och kompensera med höjt börvärde.<br>Justeringsfaktorn är ställbart från varje väderstreck.",
+            "EN":"<p><b>Wind factor</b></p><br>If the building is exposed to high winds, a wind factor can be set to compensate with a higher setpoint. <br>The adjustment factor can be set for each cardinal direction individually.", 
+            "DE":"<p><b>Windfaktor</b></p><br>Wenn das Gebäude starkem Wind ausgesetzt ist, kann dies durch einen Windfaktor in die Prognose einbezogen und mit einem höheren Sollwert kompensiert werden.<br>Der Windfaktor kann für jede Himmelsrichtung gesondert angegeben werden." 
         },"wind_factor_n": {
-            "SE":"<b>Norr</b>"
+            "SE":"<b>Norr</b>",
+            "EN":"<b>North</b>",
+            "DE":"<b>Nord</b>"
         },"wind_factor_s": {
-            "SE":"<b>Söder</b>"
+            "SE":"<b>Söder</b>",
+            "EN":"<b>South</b>",
+            "DE":"<b>Süd</b>"
         },"wind_factor_e": {
-            "SE":"<b>Öst</b>"
+            "SE":"<b>Öst</b>",
+            "EN":"<b>East</b>",
+            "DE":"<b>Ost</b>"
         },"wind_factor_w": {
-            "SE":"<b>Väst</b>"
+            "SE":"<b>Väst</b>",
+            "EN":"<b>West</b>",
+            "DE":"<b>West</b>"
         },"clear": {
-            "SE":"<b>Klart väder</b>"
+            "SE":"<b>Klart väder</b>",
+            "EN":"<b>Clear weather</b>",
+            "DE":"<b>Klares Wetter</b>"
         },"mostly_clear": {
-            "SE":"<b>Mestadels klart väder</b>"
+            "SE":"<b>Mestadels klart väder</b>",
+            "EN":"<b>Mostly clear weather</b>",
+            "DE":"<b>Überwiegend klares Wetter</b>"
         },"half_clear": {
-            "SE":"<b>Halvklart väder</b>"
+            "SE":"<b>Halvklart väder</b>",
+            "EN":"<b>Partially clear weather</b>",
+            "DE":"<b>Teilweise klares Wetter</b>"
         },"indoor_info_s1": {
-            "SE":"<p><b>Inomhusreglering S1</b></p><br>Inomhusreglering rekommenderas främst för högtempererade system (Radiatorer), det går att använda med lågtempererade system med mindre faktor<br><i>OBS golvvärme i betong anses väldigt trögt och en faktor över 2 är aldrig att rekommendera</i>"
+            "SE":"<p><b>Inomhusreglering S1</b></p><br>Inomhusreglering rekommenderas främst för högtempererade system (Radiatorer), det går att använda med lågtempererade system med mindre faktor<br><i>OBS golvvärme i betong anses väldigt trögt och en faktor över 2 är aldrig att rekommendera</i>",
+            "EN":"<p><b>Indoor control S1</b></p><br>Indoor control is recommended for high temperature systems (radiators). With a lower factor, it can be used for low temperature systems.<br><i>Note: Floor heating in concrete is considered very inert and a factor above 2 is not recommended.</i>",
+            "DE":"<p><b>Innentemperatur-Regelung S1</b></p><br>Die Innentemperatur-Regelung wird hauptsächlich für Hochtemperatursysteme (Heizkörper) empfohlen. Mit einem geringen Faktor, kann sie mit Niedertemperatursystemen verwendet werden.<br><i>Hinweis: Fußbodenheizungen in Estrich sind sehr träge Systeme und ein Faktor über 2 wird nicht empfohlen.</i>"
         },"indoor_info_s2": {
-            "SE":"<p><b>Inomhusreglering S2</b></p><br>Inomhusreglering rekommenderas främst för högtempererade system (Radiatorer), det går att använda med lågtempererade system med mindre faktor<br><i>OBS golvvärme i betong anses väldigt trögt och en faktor över 2 är aldrig att rekommendera</i>"
+            "SE":"<p><b>Inomhusreglering S2</b></p><br>Inomhusreglering rekommenderas främst för högtempererade system (Radiatorer), det går att använda med lågtempererade system med mindre faktor<br><i>OBS golvvärme i betong anses väldigt trögt och en faktor över 2 är aldrig att rekommendera</i>",
+            "EN":"<p><b>Indoor temperature control S2</b></p><br>Indoor control is recommended for high temperature systems (radiators). With a lower factor, it can be used for low temperature systems.<br><i>Note: Floor heating in concrete is considered very inert and a factor above 2 is not recommended.</i>",
+            "DE":"<p><b>Innentemperatur-Regelung S2</b></p><br>Die Innentemperatur-Regelung wird hauptsächlich für Hochtemperatursysteme (Heizkörper) empfohlen. Mit einem geringen Faktor, kann sie mit Niedertemperatursystemen verwendet werden.<br><i>Hinweis: Fußbodenheizungen in Estrich sind sehr träge Systeme und ein Faktor über 2 wird nicht empfohlen.</i>"
         },"indoor_options_label": {
-            "SE":"<b>Inomhusreglering</b>"
+            "SE":"<b>Inomhusreglering</b>",
+            "EN":"<b>Indoor temperature control</b>",
+            "DE":"<b>Innentemperatur-Regelung</b>"
         },"indoor_options_off": {
-            "SE":"Avaktiverat"
+            "SE":"Avaktiverat",
+            "EN":"Deactivated",
+            "DE":"Deaktiviert"
         },"indoor_options_nibe": {
-            "SE":"Nibes Inomhusreglering"
+            "SE":"Nibes Inomhusreglering",
+            "EN":"Nibes Indoor temperature control",
+            "DE":"Nibes Innentemperatur-Regelung"
         },"indoor_options_nibepi": {
-            "SE":"NibePis Inomhusreglering"
+            "SE":"NibePis Inomhusreglering",
+            "EN":"NibePis Indoor temperature control",
+            "DE":"NibePis Innentemperatur-Regelung"
         },"indoor_set": {
-            "SE":"<b>Inomhus börvärde</b><br><i>Ställ rumsbörvärdet här. Samma värde visas/ändras i värmepumpen</i>"
+            "SE":"<b>Inomhus börvärde</b><br><i>Ställ rumsbörvärdet här. Samma värde visas/ändras i värmepumpen</i>",
+            "EN":"<b>Indoor temperature set value</b><br><i>Set the room temperature setpoint here. The same value is shown/changed in the heatpump</i>",
+            "DE":"<b>Raumtemperatur Sollwert</b><br><i>Stelle hier den Sollwert für die Raumtemperatur ein. Der selbe Wert wird in der Wärmepumpe angezeigt/geändert</i>"
         },"indoor_diff": {
-            "SE":"<b>Avvikelse</b><br><i>Ungefärlig uträkning för hur mycket temperaturen avviker från börvärdet.</i>"
+            "SE":"<b>Avvikelse</b><br><i>Ungefärlig uträkning för hur mycket temperaturen avviker från börvärdet.</i>",
+            "EN":"<b>Deviation</b><br><i>Approximate calculation of how much the room temperature deviates from the setpoint.</i>",
+            "DE":"<b>Regelabweichung</b><br><i>Ungefähre Berechnung, um wie viel die Raumtemperatur vom Sollwert abweicht.</i>"
         },"indoor_temp": {
-            "SE":"<b>Inomhustemperatur</b>"
+            "SE":"<b>Inomhustemperatur</b>",
+            "EN":"<b>Indoor temperature</b>",
+            "DE":"<b>Raumtemperatur</b>"
         },"indoor_curveadjust": {
-            "SE":"<b>Kurvjustering</b><br><i>Aktuell kurvjustering vid NibePis reglering</i>"
+            "SE":"<b>Kurvjustering</b><br><i>Aktuell kurvjustering vid NibePis reglering</i>",
+            "EN":"<b>Curve adjustment</b><br><i>Current curve adjustment according to NibePis control</i>",
+            "DE":"<b>Kurvenanpassung</b><br><i>Aktuelle Kurvenanpassung entsprechend NibePi's Regelung</i>"
         },"indoor_factor": {
-            "SE":"<b>Faktor för rumsgivare</b><br><i>Ställ in hur mycket rumsgivaren ska påverka framledningstemperaturen.</i>"
+            "SE":"<b>Faktor för rumsgivare</b><br><i>Ställ in hur mycket rumsgivaren ska påverka framledningstemperaturen.</i>",
+            "EN":"<b>Room sensor factor</b><br><i>Define how much the room temperature sensor affects the supply temperature.</i>",
+            "DE":"<b>Raumtemperatur-Faktor</b><br><i>Lege fest, wie start der Raumtemperatursensor die Vorlauftemperatur beeinflusst.</i>"
         },"indoor_info_sensor": {
-            "SE":"<p>Välj en temperaturgivare som ska användas i grafen och för ekvationen<br><i>OBS. Endast för reglering via NibePi</i></p>"
+            "SE":"<p>Välj en temperaturgivare som ska användas i grafen och för ekvationen<br><i>OBS. Endast för reglering via NibePi</i></p>",
+            "EN":"<p>Select a temperature sensor to be used in the graph and the control alogrithm.<br><i>Note: Only for control via NibePi</i></p>",
+            "DE":"<p>Wähle einen Temperatursensor, der für das Diagramm und die Berechnung verwendet werden soll.<br><i>Hinweis: Nur bei Steuerung via NibePi</i></p>"
         },"indoor_sensor_label": {
-            "SE":"<b>Välj rumsgivare</b>"
+            "SE":"<b>Välj rumsgivare</b>",
+            "EN":"<b>Select temperature sensor</b>",
+            "DE":"<b>Temperatursensor wählen</b>"
         },"indoor_settings_info": {
-            "SE":"<p><b>Inställningar</b></p><br>Övergripande inställningar för inomhusregleringen"
+            "SE":"<p><b>Inställningar</b></p><br>Övergripande inställningar för inomhusregleringen",
+            "EN":"<p><b>Settings</b></p><br>General settings for the room temperature control",
+            "DE":"<p><b>Einstellungen</b></p><br>Allgemeine Einstellungen für die Raumtemperatur-Regelung"
         },"indoor_settings_outside": {
-            "SE":"<b>Utomhustemperatur blockering</b><br><i>Välj vid vilken utomhustemperatur som värmen ska blockeras</i>"
+            "SE":"<b>Utomhustemperatur blockering</b><br><i>Välj vid vilken utomhustemperatur som värmen ska blockeras</i>",
+            "EN":"<b>Heating stop</b><br><i>Select at which outside temperature the heating should be stopped.</i>",
+            "DE":"<b>Heizungsstop</b><br><i>Einstellung bei welcher Außentemperatur die Heizung stoppen soll.</i>"
         },"indoor_data_dm": {
-            "SE":"<b>Gradminuter</b>"
+            "SE":"<b>Gradminuter</b>",
+            "EN":"<b>Degree minutes</b>",
+            "DE":"<b>Gradminuten</b>"
         },"indoor_outside": {
-            "SE":"<b>Utomhustemperatur</b>"
+            "SE":"<b>Utomhustemperatur</b>",
+            "EN":"<b>Outside temperature</b>",
+            "DE":"<b>Außentemperatur</b>"
         },"last_updated": {
-            "SE":"<b>Senast uppdaterad</b>"
+            "SE":"<b>Senast uppdaterad</b>",
+            "EN":"<b>Last update</b>",
+            "DE":"<b>Zuletzt aktualisiert</b>"
         },"indoor_data_info": {
-            "SE":"<p><b>Data</b></p>"
+            "SE":"<p><b>Data</b></p>",
+            "EN":"<p><b>Data</b></p>",
+            "DE":"<p><b>Daten</b></p>"
         },"dm_reset_enable": {
-            "SE":"<b>Gradminut återställning</b><br><i>När inomhusbörvärdet är uppnått så återställs gradminuter till startvärdet<br>Ställ in hur många grader över inomhusbörvärdet det ska aktiveras vid</i>"
+            "SE":"<b>Gradminut återställning</b><br><i>När inomhusbörvärdet är uppnått så återställs gradminuter till startvärdet<br>Ställ in hur många grader över inomhusbörvärdet det ska aktiveras vid</i>",
+            "EN":"<b>Degree minute reset</b><br><i>When the indoor temperature setpoint is reached, the degree minutes will be reset to the start value.<br>Define at which temperature above the setpoint this should happen.</i>",
+            "DE":"<b>Gradminuten reset</b><br><i>Bei Erreichen der Innenraum-Solltemperatur werden die Gradminuten auf den Anfangswert zurückgesetzt.<br>Stelle ein, bei wieviel Grad über dem Sollwert das passieren soll.</i>"
         },"dm_reset_enable_stop": {
-            "SE":"<b>Stoppa värmeproduktion</b><br><i>När inomhusbörvärdet är uppnått så återställs gradminuter till 100 och värmepumpen stannar<br>Ställ in hur många grader över inomhusbörvärdet det ska aktiveras vid</i>"
+            "SE":"<b>Gradminut återställning</b><br><i>När inomhusbörvärdet är uppnått så återställs gradminuter till startvärdet<br>Ställ in hur många grader över inomhusbörvärdet det ska aktiveras vid</i>",
+            "EN":"<b>Stop heat production</b><br><i>When the indoor temperature set point is reached, the degree minutes will be reset to the start value.<br>Define at which temperature above the setpoint this should happen.</i>",
+            "DE":"<b>Wärmeerzeugung stoppen</b><br><i>Bei Erreichen der Innenraum-Solltemperatur werden die Gradminuten auf den Anfangswert zurückgesetzt.<br>Stelle ein, bei wieviel Grad über dem Sollwert das passieren soll.</i>"
         },"diff": {
-            "SE":"<p><b>Differens</b></p>"
+            "SE":"<p><b>Differens</b></p>",
+            "EN":"<p><b>Difference</b></p>",
+            "DE":"<p><b>Differenz</b></p>"
         },"co2_limit": {
-            "SE":"<b>Gränsvärde CO2</b>"
+            "SE":"<b>Gränsvärde CO2</b>",
+            "EN":"<b>CO2 limit</b>",
+            "DE":"<b>CO2 Grenzwert</b>"
         },"airflow": {
-            "SE":"<b>Luftflöde</b>"
+            "SE":"<b>Luftflöde</b>",
+            "EN":"<b>Airflow</b>",
+            "DE":"<b>Luftstrom</b>"
         },"low_cpr_freq": {
-            "SE":"<b>Kompressorfrekvens</b>"
+            "SE":"<b>Kompressorfrekvens</b>",
+            "EN":"<b>Compressor frequency</b>",
+            "DE":"<b>Kompressorfrequenz</b>"
         },"enable_co2": {
-            "SE":"<b>Aktivera CO2 givare</b>"
+            "SE":"<b>Aktivera CO2 givare</b>",
+            "EN":"<b>Activate CO2 sensor</b>",
+            "DE":"<b>CO2 Sensor aktivieren</b>"
         },"filter_value": {
-            "SE":"<b>Kalibrera</b>"
+            "SE":"<b>Kalibrera</b>",
+            "EN":"<b>Calibrate</b>",
+            "DE":"<b>Kalibrieren</b>"
         },"fan_efficiency": {
-            "SE":"<b>Effektivitet</b>"
+            "SE":"<b>Effektivitet</b>",
+            "EN":"<b>Efficiency</b>",
+            "DE":"<b>Effizienz</b>"
         },"fan_low_info": {
-            "SE":"<p><b>Sänk luftflöde</b></p><br>Sänk luftflödet vid låg kompressorfrekvens<br><i>Ange under vilken kompressorfrekvens det aktiveras, samt vilket luftflöde som ska hållas, om CO2 givare är aktiverad välj ett värde som nivån måste understiga"
+            "SE":"<p><b>Sänk luftflöde</b></p><br>Sänk luftflödet vid låg kompressorfrekvens<br><i>Ange under vilken kompressorfrekvens det aktiveras, samt vilket luftflöde som ska hållas, om CO2 givare är aktiverad välj ett värde som nivån måste understiga",
+            "EN":"<p><b>Reduce airflow</b></p><br> Decrease airflow at low compressor frequencies <br> <i> Specify below which compressor frequency it is activated, and which airflow to maintain, if CO2 sensor is activated select a value that the level must be below",
+            "DE":"<p><b>Luftstrom reduzieren</ b></p><br> Luftstrom bei niedriger Kompressorfrequenz verringern <br> <i> Gib an, unter welcher Kompressorfrequenz die Funktion aktiviert ist und welcher Luftstrom beibehalten werden soll, wenn CO2-Sensor aktiviert ist Wählen Sie einen Wert, unter dem der Füllstand liegen muss. "
         },"fan_co2_force_info": {
-            "SE":"<p><b>CO2 Forcering av luftflöde</b></p><br>Vid högt CO2 värde kan ventilationen forceras, ange vilket värde som ska överstigas och vilket luftflöde som ska hållas"
+            "SE":"<p><b>CO2 Forcering av luftflöde</b></p><br>Vid högt CO2 värde kan ventilationen forceras, ange vilket värde som ska överstigas och vilket luftflöde som ska hållas",
+            "EN":"<p><b>CO2 Force airflow</b></p><br>At high CO2 levels, ventilation can be forced. Specify which value is to be exceeded and which airflow is to be maintained",
+            "DE":"<p><b>CO2 Luftstrom erzwingen</b></p><br>Bei hohem CO2-Wert kann die Belüftung erzwungen werden. Gib an, welcher Wert überschritten werden muss und welcher Luftstrom aufrecht erhalten werden soll."
         },"fan_filter_info": {
-            "SE":"<p><b>Filterövervakning</b></p><br>Aktivera övervakning av filter, vid rengöring av filter behöver anläggningen kalibreras första gången<br><i>Under uppbyggnad...</i>"
+            "SE":"<p><b>Filterövervakning</b></p><br>Aktivera övervakning av filter, vid rengöring av filter behöver anläggningen kalibreras första gången<br><i>Under uppbyggnad...</i>",
+            "EN":"<p><b>Filter monitoring</b></p><br>Activate filter monitoring. When you clean the filter, the system has to be re-calibrated.<br><i>Under development ...</i>",
+            "DE":"<p><b>Filterüberwachung</b></p><br>Aktivierung der Filterüberwachung. Wenn du den Filter reinigst, muss das System neu kalibriert werden.<br><i>In Entwicklung ...</i>"
         },"fan_degree_info": {
-            "SE":"<p><b>Forcering vid låga gradminuter</b></p><br>För att öka effektiviteten på kompressorn så kan luftflödet öka när gradminuterna börjar närma sig start för tillsats."
+            "SE":"<p><b>Forcering vid låga gradminuter</b></p><br>För att öka effektiviteten på kompressorn så kan luftflödet öka när gradminuterna börjar närma sig start för tillsats.",
+            "EN":"<p><b>Force airflow at low degree minutes</b></p><br>To increase efficiency of the compressor, the airflow can be increased when the degree minutes start reaching the start value for additional heating, thus preventing that.",
+            "DE":"<p><b>Erzwingen bei niedrigen Gradminuten</b></p><br>Um die Effizienz des Kompressors zu erhöhen, kann der Luftstrom angehoben werden, wenn die Gradminuten positive Werte erreichen."
         },"fan_sensor_label": {
-            "SE":"<b>Välj CO2 givare</b>"
+            "SE":"<b>Välj CO2 givare</b>",
+            "EN":"<b>Select CO2 sensor</b>",
+            "DE":"<b>CO2 sensor auswählen</b>"
         },"fan_last_cal": {
-            "SE":"<b>Senaste kalibrering</b>"
+            "SE":"<b>Senaste kalibrering</b>",
+            "EN":"<b>Last calibration</b>",
+            "DE":"<b>Letzte Kalibrierung</b>"
         },"fan_info": {
-            "SE":"<p><b>Automatiskt luftflöde</b></p><br>Justerar automatiskt fläkthastigheten och kompenserar för smutsigt filter eller andra tillfälliga variationer i luftflödet.<br><i>OBS. Ingen justering utförs under avfrostning/forcering/låg förångartemperatur. Detta för att undvika ökning av luftflödet medans påisning pågår"
+            "SE":"<p><b>Automatiskt luftflöde</b></p><br>Justerar automatiskt fläkthastigheten och kompenserar för smutsigt filter eller andra tillfälliga variationer i luftflödet.<br><i>OBS. Ingen justering utförs under avfrostning/forcering/låg förångartemperatur. Detta för att undvika ökning av luftflödet medans påisning pågår",
+            "EN":"<p><b>Automatic airflow</b></p><br>Automatically adjusts the fan speed and compensates for dirty filters or other temporary variations in the airflow.<br><i>NOTE: No adjustment is made during defrosting/forcing/low evaporator temperature. This is to avoid increasing the airflow while icing is in progress",
+            "DE":"<p><b>Automatischer Luftstrom </b></p><br> Passt die Lüfterdrehzahl automatisch an und gleicht verschmutzte Filter oder andere vorübergehende Schwankungen des Luftstroms aus. <br><i>HINWEIS: Es wird keine Einstellung vorgenommen während des Abtauens/Forcierens/niedriger Verdampfertemperatur. Dies soll verhindern, dass der Luftstrom während der Vereisung erhöht wird."
         },"fan_size": {
-            "SE":"<b>Rekommenderat luftflöde</b><br><i>Det minsta rekommenderade flödet enligt angiven yta</i>"
+            "SE":"<b>Rekommenderat luftflöde</b><br><i>Det minsta rekommenderade flödet enligt angiven yta</i>",
+            "EN":"<b>Recommended airflow</b><br><i>The recommended minimum airflow for the given area. </i>",
+            "DE":"<b>Empfohlener Luftstrom</b><br><i>Der empfohlene Mindestluftstrom für den angegeben Bereich. </i>"
         },"log_enable": {
-            "SE":"<b>Loggning på</b><br><i>Aktiverar loggning, OBS loggning sparas endast i arbetsminnet</i>"
+            "SE":"<b>Loggning på</b><br><i>Aktiverar loggning, OBS loggning sparas endast i arbetsminnet</i>",
+            "EN":"<b>Activate logging</b><br><i>Activates the logging. Note: Logs are only stored in RAM</i>",
+            "DE":"<b>Protokollierung aktivieren</b><br><i>Aktiviert die Protokollierung. Hinweis: Logdateien werden nur im Arbeitsspeicher abgelegt.</i>"
         },"log_info": {
-            "SE":"<b>INFO</b>"
+            "SE":"<b>INFO</b>",
+            "EN":"<b>INFO</b>",
+            "DE":"<b>INFO</b>"
         },"log_error": {
-            "SE":"<b>ERROR</b>"
+            "SE":"<b>ERROR</b>",
+            "EN":"<b>ERROR</b>",
+            "DE":"<b>ERROR</b>"
         },"log_debug": {
-            "SE":"<b>DEBUG</b>"
+            "SE":"<b>DEBUG</b>",
+            "EN":"<b>DEBUG</b>",
+            "DE":"<b>DEBUG</b>"
         },"log_core": {
-            "SE":"<b>CORE</b>"
+            "SE":"<b>CORE</b>",
+            "EN":"<b>CORE</b>",
+            "DE":"<b>CORE</b>"
         },"log_fan": {
-            "SE":"<b>Automatiskt Luftflöde</b>"
+            "SE":"<b>Automatiskt Luftflöde</b>",
+            "EN":"<b>Automatic airflow</b>",
+            "DE":"<b>Automatischer Luftstrom</b>"
         },"log_diag": {
-            "SE":"<b>Diagnostik</b>"
+            "SE":"<b>Diagnostik</b>",
+            "EN":"<b>Diagnostics</b>",
+            "DE":"<b>Diagnostik</b>"
         },"log_weather": {
-            "SE":"<b>Prognosreglering</b>"
+            "SE":"<b>Prognosreglering</b>",
+            "EN":"<b>Forecast control</b>",
+            "DE":"<b>Prognoseregelung</b>"
         },"price_very_high": {
-            "SE":"<b>Väldigt högt pris</b>"
+            "SE":"<b>Väldigt högt pris</b>",
+            "EN":"<b>Very high price</b>",
+            "DE":"<b>Sehr hoher Preis</b>"
         },"price_high": {
-            "SE":"<b>Högt pris</b>"
+            "SE":"<b>Högt pris</b>",
+            "EN":"<b>High price</b>",
+            "DE":"<b>Hoher Preis</b>"
         },"price_normal": {
-            "SE":"<b>Normalt pris</b>"
+            "SE":"<b>Normalt pris</b>",
+            "EN":"<b>Normal price</b>",
+            "DE":"<b>Normaler Preis</b>"
         },"price_low": {
-            "SE":"<b>Lågt pris</b>"
+            "SE":"<b>Lågt pris</b>",
+            "EN":"<b>Low price</b>",
+            "DE":"<b>Niedriger Preis</b>"
         },"price_very_low": {
-            "SE":"<b>Väldigt lågt pris</b>"
+            "SE":"<b>Väldigt lågt pris</b>",
+            "EN":"<b>Very low price</b>",
+            "DE":"<b>Sehr niedriger Preis</b>"
         },"price_nibe_label": {
-            "SE":"<b>Nibes Elprisreglering</b><br><i>För att kunna använda sig av Nibe Uplinks elprisnivåer behöver det aktiveras i värmepumpen först</i>"
+            "SE":"<b>Nibes Elprisreglering</b><br><i>För att kunna använda sig av Nibe Uplinks elprisnivåer behöver det aktiveras i värmepumpen först</i>",
+            "EN":"<b>Nibe electricity price adaption</b><br><i>To be able to use the electricity price adaption, it has to be activated in the heatpump first.</i>",
+            "DE":"<b>Nibe Strompreisregelung</b><br><i>Um die Strompreisregelung zu verwenden, muss sie erst in der Wärmepumpe eingeschaltet werden.</i>"
         },"price_nibepi_label": {
-            "SE":"<b>NibePis Elprisreglering</b><br><i>Aktiverar NibePis elprisreglering och alla parametrar ställs in här</i>"
+            "SE":"<b>NibePis Elprisreglering</b><br><i>Aktiverar NibePis elprisreglering och alla parametrar ställs in här</i>", 
+            "EN":"<b>NibePi electricity price adaption</b><br><i>Activates NibePis electricity price adaption and all parameters will be managed from here.</i>",
+            "DE":"<b>NibePis Strompreisregelung</b><br><i>Aktiviert NibePi's Strompreisregelung und alle Parameter werden dann hier eingestellt.</i>"
         },"economy": {
-            "SE":"Ekonomi"
+            "SE":"Ekonomi",
+            "EN":"Economy",
+            "DE":"Sparmodus"
         },"normal": {
-            "SE":"Normal"
+            "SE":"Normal",
+            "EN":"Normal",
+            "DE":"Normal"
         },"luxury": {
-            "SE":"Lyx"
+            "SE":"Lyx",
+            "EN":"Luxury",
+            "DE":"Luxus"
         },"tooltip": {
             "SE":"Välj",
-            "EN":"Select"
+            "EN":"Select",
+            "DE":"Auswählen"
         },"price_info": {
-            "SE":"<p><b>Information</b></p><br>NibePi kan reglera efter elprisnivån. Uppgifter kan hämtas från antingen Nibe Uplink eller Tibber.<br>För att säkerställa komfort tas alltid inomhustemperaturen i beaktning vid reglering"
+            "SE":"<p><b>Information</b></p><br>NibePi kan reglera efter elprisnivån. Uppgifter kan hämtas från antingen Nibe Uplink eller Tibber.<br>För att säkerställa komfort tas alltid inomhustemperaturen i beaktning vid reglering",
+            "EN":"<p><b>Information</b></p><br>NibePi can control the heat production based on electricity price. Energy prices come either from NibeUplink or Tibber.<br>To guarantee comfort, room temperature is always taken into account.",
+            "DE":"<p><b>Information</b></p><br>NibePi kann die Wärmeerzeugung nach dem aktuellen Strompreis regeln. Die Strompreise werden von NibeUplink oder Tibber bezogen.<br>Um den Komfort zu erhalten, wird die aktuelle Raumtemperatur mit in Betracht gezogen."
         },"price_now": {
-            "SE":"<b>Nuvarande Elpris</b>"
+            "SE":"<b>Nuvarande Elpris</b>",
+            "EN":"<b>Current electricity price</b>",
+            "DE":"<b>Aktueller Strompreis</b>"
         },"price_now_level": {
-            "SE":"<b>Nuvarande Elprisnivå</b>"
+            "SE":"<b>Nuvarande Elprisnivå</b>",
+            "EN":"<b>Current electricity level</b>",
+            "DE":"<b>Aktuelles Strompreisniveau</b>"
         },"unknown": {
-            "SE":"<b>Okänt</b>"
+            "SE":"<b>Okänt</b>",
+            "EN":"<b>Unknown</b>",
+            "DE":"<b>Unbekannt</b>"
         },"currency": {
-            "SE":"öre"
+            "SE":"öre",
+            "EN":"öre",
+            "DE":"öre"
         },"price_hw_settings": {
-            "SE":"<p><b>Inställningar för varmvatten</b></p><br>Välj vilken varmvatten inställning det ska vara vid olika elprisnivåer"
+            "SE":"<p><b>Inställningar för varmvatten</b></p><br>Välj vilken varmvatten inställning det ska vara vid olika elprisnivåer",
+            "EN":"<p><b>Hot water settings</b></p><br>Select hot water settings for different electricity price levels.",
+            "DE":"<p><b>Wamrwassereinstellungen</b></p><br>Wähle die Wamrwassereinstellungen für die unterschiedlichen Strompreisniveaus."
         },"price_settings": {
-            "SE":"<p><b>Inställningar</b></p><br>Välj vilken reglering som ska gälla. Med styrning av NibePi så välj datakälla. För integrering mot Tibber, använd din personliga token som finns att hämta från https://developer.tibber.com/"
+            "SE":"<p><b>Inställningar</b></p><br>Välj vilken reglering som ska gälla. Med styrning av NibePi så välj datakälla. För integrering mot Tibber, använd din personliga token som finns att hämta från https://developer.tibber.com/",
+            "EN":"<p><b>Settings</b></p><br>Select, which control mechanism should be used. With NibePi control, select the data source. For integration with Tibber, please use your personal access token, which can be obtained from  https://developer.tibber.com/",
+            "DE":"<p><b>Einstellungen</b></p><br>Wähle aus, welcher Regelmechanismus verwendet werden soll. Für NibePi Regeleung, bitte die Datenquelle wählen. Für die Verwendung von Tibber muss ein persönliches Acces-Token verwendet werden. Dieses kist hier erhältlich: https://developer.tibber.com/"
         },"price_enable_hw": {
-            "SE":"<b>Aktivera varmvattenreglering</b>"
+            "SE":"<b>Aktivera varmvattenreglering</b>",
+            "EN":"<b>Enable hot water control</b>",
+            "DE":"<b>Warmwasserregelung aktivieren</b>"
         },"price_smart1_info": {
-            "SE":"<i>OBS. För att kunna använda prisnivåer från Nibe Uplink måste Nibes SmartPrice vara aktiverat i värmepumpen manuellt under meny 4.1.6 Smart Price Adaption.<br>Alla åtgärder ska däremot nollställas för att NibePi ska kunna styra.</i>"
+            "SE":"<i>OBS. För att kunna använda prisnivåer från Nibe Uplink måste Nibes SmartPrice vara aktiverat i värmepumpen manuellt under meny 4.1.6 Smart Price Adaption.<br>Alla åtgärder ska däremot nollställas för att NibePi ska kunna styra.</i>",
+            "EN":"<i>Note: To be able to use price levels from NibeUplink, SmartPrice needs to be enabled in the heatpump from menu 4.1.6 Smart Price Adaption.<br>All settings need to be reset to default for NibePi to be able to control the system.</i>",
+            "DE":"<i>Hinweis: Um die Preisniveaus von NibeUplink zu verwenden, muss SmartPrice im Menü 4.1.6 Smart Price Adaption der Wärmepumpe aktiviert werden.<br>Alle Einstellungen müssen jedoch auf Standardwerte zurückgesetzt werden, damit NibePi das System steuern kann.</i>"
         },"price_sensor_info": {
-            "SE":"Begränsa elprisregleringens påverkan med hjälp av en rumsgivare.<br>Ställ in en differens för den lägsta temperaturen som tillåts vid högt elpris för reglering mot ditt rumsbörvärde."
+            "SE":"Begränsa elprisregleringens påverkan med hjälp av en rumsgivare.<br>Ställ in en differens för den lägsta temperaturen som tillåts vid högt elpris för reglering mot ditt rumsbörvärde.",
+            "EN":"Limit the influence of the price adaption by means of a room temperature sensor.<br>Set the lowest temperature allowed at high electricity prices.",
+            "DE":"Begrenzung der Auswirkung des Strompreises<br>Definiere eine Temperaturdifferenz die auch bei hohem Strompreis nicht unterschritten werden darf."
         },"price_s1_info": {
-            "SE":"<p><b>Elprisreglering S1</b></p><br>Välj hur mycket kurvjusteringen ska justeras vid olika prisnivåer.<br>Reglering mot rumsgivare rekommenderas starkt, ibland förekommer det längre perioder av samma låga eller höga pris"
+            "SE":"<p><b>Elprisreglering S1</b></p><br>Välj hur mycket kurvjusteringen ska justeras vid olika prisnivåer.<br>Reglering mot rumsgivare rekommenderas starkt, ibland förekommer det längre perioder av samma låga eller höga pris",
+            "EN":"<p><b>Electricity price adaption S1</b></p><br>Select the curve adaption for different price levels.<br>Regulation against room temperature sensors is strongly recommended since there might be longer periods of high prices.",
+            "DE":"<p><b>Strompreisregelung S1</b></p><br>Stelle die Kurvenanpassung für die unterschiedlichen Strompreisniveaus ein.<br>Regelung gegen einen Temperatursensor wird strengstens empfohlen, da es durchaus lange Phasen mit hohen Strompreisen geben kann."
         },"price_s2_info": {
-            "SE":"<p><b>Elprisreglering S2</b></p><br>Välj hur mycket kurvjusteringen ska justeras vid olika prisnivåer.<br>Reglering mot rumsgivare rekommenderas starkt, ibland förekommer det längre perioder av samma låga eller höga pris"
+            "SE":"<p><b>Elprisreglering S2</b></p><br>Välj hur mycket kurvjusteringen ska justeras vid olika prisnivåer.<br>Reglering mot rumsgivare rekommenderas starkt, ibland förekommer det längre perioder av samma låga eller höga pris",
+            "EN":"<p><b>Electricity price adaption S2</b></p><br>Select the curve adaption for different price levels.<br>Regulation against room temperature sensors is strongly recommended since there might be longer periods of high prices.",
+            "DE":"<p><b>Strompreisregelung S2</b></p><br>Stelle die Kurvenanpassung für die unterschiedlichen Strompreisniveaus ein.<br>Regelung gegen einen Temperatursensor wird strengstens empfohlen, da es durchaus lange Phasen mit hohen Strompreisen geben kann."
         },"indoor_sensor": {
-            "SE":"<b>Rumsgivare</b>"
+            "SE":"<b>Rumsgivare</b>",
+            "EN":"<b>Room sensor</b>",
+            "DE":"<b>Raumtemperatursensor</b>"
         },"difference": {
-            "SE":"<b>Differens</b>"
+            "SE":"<b>Differens</b>",
+            "EN":"<b>Difference</b>",
+            "DE":"<b>Abweichung</b>"
         },"price_s1_graph": {
-            "SE":"<p><b>Graf S1</b></p>"
+            "SE":"<p><b>Graf S1</b></p>",
+            "EN":"<p><b>Graph S1</b></p>",
+            "DE":"<p><b>Diagramm S1</b></p>"
         },"price_s2_graph": {
-            "SE":"<p><b>Graf S2</b></p>"
+            "SE":"<p><b>Graf S2</b></p>",
+            "EN":"<p><b>Graph S2</b></p>",
+            "DE":"<p><b>Diagramm S2</b></p>"
         },"time": {
             "SE":"<b>Tid</b>",
-            "EN":"<b>Time</b>"
+            "EN":"<b>Time</b>",
+            "DE":"<b>Zeit</b>"
         },"start_heat_info": {
-            "SE":"<p><b>Värmeinformation</b></p>"
+            "SE":"<p><b>Värmeinformation</b></p>",
+            "EN":"<p><b>Heating information</b></p>",
+            "DE":"<p><b>Wärme-Informationen</b></p>"
         },"start_info": {
-            "SE":"<p><b>Husinformation</b></p><br><p>För att använda Prognosreglering behöver husets koordinater anges.<br>Fastighetens storlek anges i kvm (Uppvärmd yta) och används för att beräkna rätt flöde för frånluftsvärmepumpar med automatiskt luftflöde</p>"
+            "SE":"<p><b>Husinformation</b></p><br><p>För att använda Prognosreglering behöver husets koordinater anges.<br>Fastighetens storlek anges i kvm (Uppvärmd yta) och används för att beräkna rätt flöde för frånluftsvärmepumpar med automatiskt luftflöde</p>",
+            "EN":"<p><b>House information</b></p><br><p>To use Forecast regulation, the house's coordinates need to be specified.<br>The size of the building is given in sqm (heated area) and is used to calculate the correct flow for exhaust air heatpumps with automatic airflow </p>",
+            "DE":"<p><b>Hausinformationen</b></p><br><p>Um die Prognoseregelung verwenden zu können, müssen die Koordinaten des Hauses angegeben werden.<br>Die Größe des Gebäudes wird in m² angegeben (beheizte Fläche) und wird verwendet, um den korrekten Durchfluss für Abluftwärmepumpen mit automatischem Luftstrom zu berechnen</p>"
         },"cpr_info": {
-            "SE":"<p><b>Kompressorförbrukning</b></p><br><p>Kompressorns förbrukning för värme och varmvatten<br><i>OBS. Notera att detta kan skilja sig avsevärt från en extern elmätare som mäter hela värmepumpens förbrukning</i></p>"
+            "SE":"<p><b>Kompressorförbrukning</b></p><br><p>Kompressorns förbrukning för värme och varmvatten<br><i>OBS. Notera att detta kan skilja sig avsevärt från en extern elmätare som mäter hela värmepumpens förbrukning</i></p>",
+            "EN":"<p><b>Compressor consumption</b></p><br><p>Compressor consumption for heating and hot water<br><i>NOTE: This can differ significantly from an external electricity meter that measures the entire heat pump consumption</i></p>",
+            "DE":"<p><b>Kompressorverbrauch</b></p><br><p>Kompressorverbrauch für Wärme und Warmwasser<br><i>HINWEIS: Beachte, dass dies erheblich von einem externen Stromzähler abweichen kann, der den gesamten Wärmepumpenverbrauch misst</i></p>"
         },"register_info": {
-            "SE":"<p><b>Registerhantering</b></p><br><p>Välj vilka register som ska hämtas från värmepumpen<br>Register aktiverade med LOG.SET är förvalda och går ej ta bort.<br>Alla valda register syns till höger och det senaste aktuella hämtade värdet visas.<br><i>OBS. Ju fler register som väljs kommer göra att registerna uppdateras mindre ofta. Detta eftersom att värmepumpen endast kan hantera ett visst antal meddelanden i sekunden.</i></p>"
+            "SE":"<p><b>Registerhantering</b></p><br><p>Välj vilka register som ska hämtas från värmepumpen<br>Register aktiverade med LOG.SET är förvalda och går ej ta bort.<br>Alla valda register syns till höger och det senaste aktuella hämtade värdet visas.<br><i>OBS. Ju fler register som väljs kommer göra att registerna uppdateras mindre ofta. Detta eftersom att värmepumpen endast kan hantera ett visst antal meddelanden i sekunden.</i></p>",
+            "EN":"<p><b>Register management</b></p><br><p>Select which registers are to be retrieved from the heatpump<br>Registers activated in the LOG.SET file are preselected and cannot be deleted<br><br>All selected registers are visible on the right and the last retrieved value is displayed.<br><i>NOTE: The more registers you select, the less often the registers will be updated. This is due to the fact that the heatpump can only process a certain amount registers per second.</i></p>",
+            "DE":"<p><b>Registerverwaltung</b></p><br><p>Wähle aus, welche Register von der Wärmepumpe abgerufen werden sollen.<br>In der LOG.SET Datei aktivierte Register sind vorausgewählt und können nicht gelöscht werden<br>Alle ausgewählten Register werden rechts angezeigt und der zuletzt abgerufene Wert wird angezeigt.<br><i> HINWEIS: Je mehr Register ausgewählt werden, desto seltener werden die Register aktualisiert. Dies liegt daran, dass die Wärmepumpe nur eine bestimmte Anzahl von Registern pro Sekunde verarbeiten kann.</i></p>"
         },"data_info": {
-            "SE":"<p><b>Datahantering</b></p><br><p>Alla valda register visas här under, inkl. nuvarande värde.<br>För att visa data i graf nedan, markera register i denna lista.<br><i>Historik sparas alltid för valda register, och finns tillgängliga att visas i grafen nedan.<br>För att historiken ska sparas efter omstart behöver funktionen \"Spara grafer\" aktiveras under Inställingar</p>"
+            "SE":"<p><b>Datahantering</b></p><br><p>Alla valda register visas här under, inkl. nuvarande värde.<br>För att visa data i graf nedan, markera register i denna lista.<br><i>Historik sparas alltid för valda register, och finns tillgängliga att visas i grafen nedan.<br>För att historiken ska sparas efter omstart behöver funktionen \"Spara grafer\" aktiveras under Inställingar</p>",
+            "EN":"<p><b>Data management</b></p><br><p> All selected registers are shown below, including current value.<br>To view data in graph below, select registers in this list.<br><i>Historical values are plotted in the graph below.<br>The data can be saved permanently using the function \"Save graphs\" in the menu item \"Installation\".</p>",
+            "DE":"<p><b>Datenverwaltung</b></p><br><p>Alle ausgewählten Register werden unten angezeigt, einschließlich des aktuellen Werts.<br>Um Daten in der folgenden Grafik anzuzeigen, wählen Register in dieser Liste aus.<br><i>Der Verlauf wird immer für ausgewählte Register gezeichnet. Über Funktion \"Grafiken speichern\" im Menüpunkt \"Installation\" können die Daten dauerhaft gespeichert werden.</p>"
         },"remove_register": {
-            "SE":"<b>Ta bort register</b>"
+            "SE":"<b>Ta bort register</b>",
+            "EN":"<b>Delete register</b>",
+            "DE":"<b>Register löschen</b>"
         },"hw_auto_lux_info": {
-            "SE":"<p><b>Automatisk tillfällig lyx</b></p><br>Vid stort uttag av varmvatten så kan tillfällig lyx startas automatiskt.<br>Injustering sker nedan med två värden, det ena är differens som bestämmer hur mycket botten på varmvattentanken ska sjunka i temperatur innan funktionen aktiveras<br>Tidfaktor anger hur lång bak i tiden differensen ska gälla. Se exempel under grafen"
+            "SE":"<p><b>Automatisk tillfällig lyx</b></p><br>Vid stort uttag av varmvatten så kan tillfällig lyx startas automatiskt.<br>Injustering sker nedan med två värden, det ena är differens som bestämmer hur mycket botten på varmvattentanken ska sjunka i temperatur innan funktionen aktiveras<br>Tidfaktor anger hur lång bak i tiden differensen ska gälla. Se exempel under grafen",
+            "EN":"<p><b>Automatic temporary luxury</b></p><br>When a big amount of hot water is used, temporary luxury mode can be set automatically.<br>Adjustment is done below with two values, one is difference that determines how much the bottom of the hot water tank should drop in temperature before the function is activated <br> Time factor indicates how far back in time the difference should be considered. See example under the graph",
+            "DE":"<p><b>Automatischer temporärer Luxus</b></p><br>Bei Entnahme großer Mengen an Warmwasser, kann der temporäre Luxus-Modus automatisch gestartet werden.<br>Die Einstellung erfolgt unten mittels zwei Werten. Zum einen über die Differenz, die bestimmt, um wie viel die Temperatur am Bodens des Warmwasserspeichers sinken muss, bevor die Funktion aktiviert wird.<br>Zum Anderen über den Zeitfaktor, der angibt wie lange die Differenz zurück betrachtet werden soll. Siehe Beispiel unter der Grafik"
         },"hw_priority_info": {
-            "SE":"<p><b>Varmvatten prioritet</b></p><br>Om tappvarmvattnet (BT7) understiger den minsta inställda nivån så startar varmvattenproduktion direkt.<br><i>Denna funktion hjälper till att prioritera varmvattnet under vinterperioden där värmen ofta prioriteras</i>"
+            "SE":"<p><b>Varmvatten prioritet</b></p><br>Om tappvarmvattnet (BT7) understiger den minsta inställda nivån så startar varmvattenproduktion direkt.<br><i>Denna funktion hjälper till att prioritera varmvattnet under vinterperioden där värmen ofta prioriteras</i>",
+            "EN":"<p><b>Hot water priority</b></p><br>If the domestic hot water (BT7) is below the minimum set level, hot water production starts immediately.<br><i>This function helps to prioritize hot water during the winter period where heat is often prioritized</i>",
+            "DE":"<p><b>Warmwasser-Priorität</b></p><br>Wenn das Brauchwarmwasser (BT7) unter dem eingestellten Mindestniveau liegt, beginnt die Heißwasserproduktion sofort.<br><i>Diese Funktion hilft bei der Priorisierung von heißem Wasser während der Winterperiode, in der Wärme häufig priorisiert wird.</i>"
         },"hw_auto_lux_info2": {
-            "SE":"<i>Exempel för badkar<br>För att kalibrera in funktionen så ställ grafen att visa 1 timma, det ger en detaljerad graf.<br>Notera vad klockan är och börja tappa upp badkaret, fyll upp badkaret rejält och kolla grafen efteråt. Du kommer se en ljusblå linje som dyker ner mot en orange linje som också dyker. Detta är samma linje men den nedre linjen är förskjuten med tidfaktorn, och avståndet mellan linjerna i höjdled är differensen. Om linjerna möts kommer funktionen att triggas och en grön linje kommer visa sig, när den ljusblå linjen har överstigit denna så stängs funktionen av.<br>Om linjerna precis missar varandra under tappningen så behöver tidfaktorn justeras till ett högre värde, om den ljusblåa linjen aldrig når ner till den orangea så behöver differensen sänkas.<br>Om funktionen triggas för enklare saker som dusch eller diskning så ska man höja differensen lite.<br>OBS. Grundinställningarna är i många fall tillräckliga och kan endast behöva justeras lite i tid för att fånga upp trögheten i olika system</i>"
+            "SE":"<i>Exempel för badkar<br>För att kalibrera in funktionen så ställ grafen att visa 1 timma, det ger en detaljerad graf.<br>Notera vad klockan är och börja tappa upp badkaret, fyll upp badkaret rejält och kolla grafen efteråt. Du kommer se en ljusblå linje som dyker ner mot en orange linje som också dyker. Detta är samma linje men den nedre linjen är förskjuten med tidfaktorn, och avståndet mellan linjerna i höjdled är differensen. Om linjerna möts kommer funktionen att triggas och en grön linje kommer visa sig, när den ljusblå linjen har överstigit denna så stängs funktionen av.<br>Om linjerna precis missar varandra under tappningen så behöver tidfaktorn justeras till ett högre värde, om den ljusblåa linjen aldrig når ner till den orangea så behöver differensen sänkas.<br>Om funktionen triggas för enklare saker som dusch eller diskning så ska man höja differensen lite.<br>OBS. Grundinställningarna är i många fall tillräckliga och kan endast behöva justeras lite i tid för att fånga upp trögheten i olika system</i>",
+            "EN":"<i>Example for a bathtub<br>To calibrate the function, set the graph to show 1 hour, it gives a detailed graph.<br>Note what time it is and start filling the bathtub. Check the graph afterwards. You will see a pale blue line that goes down to an orange line that is also falling. This is the same line but the bottom line is offset by the time factor, and the distance between the lines in height is the temperature difference. When both lines meet, the function will be triggered and a green line will appear, when the pale blue line has exceeded this green line, the function will be turned off.<br>If the lines miss eachother during filling of the tub, the time factor needs to be adjusted to a higher value. If the pale blue line never reaches the orange line, then the difference needs to be lowered.<br>If the function is triggered for smaller amounts of water, such as showering or washing dishes, you should increase the difference a little.<br>NOTE: The basic settings sufficient in most cases and may only need to be adjusted a little in time to catch up inertia in different systems</i>",
+            "DE":"<i>Beispiel für eine Badewanne <br> Um die Funktion zu kalibrieren, stelle das Diagramm so ein, dass 1 Stunde angezeigt wird. Es wird ein detailliertes Diagramm angezeigt.<br>Notiere die Uhrzeit und Beginne mit dem Füllen der Badewanne. Fülle die Badewanne komplett auf. Du siehst eine hellblaue Linie, die bis zu einer orangefarbenen Linie abfällt, welche ebenfalls einen abfallenden Verlauf hat. Dies ist dieselbe Linie, aber die untere Linie ist um den Zeitfaktor versetzt und der Abstand zwischen den Linien in der Höhe ist der Temperaturunterschied. Wenn sich die Linien treffen, wird die Funktion ausgelöst wird und eine grüne Linie erscheint. Wenn die hellblaue Linie diese überschritten hat, wird die Funktion ausgeschaltet.<br>Wenn sich die Linien beim Füllen der Wanne verfehlen, muss der Zeitfaktor auf einen höheren Wert eingestellt werden. Wenn die hellblaue Linie niemals die orangene erreicht, muss die Temperaturdifferenz verringert werden.<br> Wenn die Funktion für kleinere Wassermengen wie Duschen oder Geschirrspülen ausgelöst wird, sollte die Temperaturdifferenz ein Wenig erhöht werden.<br> HINWEIS: Die Grundeinstellungen sind in meißten Fällen ausreichend und müssen möglicherweise nur minimal angepasst werden, um die Trägheit unterschiedlicher Systeme zu kompensieren.</i>"
         },"hw_diff": {
-            "SE":"<b>Differens</b>"
+            "SE":"<b>Differens</b>",
+            "EN":"<b>Temperature difference</b>",
+            "DE":"<b>Temperaturunterschied</b>"
         },"hw_time": {
-            "SE":"<b>Tidfaktor</b>"
+            "SE":"<b>Tidfaktor</b>",
+            "EN":"<b>Time factor</b>",
+            "DE":"<b>Zeitfaktor</b>"
         },"result": {
-            "SE":"<b>Resultat</b>"
+            "SE":"<b>Resultat</b>",
+            "EN":"<b>Result</b>",
+            "DE":"<b>Ergebnis</b>"
+        },"register_add": {
+            "SE":"Lägg till register",
+            "EN":"Add register"
+        },"register_remove": {
+            "SE":"Ta bort register",
+            "EN":"Remove register"
+        },"testmode": {
+            "SE":"<b>Testläge</b><br><i>Aktiverar testläge, det är då möjligt att hämta data från register som inte finns med i registerlistan.</i>",
+            "EN":"<b>Testmode</b><br><i>Activates testmode, experimental feature which makes it possible to get data that are not in the registerlist.</i>"
+        },"advanced_2": {
+            "SE":"<p><b>Anslutning</b></p><br><p>Välj vilken typ av anslutning värmepumpen är ansluten till.<br>Efter ändring så behöver Node-RED startas om.</p>",
+            "EN":"<p><b>Connection</b></p><br><p>Select the connection to the heatpump.<br>After changing connection details, Node-RED needs to be restarted.</p>"
+        },"con_serialport": {
+            "SE":"<b>Serieport</b>",
+            "EN":"<b>Serialport</b>"
+        },"con_nibegw": {
+            "SE":"<b>NibeGW IP-adress</b>",
+            "EN":"<b>NibeGW IP-address</b>"
+        },"con_type": {
+            "SE":"<b>Anslutningsmetod</b>",
+            "EN":"<b>Connection type</b>"
+        },"con_series": {
+            "SE":"<b>Värmepumpserie</b>",
+            "EN":"<b>Heatpump series</b>"
+        },"tcp_server": {
+            "SE":"<b>Modbus-TCP/IP Server</b>",
+            "EN":"<b>Modbus-TCP/IP Host</b>"
+        },"tcp_port": {
+            "SE":"<b>Modbus-TCP/IP Port</b>",
+            "EN":"<b>Modbus-TCP/IP Port</b>"
+        },"tcp_pump": {
+            "SE":"<b>Modell</b>",
+            "EN":"<b>Model</b>"
+        },"serial": {
+            "SE":"Serieport",
+            "EN":"Serialport"
+        },"modbus": {
+            "SE":"Modbus TCP/IP",
+            "EN":"Modbus TCP/IP"
+        },"nibegw": {
+            "SE":"NibeGW",
+            "EN":"NibeGW"
+        },"fSeries": {
+            "SE":"F-Serien",
+            "EN":"F-Series",
+            "DE":"F-Serie"
+        },"sSeries": {
+            "SE":"S-Serien",
+            "EN":"S-Series",
+            "DE":"S-Serie"
         }
+
     }
 }

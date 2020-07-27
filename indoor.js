@@ -39,7 +39,7 @@ module.exports = function(RED) {
                     arr.push(insideSensor);
                 }
             }
-            let nibe_enabled = await server.nibe.reqData(server.hP()["inside_enable_"+config.system]);
+            let nibe_enabled = await server.nibe.reqData(server.hP()["inside_enable_"+config.system]).catch();
             if(nibe_enabled===undefined || nibe_enabled.data===undefined || nibe_enabled.data!==1 && conf.indoor['enable_'+config.system]!==true){ arr = [];}
                 server.initiatePlugin(arr,'indoor',config.system).then(data => {
                     node.status({ fill: 'green', shape: 'dot', text: `System ${system}` });
