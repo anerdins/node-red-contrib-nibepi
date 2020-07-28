@@ -3,7 +3,7 @@
     "name": "Fredrik Anerdin"
   },
   "dependencies": {
-    "nibepi": "github:anerdins/nibepi#master",
+    "nibepi": "github:anerdins/nibepi#snapshot",
     "node-cron": "^2.0.3",
     "suncalc": "^1.8.0",
     "node-red-dashboard": "~2.22.1",
