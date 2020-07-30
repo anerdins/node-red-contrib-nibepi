@@ -3,7 +3,7 @@
     "name": "Fredrik Anerdin"
   },
   "dependencies": {
-    "nibepi": "github:anerdins/nibepi#modbus-tcp",
+    "nibepi": "github:anerdins/nibepi#snapshot",
     "node-cron": "^2.0.3",
     "suncalc": "^1.8.0",
     "node-red-dashboard": "~2.22.1",
@@ -38,5 +38,5 @@
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "version": "1.0.5"
+  "version": "1.0.9"
 }

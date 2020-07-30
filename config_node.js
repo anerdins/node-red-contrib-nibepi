@@ -1987,7 +1987,9 @@ const checkTranslation = (node) => {
         var hourly = cron.schedule('0 * * * *', () => {
             if(nibe.core!==undefined && nibe.core.connected!==undefined && nibe.core.connected===true) {
             //let graph = this.context().global.get(`graphs`);
-            saveGraph();
+            saveGraph().catch(err => {
+                
+            });
             updateData(true);
             }
         })

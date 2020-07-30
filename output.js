@@ -22,7 +22,13 @@ module.exports = function(RED) {
                     nibe.getConfig();
                 } else if(msg.topic=="setConfig" || config.name=="setConfig") {
                    nibe.setConfig(msg.payload);
-                } else if(msg.topic=="addSensor" || config.name=="addSensor") {
+                } else if(msg.topic=="refreshConfig" || config.name=="refreshConfig") {
+                    nibe.refreshConfig();
+                    this.status({ fill: 'green', shape: 'dot', text: `Refreshing configuration` });
+                    timer[register] = setTimeout(() => {
+                        this.status({ fill: 'yellow', shape: 'dot', text: `` });
+                    }, 10000);
+                 } else if(msg.topic=="addSensor" || config.name=="addSensor") {
                     nibe.addSensor(msg.payload);
                 } else if(msg.topic=="removeSensor" || config.name=="removeSensor") {
                     nibe.removeSensor(msg.payload);

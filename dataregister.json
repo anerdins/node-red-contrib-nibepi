@@ -60,6 +60,7 @@
         "bs1_flow":"40050",
         "fan_speed":"47265",
         "alarm":"45001",
+        "alarm_reset":"45171",
         "vented":"40026",
         "cpr_set":"43182",
         "cpr_act":"43136",
