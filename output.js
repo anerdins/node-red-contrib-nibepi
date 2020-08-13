@@ -38,6 +38,15 @@ module.exports = function(RED) {
                     nibe.getRegister();
                 } else if(msg.topic=="removeRegister" || config.name=="removeRegister") {
                     nibe.removeRegister(msg.payload);
+                } else if(msg.topic=="sendSMS" || config.name=="sendSMS") {
+                    setTimeout(() => {
+                        this.status({ fill: 'yellow', shape: 'dot', text: `` });
+                    }, 10000);
+                    nibe.sendText(msg.payload.n,msg.payload.t).then(result => {
+                        this.status({ fill: 'green', shape: 'dot', text: `${result}` });
+                    }).catch(err => {
+                        this.status({ fill: 'red', shape: 'dot', text: `${err}` });
+                    });
                 } else if(msg.topic=="saveGraph" || config.name=="saveGraph") {
                     this.status({ fill: 'yellow', shape: 'dot', text: `Sparar grafer...` });
                     this.server.saveGraph().then(result => {

@@ -602,6 +602,14 @@
             "SE":"S-Serien",
             "EN":"S-Series",
             "DE":"S-Serie"
+        },"sms_label": {
+            "SE":"<p><b>SMS</b></p><br>Skicka SMS från din NibePi, för att skicka sms till valfritt nummer, använd MQTT.<br>Exempel på kommando \"nibe/modbus/sms/TELENR/set\" skriv texten i din payload.",
+            "EN":"<p><b>SMS</b></p><br>",
+            "DE":"<p><b>SMS</b></p><br>"
+        },"sms_info": {
+            "SE":"<b>Guide</b><br>För att aktivera funktionen, skicka ett SMS till 079 304 93 67 med ditt ID nr och PIN kod. T.ex \"1234abcdef 123321\".<br><i>All information (Telefonnr och meddelande) krypteras i NibePi med en unik nyckel (aes-256-cbc) genererad av PIN koden, genom att skicka in PIN koden till Anerdins Moln via SMS erhålls en god säkerhet och molnet får möjlighet att avkryptera meddelandena och skicka vidare som SMS. OBS. Inga telefonnummer eller text sparas.</i>",
+            "EN":"",
+            "DE":""
         }
 
     }
