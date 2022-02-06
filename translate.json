@@ -104,6 +104,30 @@
             "SE":"<p><b>MQTT</b></p><br>Aktivera åtkomst till MQTT broker.<br>NibePi har en inbyggd broker på 127.0.0.1:1883<br>Det går även att använda en extern broker, ändra bara anslutningsdetaljerna. <br>Aktivera HA Discovery om Home Assistant automatiskt ska upptäcka aktiverade givare från NibePi",
             "EN":"<p><b>MQTT</b></p><br>Activate the MQTT broker.<br>NibePi has an internal MQTT broker that runs on 127.0.0.1:1883, You can also use an external broker just by changing the connection details. Activate HA auto discovery, if Home Assistant should detect NibePi's sensors automatically.",
             "DE":"<p><b>MQTT</b></p><br>Aktiviert den MQTT broker.<br>NibePi hat einen internen MQTT Broker, der auf 127.0.0.1:1883 läuft.<br>Wenn deaktiviert, kann hier ein externer Broker angegeben werden.<br>Aktiviere HA Auto Discovery, wenn HomeAssistant die NibePi Sensoren automatisch erkennen soll."
+        },"plejd_info": {
+            "SE":"<p><b>Plejd</b></p><br>Aktivera Plejd MQTT Gateway.<br>NibePi kan simulera en Plejd MQTT Gateway via ett projekt som heter plejd2mqtt.<br>Home Assistant/OpenHAB kan automatiskt upptäcka Plejdenheterna via MQTT Discovery<br>Ange den MQTT Broker nedan som gatewayen ska ansluta till.<br>NibePi har en inbyggd broker på 127.0.0.1:1883<br>"
+        },"plejd_login": {
+            "SE":"Ange Inloggningsinformation till Plejds molntjänst för att få kontakt med enheterna<br>OBS. Vid ändringar behöver gatewayen startas om<br>"
+        },"cloud_name": {
+            "SE":"<b>Anläggning</b>",
+            "EN":"<b>Place</b>"
+        },"cloud_user": {
+            "SE":"<b>E-post</b>",
+            "EN":"<b>E-mail</b>"
+        },"cloud_pass": {
+            "SE":"<b>Lösenord</b>",
+            "EN":"<b>Password</b>"
+        },"plejd_enable": {
+            "SE":"<b>Aktivera Plejd Gateway</b>",
+            "EN":"<b>Enable Plejd Gateway</b>"
+        },"plejd_disable": {
+            "SE":"<b>Inaktivera Plejd Gateway</b>",
+            "EN":"<b>Disable Plejd Gateway</b>"
+        },"plejd_restart": {
+            "SE":"<b>Starta om Plejd Gateway</b>",
+            "EN":"<b>Restart Plejd Gateway</b>"
+        },"plejd_restart_info": {
+            "SE":"Startar om Plejd Gateway"
         },"lat": {
             "SE":"<b>Latitud</b>",
             "EN":"<b>Latitude</b>",
