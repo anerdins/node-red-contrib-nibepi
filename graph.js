@@ -260,6 +260,28 @@ module.exports = function(RED) {
                 }        
             }
             list.sort((a, b) => (a.register > b.register) ? 1 : -1)
+            function customGraph(name1) {
+                if(savedData[name1]!==undefined) {
+                    let register = {};
+                    register.title = `${savedData[name1].titel}, ${savedData[name1].info}`;
+                    register.description = `${savedData[name1].data} ${savedData[name1].unit}`;
+                    register.register = savedData[name1].register;
+                    register.icon_name = savedData[name1].icon_name
+                    if(conf.data!==undefined && conf.data.graph!==undefined) {
+                        let index = conf.data.graph.findIndex(i => i == savedData[name1].register);
+                        if(index!==-1) {
+                            register.isChecked = true;
+                        } else {
+                            register.isChecked = false;
+                        }
+                    }
+                    return register
+                } else {
+                    return;
+                }
+            }
+            if(customGraph('electric_price')!==undefined) list.unshift(customGraph('electric_price'));
+            if(customGraph('curveadjust')!==undefined) list.unshift(customGraph('curveadjust'));
             return(list)
         }
         node.on('close', function() {

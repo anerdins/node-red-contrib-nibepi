@@ -92,11 +92,27 @@ module.exports = function(RED) {
             }
             
         });
+        server.nibeData.on('pluginPriceGraphPool', (data) => {
+            if(data.system===config.system) {
+                this.send({topic:"Graf Pool",payload:[]});
+                this.send({topic:"Graf Pool",payload:data.values});
+            }
+            
+        });
         server.nibeData.on('pluginPrice', (data) => {
             if(data.system===config.system) {
-                this.send({topic:"Nuvarande Elprisnivå",payload:data.price_level.data});
-                this.send({topic:"Nuvarande Elpris",payload:data.price_current.data});
-                this.send([null,{topic:"test",payload:data}]);
+                if(data.price_level===undefined) {
+                    this.send({topic:"Nuvarande Elprisnivå",payload:data.heat_price_level.data});
+                    this.send({topic:"Nuvarande Elprisnivå (VV)",payload:data.hw_price_level.data});
+                    this.send({topic:"Nuvarande Elpris",payload:data.price_current.data});
+                    this.send([null,{topic:"test",payload:data}]);
+
+                } else {
+                    this.send({topic:"Nuvarande Elprisnivå",payload:data.price_level.data});
+                    this.send({topic:"Nuvarande Elpris",payload:data.price_current.data});
+                    this.send([null,{topic:"test",payload:data}]);
+                }
+                
             }
         })
 

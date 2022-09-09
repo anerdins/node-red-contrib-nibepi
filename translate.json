@@ -37,9 +37,9 @@
             "EN":"<p><b>Curve adjustment S2</b><br></p>",
             "DE":"<p><b>Parrallelverschiebung S2</b><br></p>"
         },"intro": {
-            "SE":"<h2>NibePi</h2><p>NibePi är IoT produkten som både gör värmepumpen smartare och effektivare. Med hjälp av MQTT så kan värmepumpen övervakas och styras direkt från det smarta hemmet.<br>Det finns flera inbyggda funktioner som kan förbättra komforten och ekonomin. Mer information finns under varje funktion.<br><p>NibePi stödjer alla värmepumpar i Nibes F serie, samt elpannor med tillhörande utedel i VVM serien.<br>Nibe F370,F470,F730,F750,F1145,F1155,F1245,F1255,F1345,F1355<br>VVM 225,310,320,325,500<br>SMO 20/40</p>",
-            "EN":"<h2>NibePi</h2><p>NibePi is an IoT appliance that makes your heatpump smarter and more efficient. Thanks to MQTT you can control your heatpump directly from your smart home system.<br>NibePi's integrated features can increase comfort and efficiency. You can find additional information directly in the menus for the invidivual features.<br><p>NibePi works with all F series heatpumps, as well as the outdoor units of the VVM series.<br>Nibe F370,F470,F730,F750,F1145,F1155,F1245,F1255,F1345,F1355<br>VVM 225,310,320,325,500<br>SMO 20/40</p>",
-            "DE":"<h2>NibePi</h2><p>NibePi ist ein IoT Gerät, dass deine Wärmepumpe intelligenter und effizenter macht. Dank MQTT kannst du deine Wärmepumpe direkt aus deinem SmartHome System steuern.<br>NibePi's integrierte Funktionen können den Komfort und die Effizienz der Wärmepumpe steigern. Du findest weitere Informationen in den Menüs der einzelnen Funktionen.<br><p>NibePi ist kompatibel mit allen Wärmepumpen der F-Serie und den Außengeräten der VVM Serie.<br>Nibe F370,F470,F730,F750,F1145,F1155,F1245,F1255,F1345,F1355<br>VVM 225,310,320,325,500<br>SMO 20/40</p>"
+            "SE":"<h2>NibePi</h2><p>NibePi är IoT produkten som både gör värmepumpen smartare och effektivare. Med hjälp av MQTT så kan värmepumpen övervakas och styras direkt från det smarta hemmet.<br>Det finns flera inbyggda funktioner som kan förbättra komforten och ekonomin. Mer information finns under varje funktion.<br><p>NibePi stödjer alla värmepumpar i Nibes F serie, samt elpannor med tillhörande utedel i VVM serien.<br>Nibe F370,F470,F730,F750,F1145,F1155,F1245,F1255,F1345,F1355<br>VVM 225,310,320,325,500<br>SMO 40</p>",
+            "EN":"<h2>NibePi</h2><p>NibePi is an IoT appliance that makes your heatpump smarter and more efficient. Thanks to MQTT you can control your heatpump directly from your smart home system.<br>NibePi's integrated features can increase comfort and efficiency. You can find additional information directly in the menus for the invidivual features.<br><p>NibePi works with all F series heatpumps, as well as the outdoor units of the VVM series.<br>Nibe F370,F470,F730,F750,F1145,F1155,F1245,F1255,F1345,F1355<br>VVM 225,310,320,325,500<br>SMO 40</p>",
+            "DE":"<h2>NibePi</h2><p>NibePi ist ein IoT Gerät, dass deine Wärmepumpe intelligenter und effizenter macht. Dank MQTT kannst du deine Wärmepumpe direkt aus deinem SmartHome System steuern.<br>NibePi's integrierte Funktionen können den Komfort und die Effizienz der Wärmepumpe steigern. Du findest weitere Informationen in den Menüs der einzelnen Funktionen.<br><p>NibePi ist kompatibel mit allen Wärmepumpen der F-Serie und den Außengeräten der VVM Serie.<br>Nibe F370,F470,F730,F750,F1145,F1155,F1245,F1255,F1345,F1355<br>VVM 225,310,320,325,500<br>SMO 40</p>"
         },"information": {
             "SE":"<p><b>Information</b></p>",
             "EN":"<p><b>Informations</b></p>",
@@ -105,29 +105,42 @@
             "EN":"<p><b>MQTT</b></p><br>Activate the MQTT broker.<br>NibePi has an internal MQTT broker that runs on 127.0.0.1:1883, You can also use an external broker just by changing the connection details. Activate HA auto discovery, if Home Assistant should detect NibePi's sensors automatically.",
             "DE":"<p><b>MQTT</b></p><br>Aktiviert den MQTT broker.<br>NibePi hat einen internen MQTT Broker, der auf 127.0.0.1:1883 läuft.<br>Wenn deaktiviert, kann hier ein externer Broker angegeben werden.<br>Aktiviere HA Auto Discovery, wenn HomeAssistant die NibePi Sensoren automatisch erkennen soll."
         },"plejd_info": {
-            "SE":"<p><b>Plejd</b></p><br>Aktivera Plejd MQTT Gateway.<br>NibePi kan simulera en Plejd MQTT Gateway via ett projekt som heter plejd2mqtt.<br>Home Assistant/OpenHAB kan automatiskt upptäcka Plejdenheterna via MQTT Discovery<br>Ange den MQTT Broker nedan som gatewayen ska ansluta till.<br>NibePi har en inbyggd broker på 127.0.0.1:1883<br>"
-        },"plejd_login": {
-            "SE":"Ange Inloggningsinformation till Plejds molntjänst för att få kontakt med enheterna<br>OBS. Vid ändringar behöver gatewayen startas om<br>"
+            "SE":"<p><b>Plejd</b></p><br>Aktivera Plejd MQTT Gateway.<br>NibePi kan simulera en Plejd MQTT Gateway via ett projekt som heter plejd2mqtt.<br>Home Assistant/OpenHAB kan automatiskt upptäcka Plejdenheterna via MQTT Discovery<br>Ange den MQTT Broker nedan som gatewayen ska ansluta till.<br>NibePi har en inbyggd broker på 127.0.0.1:1883<br>",
+            "EN":"<p><b>Plejd</b></p><br>Activate the Plejd MQTT Gateway.<br>NibePi can simulate a Plejd MQTT Gateway via a project called plejd2mqtt.<br>Home Assistant/OpenHAB can automatically discover the Plejd devices via MQTT Discovery<br>Enter the MQTT Broker below that the gateway should connect to.<br>NibePi has a built-in broker at 127.0.0.1:1883<br>",
+            "DE":"<p><b>Plejd</b></p><br>Plejd MQTT Gateway aktivieren.<br>NibePi kann ein Plejd MQTT Gateway über ein Projekt namens plejd2mqtt simulieren.<br>Home Assistant/OpenHAB kann The automatisch erkennen Pleid-Geräte über MQTT Discovery<br>Geben Sie unten den MQTT-Broker ein, mit dem sich das Gateway verbinden soll.<br>NibePi hat einen integrierten Broker unter 127.0.0.1:1883<br>"
+            
+            },"plejd_login": {
+            "SE":"Ange Inloggningsinformation till Plejds molntjänst för att få kontakt med enheterna<br>OBS. Vid ändringar behöver gatewayen startas om<br>",
+            "EN":"Enter login information to Plejd's cloud service to connect with the devices<br>NOTE. In case of changes, the gateway needs to be restarted<br>",
+            "DE":"Geben Sie die Anmeldeinformationen für den Cloud-Dienst von Plejd ein, um sich mit den Geräten zu verbinden<br>HINWEIS. Bei Änderungen muss das Gateway neu gestartet werden<br>"
         },"cloud_name": {
             "SE":"<b>Anläggning</b>",
-            "EN":"<b>Place</b>"
+            "EN":"<b>Place</b>",
+            "DE":"<b>Ort</b>"
         },"cloud_user": {
             "SE":"<b>E-post</b>",
-            "EN":"<b>E-mail</b>"
+            "EN":"<b>E-mail</b>",
+            "DE":"<b>Email</b>"
         },"cloud_pass": {
             "SE":"<b>Lösenord</b>",
-            "EN":"<b>Password</b>"
+            "EN":"<b>Password</b>",
+            "DE":"<b>Passwort</b>"
         },"plejd_enable": {
             "SE":"<b>Aktivera Plejd Gateway</b>",
-            "EN":"<b>Enable Plejd Gateway</b>"
+            "EN":"<b>Enable Plejd Gateway</b>",
+            "DE":"<b>Plejd-Gateway aktivieren</b>"
         },"plejd_disable": {
             "SE":"<b>Inaktivera Plejd Gateway</b>",
-            "EN":"<b>Disable Plejd Gateway</b>"
+            "EN":"<b>Disable Plejd Gateway</b>",
+            "DE":"<b>Plejd-Gateway deaktivieren</b>"
         },"plejd_restart": {
             "SE":"<b>Starta om Plejd Gateway</b>",
-            "EN":"<b>Restart Plejd Gateway</b>"
+            "EN":"<b>Restart Plejd Gateway</b>",
+            "DE":"<b>Starten Sie das Plejd-Gateway neu</b>"
         },"plejd_restart_info": {
-            "SE":"Startar om Plejd Gateway"
+            "SE":"Startar om Plejd Gateway",
+            "EN":"Restarting the Plejd Gateway",
+            "DE":"Neustart des Plejd-Gateways"
         },"lat": {
             "SE":"<b>Latitud</b>",
             "EN":"<b>Latitude</b>",
@@ -188,6 +201,14 @@
             "SE":"<b>Aktivera</b>",
             "EN":"<b>Activate</b>",
             "DE":"<b>Aktivieren</b>"
+        },"enable_up": {
+            "SE":"<b>Tillåt att höja värme</b>",
+            "EN":"<b>Allow to raise heat</b>",
+            "DE":"<b>Erhitzen lassen</b>"
+        },"enable_down": {
+            "SE":"<b>Tillåt att sänka värme</b>",
+            "EN":"<b>Allow to reduce heat</b>",
+            "DE":"<b>Hitze reduzieren lassen</b>"
         },"forecast_time": {
             "SE":"<b>Prognostid</b>",
             "EN":"<b>Forecast time</b>",
@@ -321,7 +342,7 @@
             "EN":"<b>Degree minute reset</b><br><i>When the indoor temperature setpoint is reached, the degree minutes will be reset to the start value.<br>Define at which temperature above the setpoint this should happen.</i>",
             "DE":"<b>Gradminuten reset</b><br><i>Bei Erreichen der Innenraum-Solltemperatur werden die Gradminuten auf den Anfangswert zurückgesetzt.<br>Stelle ein, bei wieviel Grad über dem Sollwert das passieren soll.</i>"
         },"dm_reset_enable_stop": {
-            "SE":"<b>Gradminut återställning</b><br><i>När inomhusbörvärdet är uppnått så återställs gradminuter till startvärdet<br>Ställ in hur många grader över inomhusbörvärdet det ska aktiveras vid</i>",
+            "SE":"<b>Stoppa värmeproduktion</b><br><i>När inomhusbörvärdet är uppnått så stoppas värmeproduktionen<br>Ställ in hur många grader över inomhusbörvärdet det ska aktiveras vid</i>",
             "EN":"<b>Stop heat production</b><br><i>When the indoor temperature set point is reached, the degree minutes will be reset to the start value.<br>Define at which temperature above the setpoint this should happen.</i>",
             "DE":"<b>Wärmeerzeugung stoppen</b><br><i>Bei Erreichen der Innenraum-Solltemperatur werden die Gradminuten auf den Anfangswert zurückgesetzt.<br>Stelle ein, bei wieviel Grad über dem Sollwert das passieren soll.</i>"
         },"diff": {
@@ -416,6 +437,10 @@
             "SE":"<b>Prognosreglering</b>",
             "EN":"<b>Forecast control</b>",
             "DE":"<b>Prognoseregelung</b>"
+        },"log_price": {
+            "SE":"<b>Elprisreglering</b>",
+            "EN":"<b>Price control</b>",
+            "DE":"<b>Strompreisregulierung</b>"
         },"price_very_high": {
             "SE":"<b>Väldigt högt pris</b>",
             "EN":"<b>Very high price</b>",
@@ -428,6 +453,14 @@
             "SE":"<b>Normalt pris</b>",
             "EN":"<b>Normal price</b>",
             "DE":"<b>Normaler Preis</b>"
+        },"price_normal_start": {
+            "SE":"<b>Normalt pris (Start)</b>",
+            "EN":"<b>Normal price (Start)</b>",
+            "DE":"<b>Normaler Preis (Start)</b>"
+        },"price_normal_stop": {
+            "SE":"<b>Normalt pris (Stopp)</b>",
+            "EN":"<b>Normal price (Stop)</b>",
+            "DE":"<b>Normaler Preis (Stop)</b>"
         },"price_low": {
             "SE":"<b>Lågt pris</b>",
             "EN":"<b>Low price</b>",
@@ -444,6 +477,38 @@
             "SE":"<b>NibePis Elprisreglering</b><br><i>Aktiverar NibePis elprisreglering och alla parametrar ställs in här</i>", 
             "EN":"<b>NibePi electricity price adaption</b><br><i>Activates NibePis electricity price adaption and all parameters will be managed from here.</i>",
             "DE":"<b>NibePis Strompreisregelung</b><br><i>Aktiviert NibePi's Strompreisregelung und alle Parameter werden dann hier eingestellt.</i>"
+        },"price_priceai_label": {
+            "SE":"<b>AI Elprisreglering</b><br><i>Aktiverar AI elprisreglering och alla parametrar ställs in här</i>", 
+            "EN":"<b>AI electricity price adaption</b><br><i>Activates AI electricity price adaption and all parameters will be managed from here.</i>",
+            "DE":"<b>AI Strompreisregelung</b><br><i>Aktiviert AI's Strompreisregelung und alle Parameter werden dann hier eingestellt.</i>"
+        },"price_area_label": {
+            "SE":"Elprisområde", 
+            "EN":"Electrical area code",
+            "DE":"Electrical area code"
+        },"price_time_label": {
+            "SE":"Tidshorisont", 
+            "EN":"Timehorizon",
+            "DE":"Zeithorizont"
+        },"price_tibber_home": {
+            "SE":"Hus ID", 
+            "EN":"House ID",
+            "DE":"Haus-ID"
+        },"pool_max_temp": {
+            "SE":"<b>Pool Maxtemp", 
+            "EN":"<b>Pool Maxtemp",
+            "DE":"<b>Pool-Maximaltemp"
+        },"price_min_spread": {
+            "SE":"Minsta prisskillnad", 
+            "EN":"Minimum price difference",
+            "DE":"Minimaler Preisunterschied"
+        },"price_enable_own_setting": {
+            "SE":"<b>Använd egna inställningar", 
+            "EN":"<b>Use you own settings",
+            "DE":"<b>Verwenden Sie Ihre eigenen Einstellungen"
+        },"price_lowhigh_setting_info": {
+            "SE":"<b>Definera väldigt högt/lågt elpris</b><br>Definera vad du anser är ett väldigt högt elpris, eller väldigt lågt elpris. <br><i>(OBS Endast med AI)</i>",
+            "EN":"<b>Define very high/low electricity price</b><br>Define what you consider to be a very high electricity price, or a very low electricity price. <br><i>(NOTE Only with AI)</i>",
+            "DE":"<b>Sehr hohen/niedrigen Strompreis definieren</b><br>Definieren Sie einen sehr hohen Strompreis oder einen sehr niedrigen Strompreis. <br><i>(HINWEIS Nur mit AI)</i>"
         },"economy": {
             "SE":"Ekonomi",
             "EN":"Economy",
@@ -472,6 +537,10 @@
             "SE":"<b>Nuvarande Elprisnivå</b>",
             "EN":"<b>Current electricity level</b>",
             "DE":"<b>Aktuelles Strompreisniveau</b>"
+        },"price_now_level_hw": {
+            "SE":"<b>Nuvarande Elprisnivå (VV)</b>",
+            "EN":"<b>Current electricity level (HW)</b>",
+            "DE":"<b>Aktuelles Strompreisniveau (WW)</b>"
         },"unknown": {
             "SE":"<b>Okänt</b>",
             "EN":"<b>Unknown</b>",
@@ -480,18 +549,26 @@
             "SE":"öre",
             "EN":"öre",
             "DE":"öre"
+        },"ratio": {
+            "SE":"Ratio",
+            "EN":"Ratio",
+            "DE":"Verhältnis"
         },"price_hw_settings": {
             "SE":"<p><b>Inställningar för varmvatten</b></p><br>Välj vilken varmvatten inställning det ska vara vid olika elprisnivåer",
             "EN":"<p><b>Hot water settings</b></p><br>Select hot water settings for different electricity price levels.",
             "DE":"<p><b>Wamrwassereinstellungen</b></p><br>Wähle die Wamrwassereinstellungen für die unterschiedlichen Strompreisniveaus."
         },"price_settings": {
-            "SE":"<p><b>Inställningar</b></p><br>Välj vilken reglering som ska gälla. Med styrning av NibePi så välj datakälla. För integrering mot Tibber, använd din personliga token som finns att hämta från https://developer.tibber.com/",
-            "EN":"<p><b>Settings</b></p><br>Select, which control mechanism should be used. With NibePi control, select the data source. For integration with Tibber, please use your personal access token, which can be obtained from  https://developer.tibber.com/",
-            "DE":"<p><b>Einstellungen</b></p><br>Wähle aus, welcher Regelmechanismus verwendet werden soll. Für NibePi Regeleung, bitte die Datenquelle wählen. Für die Verwendung von Tibber muss ein persönliches Acces-Token verwendet werden. Dieses kist hier erhältlich: https://developer.tibber.com/"
+            "SE":"<p><b>Inställningar</b></p><br>Välj vilken reglering som ska gälla. Med styrning av NibePi så välj datakälla. För integrering mot Tibber, använd din personliga token som finns att hämta från https://developer.tibber.com/ eller från http://nibepi.anerdins.se för AI tjänsten.",
+            "EN":"<p><b>Settings</b></p><br>Select, which control mechanism should be used. With NibePi control, select the data source. For integration with Tibber, please use your personal access token, which can be obtained from  https://developer.tibber.com/ or from http://nibepi.anerdins.se to use with the AI service",
+            "DE":"<p><b>Einstellungen</b></p><br>Wähle aus, welcher Regelmechanismus verwendet werden soll. Für NibePi Regeleung, bitte die Datenquelle wählen. Für die Verwendung von Tibber muss ein persönliches Acces-Token verwendet werden. Dieses kist hier erhältlich: https://developer.tibber.com/ oder von http://nibepi.anerdins.se zur Verwendung mit dem KI-Dienst"
         },"price_enable_hw": {
             "SE":"<b>Aktivera varmvattenreglering</b>",
             "EN":"<b>Enable hot water control</b>",
             "DE":"<b>Warmwasserregelung aktivieren</b>"
+        },"price_enable_pool": {
+            "SE":"<b>Aktivera poolreglering</b>",
+            "EN":"<b>Enable pool control</b>",
+            "DE":"<b>Schwimmbad aktivieren</b>"
         },"price_smart1_info": {
             "SE":"<i>OBS. För att kunna använda prisnivåer från Nibe Uplink måste Nibes SmartPrice vara aktiverat i värmepumpen manuellt under meny 4.1.6 Smart Price Adaption.<br>Alla åtgärder ska däremot nollställas för att NibePi ska kunna styra.</i>",
             "EN":"<i>Note: To be able to use price levels from NibeUplink, SmartPrice needs to be enabled in the heatpump from menu 4.1.6 Smart Price Adaption.<br>All settings need to be reset to default for NibePi to be able to control the system.</i>",
@@ -508,6 +585,10 @@
             "SE":"<p><b>Elprisreglering S2</b></p><br>Välj hur mycket kurvjusteringen ska justeras vid olika prisnivåer.<br>Reglering mot rumsgivare rekommenderas starkt, ibland förekommer det längre perioder av samma låga eller höga pris",
             "EN":"<p><b>Electricity price adaption S2</b></p><br>Select the curve adaption for different price levels.<br>Regulation against room temperature sensors is strongly recommended since there might be longer periods of high prices.",
             "DE":"<p><b>Strompreisregelung S2</b></p><br>Stelle die Kurvenanpassung für die unterschiedlichen Strompreisniveaus ein.<br>Regelung gegen einen Temperatursensor wird strengstens empfohlen, da es durchaus lange Phasen mit hohen Strompreisen geben kann."
+        },"price_pool_info": {
+            "SE":"<p><b>Poolreglering</b></p><br>Välj hur mycket temperatur det ska justeras vid olika prisnivåer.",
+            "EN":"<p><b>Pool price adaption</b></p><br>Choose how much the temperature should be adjusted at different price levels.",
+            "DE":"<p><b>Poolregulierung</b></p><br>Wählen Sie aus, wie viel Temperatur bei verschiedenen Preisniveaus angepasst werden soll."
         },"indoor_sensor": {
             "SE":"<b>Rumsgivare</b>",
             "EN":"<b>Room sensor</b>",

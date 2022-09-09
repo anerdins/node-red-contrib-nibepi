@@ -31,13 +31,13 @@ module.exports = function(RED) {
                 }
             }
             if(conf.weather['enable_'+config.system]!==true) arr = [];
-                server.initiatePlugin(arr,'weather',config.system).then(result => {
-                    this.status({ fill: 'green', shape: 'dot', text: `System ${system}` });
-                    this.send({enabled:true});
-                },(reject => {
-                    this.status({ fill: 'red', shape: 'dot', text: `System ${system}` });
-                    this.send({enabled:false});
-                }));
+            server.initiatePlugin(arr,'weather',config.system).then(result => {
+                this.status({ fill: 'green', shape: 'dot', text: `System ${system}` });
+                this.send({enabled:true});
+            },(reject => {
+                this.status({ fill: 'red', shape: 'dot', text: `System ${system}` });
+                this.send({enabled:false});
+            }));
         
         }
         
