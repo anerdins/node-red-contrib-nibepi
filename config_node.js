@@ -131,9 +131,7 @@ module.exports = function(RED) {
                                         });
                                     }
                                 }
-                            },(reject => {
-
-                            }));
+                            }).catch(console.log)
                                 
                         }, 5000,i);
                     }
@@ -239,10 +237,9 @@ module.exports = function(RED) {
                             } else {
                                 return reject(false); 
                             }
-                        },(error => {
-                            //sendError('System',`System S${system.replace('s','')} ${text.sys_not_connected}`);
-                            return reject(false);
-                        }));
+                        }).catch((err) => {
+                            return reject(false)
+                        })
                     } else {
                         //sendError('System',`System S${system.replace('s','')} ${text.sys_not_connected}`);
                         //return reject(false);
@@ -329,10 +326,10 @@ module.exports = function(RED) {
                             }
                                 
                             }
-                        },(error => {
+                        }).catch((err) => {
                             checkRMU();
                             return reject(false);
-                        }));
+                        });
                         
                     } else {
                         checkRMU();
@@ -349,17 +346,17 @@ module.exports = function(RED) {
                                         } else {
                                             resolve(true)
                                         }
-                                    },(error => {
+                                    }).catch((err) => {
                                         return reject(false);
-                                    }));
+                                    });
                             } else {
                                 resolve(true)
                             }
                             }
-                        },(error => {
+                        }).catch((err) => {
                             checkRMU();
                             return reject(false);
-                        }));
+                        });
                         
                     }
                 } else {
@@ -384,10 +381,10 @@ module.exports = function(RED) {
                             resolve(true)
                         }
                         }
-                    },(error => {
+                    }).catch((err) => {
                         checkRMU();
                         return reject(false);
-                    }));
+                    });
                     
                 }
         })
@@ -456,9 +453,7 @@ module.exports = function(RED) {
                                 data.topic = item.registers[i].topic;
                                 result[item.registers[i].topic] = data;
                                 array.push(data)
-                            },(error => {
-                                console.log(error)
-                            }));
+                            }).catch(console.log)
                     }
                 }
             }
@@ -582,7 +577,7 @@ module.exports = function(RED) {
             nibe.log(`Aktuell utomhustemperatur: ${outside}`,'weather','debug');
             if(val['heatcurve_'+val.system]===undefined) {
                 console.log('Hämtar värmekurva manuellt.')
-                val['heatcurve_'+val.system] = await getNibeData(hP['heatcurve_'+val.system]);
+                val['heatcurve_'+val.system] = await getNibeData(hP['heatcurve_'+val.system]).catch(console.log)
             }
             let heatcurve = val['heatcurve_'+val.system].data;
             nibe.log(`Aktuell värmekurva: ${heatcurve}`,'weather','debug');
@@ -888,9 +883,7 @@ module.exports = function(RED) {
                 if(hw_adjust!==undefined) {
                     nibe.reqData(hP.hw_mode).then(result => {
                         if(result.raw_data!==hw_adjust) nibe.setData(hP.hw_mode,hw_adjust);
-                    },(error => {
-                        console.log(error)
-                    }))
+                    }).catch(console.log)
                 }
             } else {
                 sendError('Elprisreglering',`Kunde ej hämta prisnivå från värmepumpen eller funktion avstängd.`);
@@ -913,14 +906,14 @@ module.exports = function(RED) {
                     if(config.system.pump!=="F370" && config.system.pump!=="F470") {
                         if(heat_adjust!==0) {
                             if(data.dM===undefined) {
-                                data.dM = await getNibeData(hP['dM']);
+                                data.dM = await getNibeData(hP['dM']).catch(console.log)
                             }
                             getNibeData(hP['dMaddstart']).then(dMaddstart => {
                                 if(data.dM.data < (dMaddstart.data+50)) {
                                     nibe.setData(hP['dM'],(dMaddstart.data+100));
                                 }
                             }).catch(async (err) => {
-                                data.dMadd = await getNibeData(hP['dMadd']);
+                                data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
                                 if(data.dM.data < (data.dMstart.data-data.dMadd.data+50)) {
                                     nibe.setData(hP['dM'],(data.dMstart.data-data.dMadd.data+100));
                                 }
@@ -934,14 +927,14 @@ module.exports = function(RED) {
                     if(config.system.pump!=="F370" && config.system.pump!=="F470") {
                         if(heat_adjust!==0) {
                             if(data.dM===undefined) {
-                                data.dM = await getNibeData(hP['dM']);
+                                data.dM = await getNibeData(hP['dM']).catch(console.log);
                             }
                             getNibeData(hP['dMaddstart']).then(dMaddstart => {
                                 if(data.dM.data < (dMaddstart.data+50)) {
                                     nibe.setData(hP['dM'],(dMaddstart.data+100));
                                 }
                             }).catch(async (err) => {
-                                data.dMadd = await getNibeData(hP['dMadd']);
+                                data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
                                 if(data.dM.data < (data.dMstart.data-data.dMadd.data+50)) {
                                     nibe.setData(hP['dM'],(data.dMstart.data-data.dMadd.data+100));
                                 }
@@ -965,7 +958,7 @@ module.exports = function(RED) {
                     if(config.system.pump!=="F370" && config.system.pump!=="F470") {
                         if(heat_adjust!==0) {
                             if(data.dM===undefined) {
-                                data.dM = await getNibeData(hP['dM']);
+                                data.dM = await getNibeData(hP['dM']).catch(console.log);
                             }
                             getNibeData(hP['dMaddstart']).then(dMaddstart => {
                                 if(data.dM.data<data.dMstart.data+(-100)) {
@@ -977,7 +970,7 @@ module.exports = function(RED) {
                                 }
                             })
                             .catch(async (err) => {
-                                data.dMadd = await getNibeData(hP['dMadd']);
+                                data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
                                 let dMaddstart = data.dMstart.data-data.dMadd.data
                                 if(data.dM.data<data.dMstart.data+(-100)) {
                                     nibe.setData(hP['dM'],(data.dMstart.data/2));
@@ -999,7 +992,7 @@ module.exports = function(RED) {
                             if(config.system.pump!=="F370" && config.system.pump!=="F470") {
                                 if(heat_adjust!==0) {
                                     if(data.dM===undefined) {
-                                        data.dM = await getNibeData(hP['dM']);
+                                        data.dM = await getNibeData(hP['dM']).catch(console.log);
                                     }
                                     
                                     getNibeData(hP['dMaddstart']).then(dMaddstart => {
@@ -1012,7 +1005,7 @@ module.exports = function(RED) {
                                         }
                                     })
                                     .catch(async (err) => {
-                                        data.dMadd = await getNibeData(hP['dMadd']);
+                                        data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
                                         let dMaddstart = data.dMstart.data-data.dMadd.data
                                         if(data.dM.data<data.dMstart.data+(-100)) {
                                             nibe.setData(hP['dM'],(data.dMstart.data/2));
@@ -1059,14 +1052,14 @@ module.exports = function(RED) {
                     if(config.system.pump!=="F370" && config.system.pump!=="F470") {
                         if(heat_adjust!==0) {
                             if(data.dM===undefined) {
-                                data.dM = await getNibeData(hP['dM']);
+                                data.dM = await getNibeData(hP['dM']).catch(console.log)
                             }
                             getNibeData(hP['dMaddstart']).then(dMaddstart => {
                                 if(data.dM.data < (dMaddstart.data+50)) {
                                     nibe.setData(hP['dM'],(dMaddstart.data+100));
                                 }
                             }).catch(async (err) => {
-                                data.dMadd = await getNibeData(hP['dMadd']);
+                                data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
                                 if(data.dM.data < (data.dMstart.data-data.dMadd.data+50)) {
                                     nibe.setData(hP['dM'],(data.dMstart.data-data.dMadd.data+100));
                                 }
@@ -1081,7 +1074,7 @@ module.exports = function(RED) {
                     if(config.system.pump!=="F370" && config.system.pump!=="F470") {
                         if(heat_adjust!==0) {
                             if(data.dM===undefined) {
-                                data.dM = await getNibeData(hP['dM']);
+                                data.dM = await getNibeData(hP['dM']).catch(console.log);
                             }
                             
                             getNibeData(hP['dMaddstart']).then(dMaddstart => {
@@ -1089,7 +1082,7 @@ module.exports = function(RED) {
                                     nibe.setData(hP['dM'],(dMaddstart.data+100));
                                 }
                             }).catch(async (err) => {
-                                data.dMadd = await getNibeData(hP['dMadd']);
+                                data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
                                 if(data.dM.data < (data.dMstart.data-data.dMadd.data+50)) {
                                     nibe.setData(hP['dM'],(data.dMstart.data-data.dMadd.data+100));
                                 }
@@ -1115,7 +1108,7 @@ module.exports = function(RED) {
                     if(config.system.pump!=="F370" && config.system.pump!=="F470") {
                         if(heat_adjust!==0) {
                             if(data.dM===undefined) {
-                                data.dM = await getNibeData(hP['dM']);
+                                data.dM = await getNibeData(hP['dM']).catch(console.log);
                             }
                             
                             getNibeData(hP['dMaddstart']).then(dMaddstart => {
@@ -1128,7 +1121,7 @@ module.exports = function(RED) {
                                 }
                             })
                             .catch(async (err) => {
-                                data.dMadd = await getNibeData(hP['dMadd']);
+                                data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
                                 let dMaddstart = data.dMstart.data-data.dMadd.data
                                 if(data.dM.data<data.dMstart.data+(-100)) {
                                     nibe.setData(hP['dM'],(data.dMstart.data/2));
@@ -1151,7 +1144,7 @@ module.exports = function(RED) {
                             if(config.system.pump!=="F370" && config.system.pump!=="F470") {
                                 if(heat_adjust!==0) {
                                     if(data.dM===undefined) {
-                                        data.dM = await getNibeData(hP['dM']);
+                                        data.dM = await getNibeData(hP['dM']).catch(console.log);
                                     }
                                     
                             getNibeData(hP['dMaddstart']).then(dMaddstart => {
@@ -1164,7 +1157,7 @@ module.exports = function(RED) {
                                 }
                             })
                             .catch(async (err) => {
-                                data.dMadd = await getNibeData(hP['dMadd']);
+                                data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
                                 let dMaddstart = data.dMstart.data-data.dMadd.data
                                 if(data.dM.data<data.dMstart.data+(-100)) {
                                     nibe.setData(hP['dM'],(data.dMstart.data/2));
@@ -1185,9 +1178,7 @@ module.exports = function(RED) {
                 if(hw_adjust!==undefined) {
                     nibe.reqData(hP.hw_mode).then(result => {
                         if(result.raw_data!==hw_adjust) nibe.setData(hP.hw_mode,hw_adjust);
-                    },(error => {
-                        console.log(error)
-                    }))
+                    }).catch(console.log)
                 }
             } else {
                 sendError('Elprisreglering',`Kunde ej hämta prisnivå från värmepumpen.`);
@@ -1500,10 +1491,10 @@ module.exports = function(RED) {
                 
             } else if(config.price.source=="nibe") {
                 nibe.log(`Källan är Nibe`,'price','debug');
-                data.price_level = await getNibeData(hP['price_level']);
-                data.price_enable = await getNibeData(hP['price_enable']);
+                data.price_level = await getNibeData(hP['price_level']).catch(console.log);
+                data.price_enable = await getNibeData(hP['price_enable']).catch(console.log);
                 priceAdjustCurve(data)
-                data.price_current = await getNibeData(hP['price_current']);
+                data.price_current = await getNibeData(hP['price_current']).catch(console.log);
                 nibeData.emit('pluginPriceGraph',nibeBuildGraph(data,data.system));
                 nibeData.emit('pluginPrice',data);
             } else if(config.price.source=="priceai") {
@@ -1640,10 +1631,10 @@ module.exports = function(RED) {
                     nibe.setConfig(config);
                 }
                 if(config.price.pool_enable_s1===true) {
-                    const poolTemp = getNibeData(hP['pool_temp_'+system])
-                    const poolStart = getNibeData(hP['pool_start_temp_'+system])
-                    const poolStop = getNibeData(hP['pool_stop_temp_'+system])
-                    const poolCpr = getNibeData(hP['pool_cpr_'+system])
+                    const poolTemp = getNibeData(hP['pool_temp_'+system]).catch(console.log)
+                    const poolStart = getNibeData(hP['pool_start_temp_'+system]).catch(console.log)
+                    const poolStop = getNibeData(hP['pool_stop_temp_'+system]).catch(console.log)
+                    const poolCpr = getNibeData(hP['pool_cpr_'+system]).catch(console.log)
                     if(config.price.pool_max_temp===undefined || isNaN(config.price.pool_max_temp)) config.price.pool_max_temp = 100
                     Promise.all([poolTemp, poolStart, poolStop, poolCpr]).then((values) => {
                         let level = data.price_level.data;
@@ -1696,10 +1687,10 @@ module.exports = function(RED) {
                 })
         } else if(req.name=="hw") {
                 try {
-                    const bt6 = getNibeData(hP['bt6']);
-                    const bt7 = getNibeData(hP['bt7']);
-                    const hwStartTemp = getNibeData(hP['hw_start_0']);
-                    const hwStopTemp = getNibeData(hP['hw_stop_2']);
+                    const bt6 = getNibeData(hP['bt6']).catch(console.log);
+                    const bt7 = getNibeData(hP['bt7']).catch(console.log);
+                    const hwStartTemp = getNibeData(hP['hw_start_0']).catch(console.log);
+                    const hwStopTemp = getNibeData(hP['hw_stop_2']).catch(console.log);
                     Promise.all([bt6, bt7, hwStartTemp, hwStopTemp]).then((values) => {
                         
                         
@@ -1795,11 +1786,11 @@ module.exports = function(RED) {
         let hwStopTemp;
         let data = {};
         if(config.hotwater.enable_autoluxury===true || config.hotwater.enable_hw_priority===true) {      
-            hwON = await getNibeData(hP['startHW']);
-            bt6 = await getNibeData(hP['bt6']);
-            bt7 = await getNibeData(hP['bt7']);
-            hwMode = await getNibeData(hP['hw_mode']);
-            hwStopTemp = await getNibeData(hP['hw_stop_'+hwMode.raw_data]);
+            hwON = await getNibeData(hP['startHW']).catch(console.log);
+            bt6 = await getNibeData(hP['bt6']).catch(console.log);
+            bt7 = await getNibeData(hP['bt7']).catch(console.log);
+            hwMode = await getNibeData(hP['hw_mode']).catch(console.log);
+            hwStopTemp = await getNibeData(hP['hw_stop_'+hwMode.raw_data]).catch(console.log);
             data.bt6 = bt6;
             data.bt7 = bt7;
             data.hwMode = hwMode;
@@ -1868,7 +1859,7 @@ module.exports = function(RED) {
             nibeData.emit('pluginHotwaterAutoLuxury',data);
         }
         if(config.hotwater.enable_hw_priority===true) {
-            hwStartTemp = await getNibeData(hP['hw_start_'+hwMode.data]);
+            hwStartTemp = await getNibeData(hP['hw_start_'+hwMode.data]).catch(console.log);
             hwStartTemp.timestamp = time;
             if(hwON.raw_data!==4) {
                 if(bt7.data<=hwStartTemp.data) {
@@ -1907,9 +1898,9 @@ async function runFan() {
         const promise = new Promise(async function (resolve,reject) {
         let config = nibe.getConfig();
         if(config.fan.enable_dm_boost!==undefined && config.fan.enable_dm_boost===true && config.system.pump!=="F370" && config.system.pump!=="F470") {
-        data.dMadd = await getNibeData(hP['dMadd']);
-        data.dMstart = await getNibeData(hP['dMstart']);
-        data.dM = await getNibeData(hP['dM']);
+        data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
+        data.dMstart = await getNibeData(hP['dMstart']).catch(console.log);
+        data.dM = await getNibeData(hP['dM']).catch(console.log);
             nibe.log(`Luftflödes boost vid låga gradminuter aktiverat.`,'fan','debug');
             if(config.fan.dm_boost_start===undefined || config.fan.dm_boost_start=="" || config.fan.dm_boost_start===0) {
                 config.fan.dm_boost_start = 300;
@@ -1969,19 +1960,19 @@ async function runFan() {
         // Function turned off, stopping.
         return;
     }
-    data.temp_fan_speed = await getNibeData(hP['fan_mode']);
+    data.temp_fan_speed = await getNibeData(hP['fan_mode']).catch(console.log);
     if(data.temp_fan_speed===undefined) {
         nibe.log('Ingen data från fläktforceringsregister. Avbryter...','fan','error');
         return;
     }
     
     data.co2Sensor;
-    data.fan_speed = await getNibeData(hP['fan_speed']);
-    data.bs1_flow = await getNibeData(hP['bs1_flow']);
+    data.fan_speed = await getNibeData(hP['fan_speed']).catch(console.log);
+    data.bs1_flow = await getNibeData(hP['bs1_flow']).catch(console.log);
     // Check if bug with saving 0% resolves if(flow_set===undefined) flow_set = data.bs1_flow.raw_data;
-    data.alarm = await getNibeData(hP['alarm']);
-    data.evaporator = await getNibeData(hP['evaporator']);
-    data.cpr_set = await getNibeData(hP['cpr_set']);
+    data.alarm = await getNibeData(hP['alarm']).catch(console.log);
+    data.evaporator = await getNibeData(hP['evaporator']).catch(console.log);
+    data.cpr_set = await getNibeData(hP['cpr_set']).catch(console.log);
     
     if(config.fan.enable_co2===true) {
     if(config.fan.sensor===undefined || config.fan.sensor=="Ingen") {
@@ -1999,7 +1990,7 @@ async function runFan() {
         if(data.co2Sensor.source=="mqtt") {
             await nibe.getMQTTData(data.co2Sensor.register).then(atad => {
                 let result = Object.assign({}, atad);
-                nibe.log('Data från CO2 givare\n'+result,'fan','debug');
+                nibe.log('Data från CO2 givare\n',result.data,'fan','debug');
                 let sensor_timeout;
                 if(config.home.sensor_timeout!==undefined && config.home.sensor_timeout!=="") {
                     sensor_timeout = result.timestamp+(config.home.sensor_timeout*60000);
@@ -2014,7 +2005,7 @@ async function runFan() {
                 if(timeNow>sensor_timeout) {
                     nibe.log(`CO2 givare ${data.co2Sensor.name} har inte uppdaterats. Ignorerar.`,'fan','error');
                 } else {
-                    nibe.log(`CO2 givare ${data.co2Sensor.name} värde:${result}`,'fan','debug');
+                    nibe.log(`CO2 givare ${data.co2Sensor.name} värde:${result.data}`,'fan','debug');
                     data.co2Sensor.data = result;
                     data.co2Sensor.data.timestamp = timeNow;
                     saveDataGraph('fan_co2Sensor',timeNow,data.co2Sensor.data.data,true)
@@ -2240,7 +2231,7 @@ async function runFan() {
         if(data.evaporator.raw_data<0) nibe.log(`Villkor för reglering ej uppfyllt, förångaren för kall (${data.evaporator.raw_data})`,'fan','debug');
         if(data.temp_fan_speed!==undefined && data.temp_fan_speed.raw_data!==0) nibe.log(`Villkor för reglering ej uppfyllt, Tillfällig fläktforcering pågår. värde: ${data.temp_fan_speed.raw_data}`,'fan','debug');
     }
-    data.cpr_act = await getNibeData(hP['cpr_act']);
+    data.cpr_act = await getNibeData(hP['cpr_act']).catch(console.log);
     saveDataGraph('fan_setpoint',timeNow,flow_set,true);
     saveDataGraph('filter_eff',timeNow,filter_eff,true);
     data.filter_eff = filter_eff;
@@ -2404,7 +2395,7 @@ async function runDiagnostic() {
                 }
                 saveDataGraph('cpr_runtime',Date.now(),0,true);
             }
-        });
+        }).catch(console.log);
     }
     async function defrostCheck() {
         if(timer.diagnostic!==undefined && timer.diagnostic._idleTimeout>0) {
@@ -2430,13 +2421,13 @@ async function runDiagnostic() {
             if(timer.diagnostic===undefined || timer.diagnostic._idleTimeout===-1) {
                 timer.diagnostic = setTimeout(defrostCheck, defrostTimer);
             }
-        },(err => {
+        }).catch(err => {
             nibe.log(`No defrost data.`,'diagnostic','debug');
             defrostTimer = 60000;
             if(timer.diagnostic===undefined || timer.diagnostic._idleTimeout===-1) {
                 timer.diagnostic = setTimeout(defrostCheck, defrostTimer);
             }
-        }))
+        })
         uptimeCheck();
     }
     let config = nibe.getConfig();
@@ -2456,9 +2447,9 @@ async function runDiagnostic() {
 async function tenMinuteUpdate() {
     let config = nibe.getConfig();
     if(config.system.auto_update===undefined || config.system.auto_update===true) {
-        getNibeData(hP['inside_set_s1']);
+        getNibeData(hP['inside_set_s1']).catch(console.log);
         if(systems!==undefined && systems.s2===true) {
-            getNibeData(hP['inside_set_s2']);
+            getNibeData(hP['inside_set_s2']).catch(console.log);
         }
     }
 }
@@ -2469,16 +2460,16 @@ async function minuteUpdate() {
         nibe.setConfig(config);
     }
     if(config.system.auto_update===true) {
-        getNibeData(hP['outside']);
-        getNibeData(hP['inside_s1']);
-        getNibeData(hP['curveadjust_s1']);
-        getNibeData(hP['setpoint_s1']);
-        getNibeData(hP['supply_s1']);
+        getNibeData(hP['outside']).catch(console.log);
+        getNibeData(hP['inside_s1']).catch(console.log);
+        getNibeData(hP['curveadjust_s1']).catch(console.log);
+        getNibeData(hP['setpoint_s1']).catch(console.log);
+        getNibeData(hP['supply_s1']).catch(console.log);
         if(systems!==undefined && systems.s2===true) {
-            getNibeData(hP['inside_s2']);
-            getNibeData(hP['curveadjust_s2']);
-            getNibeData(hP['setpoint_s2']);
-            getNibeData(hP['supply_s2']);
+            getNibeData(hP['inside_s2']).catch(console.log);
+            getNibeData(hP['curveadjust_s2']).catch(console.log);
+            getNibeData(hP['setpoint_s2']).catch(console.log);
+            getNibeData(hP['supply_s2']).catch(console.log);
         }
     }
 }
