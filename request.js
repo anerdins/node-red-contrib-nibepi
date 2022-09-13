@@ -46,9 +46,9 @@ module.exports = function(RED) {
                             setTimeout(() => {
                                 this.status({ fill: 'yellow', shape: 'dot', text: `` });
                             }, 10000);
-                        },(reject => {
-
-                        }));
+                        }.catch((err) => {
+                            this.status({ fill: 'red', shape: 'dot', text: `Could not get data.` });
+                        })
                         timer = setTimeout(() => {
                             reqOn = false;
                             this.send(msg);
