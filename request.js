@@ -46,7 +46,7 @@ module.exports = function(RED) {
                             setTimeout(() => {
                                 this.status({ fill: 'yellow', shape: 'dot', text: `` });
                             }, 10000);
-                        }.catch((err) => {
+                        }).catch((err) => {
                             console.log(err)
                             this.status({ fill: 'red', shape: 'dot', text: `Could not get data.` });
                         })
