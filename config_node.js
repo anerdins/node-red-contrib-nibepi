@@ -2171,11 +2171,17 @@ async function runFan() {
         }
         nibe.log(`Villkor uppfyllda för reglering av flöde.`,'fan','debug');
         nibe.log(`Flowset: ${flow_set}, Flöde: ${data.bs1_flow.raw_data}, Flowsaved: ${flow_saved}`,'fan','debug');
-        if(data.bs1_flow.raw_data>(flow_set+25) && (flow_saved===undefined || data.bs1_flow.raw_data>flow_saved+25)) {
+        if(fan_mode!=="low" && data.bs1_flow.raw_data>(flow_set+25) && (flow_saved===undefined || data.bs1_flow.raw_data>flow_saved+25)) {
             nibe.log(`Luftflöde långt över börvärde: ${flow_set}, Flöde: ${data.bs1_flow.raw_data} m3/h, Forcering pågår`,'fan','debug');
+        } else if(data.bs1_flow.raw_data>(flow_set+20)) {
+            nibe.log(`Luftflöde långt över gränsvärde: ${flow_set+20}, Flöde: ${data.bs1_flow.raw_data} m3/h, -5%`,'fan','debug');
+            if(data.fan_speed.raw_data>0) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-5));
         } else if(data.bs1_flow.raw_data>(flow_set+10)) {
             nibe.log(`Luftflöde över gränsvärde: ${flow_set+10}, Flöde: ${data.bs1_flow.raw_data} m3/h, -1%`,'fan','debug');
             if(data.fan_speed.raw_data>0) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data-1));
+        } else if(data.bs1_flow.raw_data<(flow_set-20)) {
+            nibe.log(`Luftflöde långt under gränsvärde: ${flow_set+20}, Flöde: ${data.bs1_flow.raw_data} m3/h, +5%`,'fan','debug');
+            if(data.fan_speed.raw_data<100) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data+5));
         } else if(data.bs1_flow.raw_data<(flow_set-10)) {
             nibe.log(`Luftflöde under gränsvärde: ${flow_set+10}, Flöde: ${data.bs1_flow.raw_data} m3/h, +1%`,'fan','debug');
             if(data.fan_speed.raw_data<100) nibe.setData(hP.fan_speed,(data.fan_speed.raw_data+1));
