@@ -1885,6 +1885,7 @@ module.exports = function(RED) {
         
     }
 let fan_mode;
+let fan_mode_saved;
 let flow_set;
 let flow_saved;
 let fan_saved;
@@ -2036,10 +2037,15 @@ async function runFan() {
                         nibe.log(`CO2 givares värde (${data.co2Sensor.data.data}) över gränsvärde ${config.fan.high_co2_limit}`,'fan','debug');
                         if(config.fan.speed_high!==undefined && config.fan.speed_high!="" && config.fan.speed_high!==0) {
                             if(fan_mode!='co2boost') {
+                                fan_mode_saved = fan_mode
                                 fan_mode = 'co2boost'
                                 co2boost = true;
                             }
                             flow_set = config.fan.speed_high;
+                            if(fan_mode!=="co2boost") {
+                                fan_saved = data.fan_speed.raw_data;
+                                nibe.log(`Sparar fläkthastighet vid första upptäckt av forcering med CO2, värde: ${fan_saved}%`,'fan','debug');
+                            }
                             nibe.log(`Ställer in högt luftflöde: ${config.fan.speed_high} m3/h`,'fan','debug');
                             dMboost = false;
                         } else {
@@ -2047,7 +2053,19 @@ async function runFan() {
                         }
                     } else {
                         nibe.log(`CO2 givares värde (${data.co2Sensor.data.data}) under gränsvärde ${config.fan.high_co2_limit}`,'fan','debug');
-
+                        
+                        if(data.alarm.raw_data!==183) {
+                            if(fan_saved!==undefined) {
+                                nibe.setData(hP.fan_speed,fan_saved);
+                                data.fan_speed.raw_data = fan_saved;
+                                nibe.log(`Återställer fläkthastighet (${fan_saved}%)`,'fan','debug');
+                            }
+                            if(config.fan[`speed_${fan_mode_saved}`]!==undefined) flow_set = config.fan[`speed_${fan_mode_saved}`];
+                            fan_mode = fan_mode_saved;
+                            nibe.log(`Ställer in ${fan_mode_saved} luftflöde: ${config.fan[`speed_${fan_mode_saved}`]} m3/h`,'fan','debug');
+                        } else {
+                            nibe.log(`Avfrostning pågår, avvaktar, sparad fläkthastighet (${fan_saved}%)`,'fan','debug');
+                        }
                     }
                 } else {
                     nibe.log(`Inget värde på CO2 givare`,'fan','error');
