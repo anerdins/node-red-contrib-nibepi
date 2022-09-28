@@ -1583,12 +1583,58 @@ module.exports = function(RED) {
                             savedData['electric_price'] = data.price_current;
                             saveDataGraph('electric_price',Date.now(),(data.price_current.raw_data/10))
                             nibe.log(`Hämtad nivå: ${heat.level}, hämtat pris: ${data.price_current.data} öre`,'price','debug');
-                            priceAdjustCurve(data)
-                            adjustPool(data,data.system)
-                            .then(pool => {
-                                if(pool!==undefined) nibeData.emit('pluginPriceGraphPool',priceBuildPoolGraph(heat,data.system));
-                            })
-                            .catch(console.log)
+                            var prio_add_enable = await getNibeData(hP['prio_add_enable']).catch(console.log)
+                            if(prio_add_enable!==undefined) {
+                            if(config.price.prio_enable===true) {
+                                if(config.price.prio_cop===undefined) {
+                                    config.price.prio_cop = 3
+                                    nibe.setConfig(config);
+                                }
+                                if(config.price.prio_cost===undefined) {
+                                    config.price.prio_cost = 1
+                                    nibe.setConfig(config);
+                                }
+                                if(config.price.prio_tax===undefined) {
+                                    config.price.prio_tax = 45
+                                    nibe.setConfig(config);
+                                }
+                                if(config.price.prio_transfer===undefined) {
+                                    config.price.prio_transfer = 25
+                                    nibe.setConfig(config);
+                                }
+                                nibe.log(`Prioriterad tillsats är aktiverad som elprisreglering`,'price','debug');
+                                let price = data.price_current.raw_data
+                                let fee = config.price.prio_tax+config.price.prio_transfer
+                                let cop = config.price.prio_cop
+                                let cost = config.price.prio_cost
+                                    if(price+fee > cost*cop) {
+                                        if(prio_add_enable.raw_data===0) {
+                                            nibe.log(`Elpriset har en högre kostnad att producera än prioriterad tillsats.`,'price','debug');
+                                            nibe.log(`Prioriterad tillsats är av, slår på`,'price','debug');
+                                            nibe.setData(hP['prio_add_enable'],1);
+                                            prio_add_enable.raw_data = 1
+                                            prio_add_enable.data = 1
+                                        }
+                                    } else {
+                                        if(prio_add_enable.raw_data===1) {
+                                            nibe.log(`Elpriset har en lägre kostnad att producera än prioriterad tillsats.`,'price','debug');
+                                            nibe.log(`Prioriterad tillsats är på, slår av`,'price','debug');
+                                            nibe.setData(hP['prio_add_enable'],0);
+                                            prio_add_enable.raw_data = 0
+                                            prio_add_enable.data = 0
+                                        }
+                                    }
+                                }
+                            }
+                            if(prio_add_enable===undefined || prio_add_enable.raw_data===0) {
+                                priceAdjustCurve(data)
+                                adjustPool(data,data.system)
+                                .then(pool => {
+                                    if(pool!==undefined) nibeData.emit('pluginPriceGraphPool',priceBuildPoolGraph(heat,data.system));
+                                })
+                                .catch(console.log)
+                            }
+                            
                             nibeData.emit('pluginPrice',data);
                             nibeData.emit('pluginPriceGraph',priceaiBuildGraph(heat,hw,data.system));
                         })
