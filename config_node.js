@@ -2,7 +2,7 @@ module.exports = function(RED) {
     const EventEmitter = require('events').EventEmitter;
     require('events').EventEmitter.defaultMaxListeners = 800;
     const https = require('https');
-    const http = require('http');
+    //const http = require('http');
     const nibeData = new EventEmitter()
     const nibe = require('nibepi')
     var serialPort = "";
@@ -1263,7 +1263,8 @@ module.exports = function(RED) {
         let result = {values:sendArray,system:system};
         return result;
     }
-    function priceaiBuildGraph(heat,hw,system) {
+    async function priceaiBuildGraph(heat,hw,data) {
+        var system = data.system
         let config = nibe.getConfig();
         if(config.price===undefined) {
             config.price = {};
@@ -1329,6 +1330,35 @@ module.exports = function(RED) {
                 "data":[valueArray,adjustArrayHeat,adjustArrayHW],
                 "labels":["Pris","Värmejustering","Varmvattenläge"]
             }];
+            var prio_add_enable = await getNibeData(hP['prio_add_enable']).catch((err) => {
+
+            })
+            if(prio_add_enable!==undefined) {
+                if(config.price.prio_enable===true) {
+                    nibe.log(`Prioriterad tillsats är aktiverad som elprisreglering, skapar graf`,'price','debug');
+                    var prioArray = [];
+                    let fee = config.price.prio_tax+config.price.prio_transfer
+                    let cop = config.price.prio_cop
+                    let cost = config.price.prio_cost
+                    for( var o = 0; o < priceArrayHeat.length; o++){
+                        let timestamp = priceArrayHeat[o].ts
+                        var adjust = 0;
+                        let price = Number((priceArrayHeat[o].value/100).toFixed(2));
+                        if(price+fee > cost*cop) {
+                            // Reglering
+                            prioArray.push({x:timestamp,y:10})
+                        } else {
+                            // Ingen reglering
+                            prioArray.push({x:timestamp,y:0})
+
+                        }
+                    }
+                    prioArray.sort((a, b) => (a.x > b.x) ? 1 : -1)
+                    sendArray[0].series.push('Prio. tillsats')
+                    sendArray[0].data.push(prioArray)
+                    sendArray[0].labels.push('Prio. tillsats')
+                }
+            }
         let result = {values:sendArray,system:system};
         return result;
     }
@@ -1638,7 +1668,7 @@ module.exports = function(RED) {
                             }
                             
                             nibeData.emit('pluginPrice',data);
-                            nibeData.emit('pluginPriceGraph',priceaiBuildGraph(heat,hw,data.system));
+                            nibeData.emit('pluginPriceGraph',priceaiBuildGraph(heat,hw,data));
                         })
                     } catch(err) {
                         console.log(err)
