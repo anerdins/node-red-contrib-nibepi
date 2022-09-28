@@ -1561,7 +1561,7 @@ module.exports = function(RED) {
                         });
                         const heatSettings = await getCloudData(optionsHeat,requestHeat)
                         const hwSettings = await getCloudData(optionsHW,requestHW)
-                        Promise.all([heatSettings, hwSettings]).then((values) => {
+                        Promise.all([heatSettings, hwSettings]).then(async (values) => {
                             nibe.log(`Data hämtad från AI`,'price','debug');
                             var heat = values[0]
                             var hw = values[1]
