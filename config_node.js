@@ -1263,7 +1263,7 @@ module.exports = function(RED) {
         let result = {values:sendArray,system:system};
         return result;
     }
-    async function priceaiBuildGraph(heat,hw,data) {
+    async function priceaiBuildGraph(heat,hw,data,prio_add_enable) {
         var system = data.system
         let config = nibe.getConfig();
         if(config.price===undefined) {
@@ -1330,9 +1330,6 @@ module.exports = function(RED) {
                 "data":[valueArray,adjustArrayHeat,adjustArrayHW],
                 "labels":["Pris","Värmejustering","Varmvattenläge"]
             }];
-            var prio_add_enable = await getNibeData(hP['prio_add_enable']).catch((err) => {
-
-            })
             if(prio_add_enable!==undefined) {
                 if(config.price.prio_enable===true) {
                     nibe.log(`Prioriterad tillsats är aktiverad som elprisreglering, skapar graf`,'price','debug');
@@ -1668,7 +1665,7 @@ module.exports = function(RED) {
                             }
                             
                             nibeData.emit('pluginPrice',data);
-                            nibeData.emit('pluginPriceGraph',priceaiBuildGraph(heat,hw,data));
+                            nibeData.emit('pluginPriceGraph',priceaiBuildGraph(heat,hw,data,prio_add_enable));
                         })
                     } catch(err) {
                         console.log(err)
