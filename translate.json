@@ -569,6 +569,30 @@
             "SE":"<b>Aktivera poolreglering</b>",
             "EN":"<b>Enable pool control</b>",
             "DE":"<b>Schwimmbad aktivieren</b>"
+        },"price_enable_prio": {
+            "SE":"<b>Aktivera Prio. tillsats</b>",
+            "EN":"<b>**</b>",
+            "DE":"<b>**</b>"
+        },"price_prio_info": {
+            "SE":"<p><b>Prioriterad tillsats</b></p><br>Infotext här",
+            "EN":"**",
+            "DE":"**"
+        },"prio_cost": {
+            "SE":"<b>Kostnad per kwh", 
+            "EN":"**",
+            "DE":"**"
+        },"prio_cop": {
+            "SE":"<b>COP", 
+            "EN":"**",
+            "DE":"**"
+        },"prio_tax": {
+            "SE":"<b>Skatt", 
+            "EN":"**",
+            "DE":"**"
+        },"prio_transfer": {
+            "SE":"<b>Överföringsavgift", 
+            "EN":"**",
+            "DE":"**"
         },"price_smart1_info": {
             "SE":"<i>OBS. För att kunna använda prisnivåer från Nibe Uplink måste Nibes SmartPrice vara aktiverat i värmepumpen manuellt under meny 4.1.6 Smart Price Adaption.<br>Alla åtgärder ska däremot nollställas för att NibePi ska kunna styra.</i>",
             "EN":"<i>Note: To be able to use price levels from NibeUplink, SmartPrice needs to be enabled in the heatpump from menu 4.1.6 Smart Price Adaption.<br>All settings need to be reset to default for NibePi to be able to control the system.</i>",

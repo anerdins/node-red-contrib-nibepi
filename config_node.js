@@ -1,6 +1,6 @@
 module.exports = function(RED) {
     const EventEmitter = require('events').EventEmitter;
-    require('events').EventEmitter.defaultMaxListeners = 700;
+    require('events').EventEmitter.defaultMaxListeners = 800;
     const https = require('https');
     const http = require('http');
     const nibeData = new EventEmitter()
@@ -1583,7 +1583,9 @@ module.exports = function(RED) {
                             savedData['electric_price'] = data.price_current;
                             saveDataGraph('electric_price',Date.now(),(data.price_current.raw_data/10))
                             nibe.log(`Hämtad nivå: ${heat.level}, hämtat pris: ${data.price_current.data} öre`,'price','debug');
-                            var prio_add_enable = await getNibeData(hP['prio_add_enable']).catch(console.log)
+                            var prio_add_enable = await getNibeData(hP['prio_add_enable']).catch((err) => {
+
+                            })
                             if(prio_add_enable!==undefined) {
                             if(config.price.prio_enable===true) {
                                 if(config.price.prio_cop===undefined) {
