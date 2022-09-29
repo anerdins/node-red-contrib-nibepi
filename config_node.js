@@ -1263,7 +1263,7 @@ module.exports = function(RED) {
         let result = {values:sendArray,system:system};
         return result;
     }
-    async function priceaiBuildGraph(heat,hw,data,prio_add_enable) {
+    function priceaiBuildGraph(heat,hw,data,prio_add_enable) {
         var system = data.system
         let config = nibe.getConfig();
         if(config.price===undefined) {
@@ -1340,7 +1340,7 @@ module.exports = function(RED) {
                     for( var o = 0; o < priceArrayHeat.length; o++){
                         let timestamp = priceArrayHeat[o].ts
                         var adjust = 0;
-                        let price = Number((priceArrayHeat[o].value/100).toFixed(2));
+                        let price = Number((priceArrayHeat[o].value).toFixed(2));
                         if(price+fee > cost*cop) {
                             // Reglering
                             prioArray.push({x:timestamp,y:10})
