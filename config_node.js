@@ -1054,13 +1054,19 @@ module.exports = function(RED) {
                             if(data.dM===undefined) {
                                 data.dM = await getNibeData(hP['dM']).catch(console.log)
                             }
+                            if(data.dM.data > 0 && data.dM.data > data.dMstart.data+25) {
+                                nibe.log(`Ställer in gradminuter nära start ${data.dMstart.data+25}`,'price','debug');
+                                nibe.setData(hP['dM'],(data.dMstart.data+25));
+                            }
                             getNibeData(hP['dMaddstart']).then(dMaddstart => {
                                 if(data.dM.data < (dMaddstart.data+50)) {
+                                    nibe.log(`Ställer in gradminuter över gräns för elpatron, för att förhindra tilsats ${dMaddstart.data+100}`,'price','debug');
                                     nibe.setData(hP['dM'],(dMaddstart.data+100));
                                 }
                             }).catch(async (err) => {
                                 data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
                                 if(data.dM.data < (data.dMstart.data-data.dMadd.data+50)) {
+                                    nibe.log(`Ställer in gradminuter över gräns för elpatron, för att förhindra tilsats ${data.dMstart.data-data.dMadd.data+100}`,'price','debug');
                                     nibe.setData(hP['dM'],(data.dMstart.data-data.dMadd.data+100));
                                 }
                             })
@@ -1076,14 +1082,19 @@ module.exports = function(RED) {
                             if(data.dM===undefined) {
                                 data.dM = await getNibeData(hP['dM']).catch(console.log);
                             }
-                            
+                            if(data.dM.data > 0 && data.dM.data > data.dMstart.data+25) {
+                                nibe.log(`Ställer in gradminuter nära start ${data.dMstart.data+25}`,'price','debug');
+                                nibe.setData(hP['dM'],(data.dMstart.data+25));
+                            }
                             getNibeData(hP['dMaddstart']).then(dMaddstart => {
                                 if(data.dM.data < (dMaddstart.data+50)) {
+                                    nibe.log(`Ställer in gradminuter över gräns för elpatron, för att förhindra tilsats ${dMaddstart.data+100}`,'price','debug');
                                     nibe.setData(hP['dM'],(dMaddstart.data+100));
                                 }
                             }).catch(async (err) => {
                                 data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
                                 if(data.dM.data < (data.dMstart.data-data.dMadd.data+50)) {
+                                    nibe.log(`Ställer in gradminuter över gräns för elpatron, för att förhindra tilsats ${data.dMstart.data-data.dMadd.data+100}`,'price','debug');
                                     nibe.setData(hP['dM'],(data.dMstart.data-data.dMadd.data+100));
                                 }
                             })
