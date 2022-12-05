@@ -946,7 +946,6 @@ module.exports = function(RED) {
                     nibe.log(`Nivån är normal`,'price','debug');
                     if(heat_enable!==undefined && heat_enable===true) if(config.price['heat_normal_'+system]!==undefined) heat_adjust = config.price['heat_normal_'+system];
                 } else if(heat_level=="EXPENSIVE") {
-                    
                     nibe.log(`Nivån är dyr`,'price','debug');
                     if(inside!==undefined && (inside.data>(data['inside_set_'+system].data+temp_diff)) || config.price['enable_temp_'+system]===undefined || config.price['enable_temp_'+system]===false) {
                     if(heat_enable!==undefined && heat_enable===true) {
@@ -955,72 +954,26 @@ module.exports = function(RED) {
                             nibe.log(`Justerar värmen ${heat_adjust}`,'price','debug');
                         }
                     }
-                    if(config.system.pump!=="F370" && config.system.pump!=="F470") {
-                        if(heat_adjust!==0) {
-                            if(data.dM===undefined) {
-                                data.dM = await getNibeData(hP['dM']).catch(console.log);
-                            }
-                            getNibeData(hP['dMaddstart']).then(dMaddstart => {
-                                if(data.dM.data<data.dMstart.data+(-100)) {
-                                    nibe.setData(hP['dM'],(data.dMstart.data/2));
-                                } else {
-                                    if(data.dM.data < (dMaddstart.data+50)) {
-                                        nibe.setData(hP['dM'],(dMaddstart.data+100));
-                                    }
-                                }
-                            })
-                            .catch(async (err) => {
-                                data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
-                                let dMaddstart = data.dMstart.data-data.dMadd.data
-                                if(data.dM.data<data.dMstart.data+(-100)) {
-                                    nibe.setData(hP['dM'],(data.dMstart.data/2));
-                                } else {
-                                    if(data.dM.data < (dMaddstart.data+50)) {
-                                        nibe.setData(hP['dM'],(dMaddstart.data+100));
-                                    }
-                                }
-                            })
-                            
-                        }
-                    }
                     }
                 } else if(heat_level=="VERY_EXPENSIVE") {
                     nibe.log(`Nivån är väldigt dyr`,'price','debug');
                     if(heat_enable!==undefined && heat_enable===true) {
                         if(inside!==undefined && (inside.data>(data['inside_set_'+system].data+temp_diff)) || config.price['enable_temp_'+system]===undefined || config.price['enable_temp_'+system]===false) {
                             if(config.price['heat_very_expensive_'+system]!==undefined) heat_adjust = config.price['heat_very_expensive_'+system];
-                            if(config.system.pump!=="F370" && config.system.pump!=="F470") {
-                                if(heat_adjust!==0) {
-                                    if(data.dM===undefined) {
-                                        data.dM = await getNibeData(hP['dM']).catch(console.log);
-                                    }
-                                    
-                                    getNibeData(hP['dMaddstart']).then(dMaddstart => {
-                                        if(data.dM.data<data.dMstart.data+(-100)) {
-                                            nibe.setData(hP['dM'],(data.dMstart.data/2));
-                                        } else {
-                                            if(data.dM.data < (dMaddstart.data+50)) {
-                                                nibe.setData(hP['dM'],(dMaddstart.data+100));
-                                            }
-                                        }
-                                    })
-                                    .catch(async (err) => {
-                                        data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
-                                        let dMaddstart = data.dMstart.data-data.dMadd.data
-                                        if(data.dM.data<data.dMstart.data+(-100)) {
-                                            nibe.setData(hP['dM'],(data.dMstart.data/2));
-                                        } else {
-                                            if(data.dM.data < (dMaddstart.data+50)) {
-                                                nibe.setData(hP['dM'],(dMaddstart.data+100));
-                                            }
-                                        }
-                                    })
-                                    
-                                }
-                            }
                         }
                     }
                 }
+                await lockFreq({heat:heat_adjust}).then(result => {
+                    if(result===true) nibe.log(`Frekvensen sänkt till 20 hz`,'price','debug');
+                    if(result===false) nibe.log(`Frekvensen ej längre sänkt`,'price','debug');
+                }).catch(async err => {
+                    nibe.log(`Värmepump stödjer inte frekvens styrning, försöker stoppa via gradminuter`,'price','debug');
+                    blockAdditive({heat:heat_adjust}).then(result => {
+                    
+                    }).catch(async err => {
+                        nibe.log(`Värmepump stödjer inte stopp via gradminuter`,'price','debug');
+                    })
+                })
                 priceOffset[system] = heat_adjust;
                 curveAdjust('price',system,heat_adjust);
             } else {
@@ -1116,35 +1069,6 @@ module.exports = function(RED) {
                             nibe.log(`Justerar värmen ${heat_adjust}`,'price','debug');
                         }
                     }
-                    if(config.system.pump!=="F370" && config.system.pump!=="F470") {
-                        if(heat_adjust!==0) {
-                            if(data.dM===undefined) {
-                                data.dM = await getNibeData(hP['dM']).catch(console.log);
-                            }
-                            
-                            getNibeData(hP['dMaddstart']).then(dMaddstart => {
-                                if(data.dM.data<data.dMstart.data+(-100)) {
-                                    nibe.setData(hP['dM'],(data.dMstart.data/2));
-                                } else {
-                                    if(data.dM.data < (dMaddstart.data+50)) {
-                                        nibe.setData(hP['dM'],(dMaddstart.data+100));
-                                    }
-                                }
-                            })
-                            .catch(async (err) => {
-                                data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
-                                let dMaddstart = data.dMstart.data-data.dMadd.data
-                                if(data.dM.data<data.dMstart.data+(-100)) {
-                                    nibe.setData(hP['dM'],(data.dMstart.data/2));
-                                } else {
-                                    if(data.dM.data < (dMaddstart.data+50)) {
-                                        nibe.setData(hP['dM'],(dMaddstart.data+100));
-                                    }
-                                }
-                            })
-                            
-                        }
-                    }
                     }
                 } else if(level=="VERY_EXPENSIVE") {
                     nibe.log(`Nivån är väldigt dyr`,'price','debug');
@@ -1152,38 +1076,20 @@ module.exports = function(RED) {
                     if(heat_enable!==undefined && heat_enable===true) {
                         if(inside!==undefined && (inside.data>(data['inside_set_'+system].data+temp_diff)) || config.price['enable_temp_'+system]===undefined || config.price['enable_temp_'+system]===false) {
                             if(config.price['heat_very_expensive_'+system]!==undefined) heat_adjust = config.price['heat_very_expensive_'+system];
-                            if(config.system.pump!=="F370" && config.system.pump!=="F470") {
-                                if(heat_adjust!==0) {
-                                    if(data.dM===undefined) {
-                                        data.dM = await getNibeData(hP['dM']).catch(console.log);
-                                    }
-                                    
-                            getNibeData(hP['dMaddstart']).then(dMaddstart => {
-                                if(data.dM.data<data.dMstart.data+(-100)) {
-                                    nibe.setData(hP['dM'],(data.dMstart.data/2));
-                                } else {
-                                    if(data.dM.data < (dMaddstart.data+50)) {
-                                        nibe.setData(hP['dM'],(dMaddstart.data+100));
-                                    }
-                                }
-                            })
-                            .catch(async (err) => {
-                                data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
-                                let dMaddstart = data.dMstart.data-data.dMadd.data
-                                if(data.dM.data<data.dMstart.data+(-100)) {
-                                    nibe.setData(hP['dM'],(data.dMstart.data/2));
-                                } else {
-                                    if(data.dM.data < (dMaddstart.data+50)) {
-                                        nibe.setData(hP['dM'],(dMaddstart.data+100));
-                                    }
-                                }
-                            })
-                                    
-                                }
-                            }
                         }
                     }
                 }
+                await lockFreq({heat:heat_adjust}).then(result => {
+                    if(result===true) nibe.log(`Frekvensen sänkt till 20 hz`,'price','debug');
+                    if(result===false) nibe.log(`Frekvensen ej längre sänkt`,'price','debug');
+                }).catch(async err => {
+                    nibe.log(`Värmepump stödjer inte frekvens styrning, försöker stoppa via gradminuter`,'price','debug');
+                    blockAdditive({heat:heat_adjust}).then(result => {
+                    
+                    }).catch(async err => {
+                        nibe.log(`Värmepump stödjer inte stopp via gradminuter`,'price','debug');
+                    })
+                })
                 priceOffset[system] = heat_adjust;
                 curveAdjust('price',system,heat_adjust);
                 if(hw_adjust!==undefined) {
@@ -1195,6 +1101,17 @@ module.exports = function(RED) {
                 sendError('Elprisreglering',`Kunde ej hämta prisnivå från värmepumpen.`);
                 if(priceOffset[system]!==0) {
                     priceOffset[system] = 0;
+                    await lockFreq({heat:0}).then(result => {
+                        if(result===true) nibe.log(`Frekvensen sänkt till 20 hz`,'price','debug');
+                        if(result===false) nibe.log(`Frekvensen ej längre sänkt`,'price','debug');
+                    }).catch(async err => {
+                        nibe.log(`Värmepump stödjer inte frekvens styrning, försöker stoppa via gradminuter`,'price','debug');
+                        blockAdditive({heat:0}).then(result => {
+                        
+                        }).catch(async err => {
+                            nibe.log(`Värmepump stödjer inte stopp via gradminuter`,'price','debug');
+                        })
+                    })
                     curveAdjust('price',system,0);
                 }
                 
@@ -1854,6 +1771,83 @@ module.exports = function(RED) {
         });
         return promise;
     }
+const lockFreq = (options) => {
+    const promise = new Promise((resolve,reject) => {
+    let config = nibe.getConfig();
+    if(config.price===undefined) {
+        config.price = {};
+        nibe.setConfig(config);
+    }
+    if(config.system.pump=="F730" || config.system.pump=="F750" || config.system.pump=="F1155" || config.system.pump=="F1255" || config.system.pump=="F1355") {
+        data.lock_freq_1 = getNibeData(hP['lock_freq_1_activate']).catch(console.log);
+        data.lock_freq_2 = getNibeData(hP['lock_freq_2_activate']).catch(console.log);
+        data.lock_freq_1_min = getNibeData(hP['lock_freq_1_min']).catch(console.log);
+        data.lock_freq_1_max = getNibeData(hP['lock_freq_1_max']).catch(console.log);
+        data.lock_freq_2_min = getNibeData(hP['lock_freq_2_min']).catch(console.log);
+        data.lock_freq_2_max = getNibeData(hP['lock_freq_2_max']).catch(console.log);
+        Promise.all([data.lock_freq_1, data.lock_freq_2, data.lock_freq_1_min, data.lock_freq_1_max, data.lock_freq_2_min, data.lock_freq_2_max]).then(async (values) => {
+            if(data.lock_freq_1_min.data!=="21") nibe.setData(hP['lock_freq_1_min'],"21");
+            if(data.lock_freq_1_max.data!=="70") nibe.setData(hP['lock_freq_1_max'],"70");
+            if(data.lock_freq_2_min.data!=="71") nibe.setData(hP['lock_freq_2_min'],"71");
+            if(data.lock_freq_2_max.data!=="120") nibe.setData(hP['lock_freq_2_max'],"120");
+            if(options.heat < 0) {
+                // Aktivera spärrband
+                if(data.lock_freq_1.data!=="1") nibe.setData(hP['lock_freq_1_activate'],"1");
+                if(data.lock_freq_2.data!=="1") nibe.setData(hP['lock_freq_2_activate'],"1");
+                resolve(true)
+            } else if(options.heat >= 0) {
+                // Avaktivera spärrband
+                if(data.lock_freq_1.data!=="0") nibe.setData(hP['lock_freq_1_activate'],"0");
+                if(data.lock_freq_2.data!=="0") nibe.setData(hP['lock_freq_2_activate'],"0");
+                resolve(false)
+            }
+        }).catch(err => reject(err))
+    } else {
+        reject(`This model does not support slowing the frequenzy down.`)
+    }
+    
+    });
+    return promise;
+}
+const blockAdditive = (options) => {
+    const promise = new Promise(async (resolve,reject) => {
+    let config = nibe.getConfig();
+    if(config.price===undefined) {
+        config.price = {};
+        nibe.setConfig(config);
+    }
+    if(config.system.pump!=="F370" && config.system.pump!=="F470") {
+        if(options.heat < 0) {
+            if(data.dM===undefined) {
+                data.dM = await getNibeData(hP['dM']).catch(console.log);
+            }
+            getNibeData(hP['dMaddstart']).then(dMaddstart => {
+                if(data.dM.data<data.dMstart.data+(-100)) {
+                    nibe.setData(hP['dM'],(data.dMstart.data/2));
+                } else {
+                    if(data.dM.data < (dMaddstart.data+50)) {
+                        nibe.setData(hP['dM'],(dMaddstart.data+100));
+                    }
+                }
+            })
+            .catch(async (err) => {
+                data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
+                let dMaddstart = data.dMstart.data-data.dMadd.data
+                if(data.dM.data<data.dMstart.data+(-100)) {
+                    nibe.setData(hP['dM'],(data.dMstart.data/2));
+                } else {
+                    if(data.dM.data < (dMaddstart.data+50)) {
+                        nibe.setData(hP['dM'],(dMaddstart.data+100));
+                    }
+                }
+            })
+            
+        }
+    }
+    
+    });
+    return promise;
+}
     let hwSavedTemp = [];
     let hwTargetValue;
     async function hotwaterPlugin() {
