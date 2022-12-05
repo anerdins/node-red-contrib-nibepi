@@ -2024,6 +2024,7 @@ async function runFan() {
                 if(data.alarm.raw_data!==183) {
                     if(config.fan.dm_boost_value!==undefined && config.fan.dm_boost_value!=="" && config.fan.dm_boost_value!==0) {
                         if(fan_mode!='dMboost') {
+                            fan_mode_saved = fan_mode
                             fan_mode = 'dMboost'
                             dMboost = true;
                         }
@@ -2037,6 +2038,7 @@ async function runFan() {
                 }
             } else if(data.dM.data>(boost+50)) {
                 dMboost = false;
+                fan_mode = fan_mode_saved
                 nibe.log(`Gradminuter över gränsvärde för boost: ${boost+50}, Gradminuter: ${data.dM.data}`,'fan','debug');
                 reject();
             } else {
