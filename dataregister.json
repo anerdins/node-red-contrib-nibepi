@@ -71,7 +71,13 @@
         "pool_start_temp_s1":"48090",
         "pool_stop_temp_s1":"48092",
         "pool_cpr_s1":"48287",
-        "prio_add_enable":"49202"
+        "prio_add_enable":"49202",
+        "lock_freq_1_activate":"48660",
+        "lock_freq_2_activate":"48659",
+        "lock_freq_1_min":"48662",
+        "lock_freq_1_max":"48664",
+        "lock_freq_2_min":"48661",
+        "lock_freq_2_max":"48663"
     },
     "sSeries": {
         "inside":"30026",

@@ -1779,26 +1779,48 @@ const lockFreq = (options) => {
         nibe.setConfig(config);
     }
     if(config.system.pump=="F730" || config.system.pump=="F750" || config.system.pump=="F1155" || config.system.pump=="F1255" || config.system.pump=="F1355") {
-        data.lock_freq_1 = getNibeData(hP['lock_freq_1_activate']).catch(console.log);
-        data.lock_freq_2 = getNibeData(hP['lock_freq_2_activate']).catch(console.log);
-        data.lock_freq_1_min = getNibeData(hP['lock_freq_1_min']).catch(console.log);
-        data.lock_freq_1_max = getNibeData(hP['lock_freq_1_max']).catch(console.log);
-        data.lock_freq_2_min = getNibeData(hP['lock_freq_2_min']).catch(console.log);
-        data.lock_freq_2_max = getNibeData(hP['lock_freq_2_max']).catch(console.log);
-        Promise.all([data.lock_freq_1, data.lock_freq_2, data.lock_freq_1_min, data.lock_freq_1_max, data.lock_freq_2_min, data.lock_freq_2_max]).then(async (values) => {
-            if(data.lock_freq_1_min.data!=="21") nibe.setData(hP['lock_freq_1_min'],"21");
-            if(data.lock_freq_1_max.data!=="70") nibe.setData(hP['lock_freq_1_max'],"70");
-            if(data.lock_freq_2_min.data!=="71") nibe.setData(hP['lock_freq_2_min'],"71");
-            if(data.lock_freq_2_max.data!=="120") nibe.setData(hP['lock_freq_2_max'],"120");
+        var lock_freq_1 = getNibeData(hP['lock_freq_1_activate']).catch(console.log);
+        var lock_freq_2 = getNibeData(hP['lock_freq_2_activate']).catch(console.log);
+        var lock_freq_1_min = getNibeData(hP['lock_freq_1_min']).catch(console.log);
+        var lock_freq_1_max = getNibeData(hP['lock_freq_1_max']).catch(console.log);
+        var lock_freq_2_min = getNibeData(hP['lock_freq_2_min']).catch(console.log);
+        var lock_freq_2_max = getNibeData(hP['lock_freq_2_max']).catch(console.log);
+        Promise.all([lock_freq_1, lock_freq_2, lock_freq_1_min, lock_freq_1_max, lock_freq_2_min, lock_freq_2_max]).then(async (values) => {
+            lock_freq_1 = values[0]
+            lock_freq_2 = values[1]
+            lock_freq_1_min = values[2]
+            lock_freq_1_max = values[3]
+            lock_freq_2_min = values[4]
+            lock_freq_2_max = values[5]
+            if(lock_freq_1_min.data!==21) nibe.setData(hP['lock_freq_1_min'],"21");
+            if(lock_freq_1_max.data!==70) nibe.setData(hP['lock_freq_1_max'],"70");
+            if(lock_freq_2_min.data!==71) nibe.setData(hP['lock_freq_2_min'],"71");
+            if(lock_freq_2_max.data!==120) nibe.setData(hP['lock_freq_2_max'],"120");
             if(options.heat < 0) {
                 // Aktivera spärrband
-                if(data.lock_freq_1.data!=="1") nibe.setData(hP['lock_freq_1_activate'],"1");
-                if(data.lock_freq_2.data!=="1") nibe.setData(hP['lock_freq_2_activate'],"1");
+                if(lock_freq_1.data!==1) nibe.setData(hP['lock_freq_1_activate'],"1");
+                if(lock_freq_2.data!==1) nibe.setData(hP['lock_freq_2_activate'],"1");
+                var dM = await getNibeData(hP['dM']).catch(console.log)
+                var dMaddstart = await getNibeData(hP['dMaddstart']).catch(console.log)
+                if(dMaddstart!==undefined) {
+                    if(dM.data < (dMaddstart.data+50)) {
+                        nibe.setData(hP['dM'],(dMaddstart.data+100));
+                        nibe.log(`Förhindrar gradminuter från att starta tillsats`,'price','debug');
+                    }
+                } else {
+                    var dMadd = await getNibeData(hP['dMadd']).catch(console.log);
+                    var dMstart = await getNibeData(hP['dMstart']).catch(console.log);
+                    dMaddstart = dMstart.data-dMadd.data
+                    if(dM.data < (dMaddstart.data+50)) {
+                        nibe.setData(hP['dM'],(dMaddstart.data+100));
+                        nibe.log(`Förhindrar gradminuter från att starta tillsats`,'price','debug');
+                    }
+                }
                 resolve(true)
             } else if(options.heat >= 0) {
                 // Avaktivera spärrband
-                if(data.lock_freq_1.data!=="0") nibe.setData(hP['lock_freq_1_activate'],"0");
-                if(data.lock_freq_2.data!=="0") nibe.setData(hP['lock_freq_2_activate'],"0");
+                if(lock_freq_1.data!==0) nibe.setData(hP['lock_freq_1_activate'],"0");
+                if(lock_freq_2.data!==0) nibe.setData(hP['lock_freq_2_activate'],"0");
                 resolve(false)
             }
         }).catch(err => reject(err))
@@ -1824,9 +1846,11 @@ const blockAdditive = (options) => {
             getNibeData(hP['dMaddstart']).then(dMaddstart => {
                 if(data.dM.data<data.dMstart.data+(-100)) {
                     nibe.setData(hP['dM'],(data.dMstart.data/2));
+                    nibe.log(`Återställer gradminuter`,'price','debug');
                 } else {
                     if(data.dM.data < (dMaddstart.data+50)) {
                         nibe.setData(hP['dM'],(dMaddstart.data+100));
+                        nibe.log(`Förhindrar gradminuter från att starta tillsats`,'price','debug');
                     }
                 }
             })
@@ -1835,9 +1859,11 @@ const blockAdditive = (options) => {
                 let dMaddstart = data.dMstart.data-data.dMadd.data
                 if(data.dM.data<data.dMstart.data+(-100)) {
                     nibe.setData(hP['dM'],(data.dMstart.data/2));
+                    nibe.log(`Återställer gradminuter`,'price','debug');
                 } else {
                     if(data.dM.data < (dMaddstart.data+50)) {
                         nibe.setData(hP['dM'],(dMaddstart.data+100));
+                        nibe.log(`Förhindrar gradminuter från att starta tillsats`,'price','debug');
                     }
                 }
             })
