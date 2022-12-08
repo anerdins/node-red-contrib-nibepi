@@ -903,45 +903,9 @@ module.exports = function(RED) {
                     nibe.log(`Nivån är väldigt billig`,'price','debug');
     
                     if(heat_enable!==undefined && heat_enable===true) if(config.price['heat_very_cheap_'+system]!==undefined) heat_adjust = config.price['heat_very_cheap_'+system];
-                    if(config.system.pump!=="F370" && config.system.pump!=="F470") {
-                        if(heat_adjust!==0) {
-                            if(data.dM===undefined) {
-                                data.dM = await getNibeData(hP['dM']).catch(console.log)
-                            }
-                            getNibeData(hP['dMaddstart']).then(dMaddstart => {
-                                if(data.dM.data < (dMaddstart.data+50)) {
-                                    nibe.setData(hP['dM'],(dMaddstart.data+100));
-                                }
-                            }).catch(async (err) => {
-                                data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
-                                if(data.dM.data < (data.dMstart.data-data.dMadd.data+50)) {
-                                    nibe.setData(hP['dM'],(data.dMstart.data-data.dMadd.data+100));
-                                }
-                            })
-                            
-                        }
-                    }
                 } else if(heat_level=="CHEAP") {
                     nibe.log(`Nivån är billig`,'price','debug');
                     if(heat_enable!==undefined && heat_enable===true) if(config.price['heat_cheap_'+system]!==undefined) heat_adjust = config.price['heat_cheap_'+system];
-                    if(config.system.pump!=="F370" && config.system.pump!=="F470") {
-                        if(heat_adjust!==0) {
-                            if(data.dM===undefined) {
-                                data.dM = await getNibeData(hP['dM']).catch(console.log);
-                            }
-                            getNibeData(hP['dMaddstart']).then(dMaddstart => {
-                                if(data.dM.data < (dMaddstart.data+50)) {
-                                    nibe.setData(hP['dM'],(dMaddstart.data+100));
-                                }
-                            }).catch(async (err) => {
-                                data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
-                                if(data.dM.data < (data.dMstart.data-data.dMadd.data+50)) {
-                                    nibe.setData(hP['dM'],(data.dMstart.data-data.dMadd.data+100));
-                                }
-                            })
-                            
-                        }
-                    }
                 } else if(heat_level=="NORMAL") {
                     nibe.log(`Nivån är normal`,'price','debug');
                     if(heat_enable!==undefined && heat_enable===true) if(config.price['heat_normal_'+system]!==undefined) heat_adjust = config.price['heat_normal_'+system];
@@ -1011,18 +975,6 @@ module.exports = function(RED) {
                                 nibe.log(`Ställer in gradminuter nära start ${data.dMstart.data+25}`,'price','debug');
                                 nibe.setData(hP['dM'],(data.dMstart.data+25));
                             }
-                            getNibeData(hP['dMaddstart']).then(dMaddstart => {
-                                if(data.dM.data < (dMaddstart.data+50)) {
-                                    nibe.log(`Ställer in gradminuter över gräns för elpatron, för att förhindra tilsats ${dMaddstart.data+100}`,'price','debug');
-                                    nibe.setData(hP['dM'],(dMaddstart.data+100));
-                                }
-                            }).catch(async (err) => {
-                                data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
-                                if(data.dM.data < (data.dMstart.data-data.dMadd.data+50)) {
-                                    nibe.log(`Ställer in gradminuter över gräns för elpatron, för att förhindra tilsats ${data.dMstart.data-data.dMadd.data+100}`,'price','debug');
-                                    nibe.setData(hP['dM'],(data.dMstart.data-data.dMadd.data+100));
-                                }
-                            })
                             
                         }
                     }
@@ -1039,19 +991,6 @@ module.exports = function(RED) {
                                 nibe.log(`Ställer in gradminuter nära start ${data.dMstart.data+25}`,'price','debug');
                                 nibe.setData(hP['dM'],(data.dMstart.data+25));
                             }
-                            getNibeData(hP['dMaddstart']).then(dMaddstart => {
-                                if(data.dM.data < (dMaddstart.data+50)) {
-                                    nibe.log(`Ställer in gradminuter över gräns för elpatron, för att förhindra tilsats ${dMaddstart.data+100}`,'price','debug');
-                                    nibe.setData(hP['dM'],(dMaddstart.data+100));
-                                }
-                            }).catch(async (err) => {
-                                data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
-                                if(data.dM.data < (data.dMstart.data-data.dMadd.data+50)) {
-                                    nibe.log(`Ställer in gradminuter över gräns för elpatron, för att förhindra tilsats ${data.dMstart.data-data.dMadd.data+100}`,'price','debug');
-                                    nibe.setData(hP['dM'],(data.dMstart.data-data.dMadd.data+100));
-                                }
-                            })
-                            
                         }
                     }
                 } else if(level=="NORMAL") {
@@ -2019,7 +1958,10 @@ async function runFan() {
         if(boost>(data.dMstart.data-100)) {
             reject(new Error(`Startvärde för boost ligger för nära gradminuter vid start av kompressor, ${boost}>${data.dMstart.data-100}`))
         } else {
-            if(data.dM.data<boost) {
+            var lock_freq_1 = await getNibeData(hP['lock_freq_1_activate']).catch(console.log);
+            var lock_freq_2 = await getNibeData(hP['lock_freq_2_activate']).catch(console.log);
+
+            if(data.dM.data<boost && lock_freq_1.data===0 && lock_freq_2.data===0) {
                 nibe.log(`Gradminuter under gränsvärde för boost: ${boost}, Gradminuter: ${data.dM.data}`,'fan','debug');
                 if(data.alarm.raw_data!==183) {
                     if(config.fan.dm_boost_value!==undefined && config.fan.dm_boost_value!=="" && config.fan.dm_boost_value!==0) {
@@ -2036,6 +1978,11 @@ async function runFan() {
                     nibe.log(`Gradminutboost uppfylld, men avfrostning pågår.`,'fan','debug');
                     reject();
                 }
+            } else if(lock_freq_1.data===1 && lock_freq_2.data===1) {
+                dMboost = false;
+                fan_mode = fan_mode_saved
+                nibe.log(`Blockering av hög kompressorfrekvens pågår via elprisreglering`,'fan','debug');
+                reject();
             } else if(data.dM.data>(boost+50)) {
                 dMboost = false;
                 fan_mode = fan_mode_saved
