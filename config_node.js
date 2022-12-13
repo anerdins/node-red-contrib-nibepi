@@ -928,10 +928,10 @@ module.exports = function(RED) {
                     }
                 }
                 await lockFreq({heat:heat_adjust}).then(result => {
-                    if(result===true) nibe.log(`Frekvensen sänkt till 20 hz`,'price','debug');
-                    if(result===false) nibe.log(`Frekvensen ej längre sänkt`,'price','debug');
+                    if(result!==null) nibe.log(`Frekvensen sänkt till ${result} hz`,'price','debug');
+                    if(result===null) nibe.log(`Frekvensen ej längre sänkt`,'price','debug');
                 }).catch(async err => {
-                    nibe.log(`Värmepump stödjer inte frekvens styrning, försöker stoppa via gradminuter`,'price','debug');
+                    nibe.log(err,'price','debug');
                     blockAdditive({heat:heat_adjust}).then(result => {
                     
                     }).catch(async err => {
@@ -1019,10 +1019,10 @@ module.exports = function(RED) {
                     }
                 }
                 await lockFreq({heat:heat_adjust}).then(result => {
-                    if(result===true) nibe.log(`Frekvensen sänkt till 20 hz`,'price','debug');
-                    if(result===false) nibe.log(`Frekvensen ej längre sänkt`,'price','debug');
+                    if(result!==null) nibe.log(`Frekvensen sänkt till ${result} hz`,'price','debug');
+                    if(result===null) nibe.log(`Frekvensen ej längre sänkt`,'price','debug');
                 }).catch(async err => {
-                    nibe.log(`Värmepump stödjer inte frekvens styrning, försöker stoppa via gradminuter`,'price','debug');
+                    nibe.log(err,'price','debug');
                     blockAdditive({heat:heat_adjust}).then(result => {
                     
                     }).catch(async err => {
@@ -1041,10 +1041,10 @@ module.exports = function(RED) {
                 if(priceOffset[system]!==0) {
                     priceOffset[system] = 0;
                     await lockFreq({heat:0}).then(result => {
-                        if(result===true) nibe.log(`Frekvensen sänkt till 20 hz`,'price','debug');
-                        if(result===false) nibe.log(`Frekvensen ej längre sänkt`,'price','debug');
+                        if(result!==null) nibe.log(`Frekvensen sänkt till ${result} hz`,'price','debug');
+                        if(result===null) nibe.log(`Frekvensen ej längre sänkt`,'price','debug');
                     }).catch(async err => {
-                        nibe.log(`Värmepump stödjer inte frekvens styrning, försöker stoppa via gradminuter`,'price','debug');
+                        nibe.log(err,'price','debug');
                         blockAdditive({heat:0}).then(result => {
                         
                         }).catch(async err => {
@@ -1290,11 +1290,6 @@ module.exports = function(RED) {
         nibe.log(`Startar elprisreglering runPrice()`,'price','debug');
         //let data = Object.assign({}, result);
         let config = nibe.getConfig();
-        if(config.price===undefined) {
-            config.price = {};
-            nibe.setConfig(config);
-            nibe.log(`Sätter config för första gången.`,'price','debug');
-        }
         let inside;
         nibe.log(`Letar efter givare ${config.price['sensor_'+data.system]}`,'price','debug');
         if(config.price['sensor_'+data.system]!==undefined && config.price['sensor_'+data.system]!=="") {
@@ -1710,6 +1705,10 @@ module.exports = function(RED) {
         });
         return promise;
     }
+    
+function scale (number, inMin, inMax, outMin, outMax) {
+    return (number - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+}
 const lockFreq = (options) => {
     const promise = new Promise((resolve,reject) => {
     let config = nibe.getConfig();
@@ -1718,20 +1717,57 @@ const lockFreq = (options) => {
         nibe.setConfig(config);
     }
     if(config.system.pump=="F730" || config.system.pump=="F750" || config.system.pump=="F1155" || config.system.pump=="F1255" || config.system.pump=="F1355") {
+        var min_temp = config.price.min_temp
+        var max_temp = config.price.max_temp
+        var min_freq = config.price.min_freq
+        var max_freq = config.price.max_freq
+        var outside = getNibeData(hP['outside']).catch(console.log);
         var lock_freq_1 = getNibeData(hP['lock_freq_1_activate']).catch(console.log);
         var lock_freq_2 = getNibeData(hP['lock_freq_2_activate']).catch(console.log);
         var lock_freq_1_min = getNibeData(hP['lock_freq_1_min']).catch(console.log);
         var lock_freq_1_max = getNibeData(hP['lock_freq_1_max']).catch(console.log);
         var lock_freq_2_min = getNibeData(hP['lock_freq_2_min']).catch(console.log);
         var lock_freq_2_max = getNibeData(hP['lock_freq_2_max']).catch(console.log);
-        Promise.all([lock_freq_1, lock_freq_2, lock_freq_1_min, lock_freq_1_max, lock_freq_2_min, lock_freq_2_max]).then(async (values) => {
+        Promise.all([lock_freq_1, lock_freq_2, lock_freq_1_min, lock_freq_1_max, lock_freq_2_min, lock_freq_2_max,outside]).then(async (values) => {
             lock_freq_1 = values[0]
             lock_freq_2 = values[1]
             lock_freq_1_min = values[2]
             lock_freq_1_max = values[3]
             lock_freq_2_min = values[4]
             lock_freq_2_max = values[5]
-            if(lock_freq_1_min.data!==21) nibe.setData(hP['lock_freq_1_min'],"21");
+            outside = values[6]
+            var frequency = scale(Number(outside.data.toFixed(0)), min_temp, max_temp, max_freq, min_freq)
+            if(frequency!==undefined && frequency!==null && !isNaN(frequency)) {
+                frequency = Number(frequency.toFixed(0))
+                if(frequency<21) frequency = 21
+                nibe.log(`Max frekvens som ska köras vid denna utomhustemperatur: ${frequency} hz`,'price','debug');
+            } else {
+                frequency = 21
+                nibe.log(`Max frekvens som ska köras vid denna utomhustemperatur: Ställer in standard ${frequency} hz`,'price','debug');
+            }
+            if(frequency<21) frequency = 21
+            if(frequency > lock_freq_1_min.data) {
+                if(options.heat < 0) {
+                    nibe.setData(hP['lock_freq_1_min'],frequency,(err,result) => {
+                        if(err) {
+
+                        } else {
+                            nibe.setData(hP['lock_freq_1_activate'],"0",(err,result) => {
+                                if(err) {
+        
+                                } else {
+                                    nibe.setData(hP['lock_freq_1_activate'],"1")
+                                }
+        
+                            });
+                        }
+
+                    });
+                }
+
+            } else if(frequency < lock_freq_1_min.data) {
+                nibe.setData(hP['lock_freq_1_min'],frequency);
+            }
             if(lock_freq_1_max.data!==70) nibe.setData(hP['lock_freq_1_max'],"70");
             if(lock_freq_2_min.data!==71) nibe.setData(hP['lock_freq_2_min'],"71");
             if(lock_freq_2_max.data!==120) nibe.setData(hP['lock_freq_2_max'],"120");
@@ -1755,16 +1791,19 @@ const lockFreq = (options) => {
                         nibe.log(`Förhindrar gradminuter från att starta tillsats`,'price','debug');
                     }
                 }
-                resolve(true)
+                resolve(frequency)
             } else if(options.heat >= 0) {
                 // Avaktivera spärrband
                 if(lock_freq_1.data!==0) nibe.setData(hP['lock_freq_1_activate'],"0");
                 if(lock_freq_2.data!==0) nibe.setData(hP['lock_freq_2_activate'],"0");
-                resolve(false)
+                resolve(null)
             }
-        }).catch(err => reject(err))
+        }).catch(err => {
+            console.log(err)
+            reject(JSON.stringify(err,null,2))
+        })
     } else {
-        reject(`This model does not support slowing the frequenzy down.`)
+        reject(`This model does not support slowing the frequency down.`)
     }
     
     });
@@ -2139,7 +2178,7 @@ async function runFan() {
             
         },(err => {
             if(err) {
-                nibe.log(err,'fan','error');
+                //nibe.log(err,'fan','error');
             } else {
                 if(config.fan.enable_low===true && data.cpr_set.raw_data<config.fan.low_cpr_freq) {
                     nibe.log(`Kompressorfrekvens under gränsvärde`,'fan','debug');
@@ -2530,7 +2569,7 @@ async function runDiagnostic() {
             timer.diagnostic = setTimeout(defrostCheck, defrostTimer);
         }
     } else {
-        nibe.log(`Heatpump is not supported`,'diagnostic','error');
+        nibe.log(`Heatpump is not supported`,'diagnostic','debug');
     }
 }
 async function tenMinuteUpdate() {
@@ -2580,6 +2619,20 @@ const checkTranslation = (node) => {
     function nibeConfig(n) {
         RED.nodes.createNode(this,n);
         var cron = require('node-cron');
+        let config = nibe.getConfig();
+        if(config.price===undefined) {
+            config.price = {};
+            nibe.setConfig(config);
+            nibe.log(`Sätter config för första gången för elprisregleringen.`,'price','debug');
+        }
+        if(config.price.min_freq===undefined) {
+            config.price.min_freq = 20
+            config.price.max_freq = 35
+            config.price.min_temp = -20
+            config.price.max_temp = 0
+            nibe.setConfig(config);
+            nibe.log(`Sätter config för Elprisreglering till standardvärden för frekvensstyrning`,'price','debug');
+        }
         nibeData.emit('config',nibe.getConfig());
         checkTranslation(this);
         const handleMQTT = (config) => {
