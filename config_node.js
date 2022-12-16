@@ -1141,6 +1141,7 @@ module.exports = function(RED) {
             config.price = {};
             nibe.setConfig(config);
         }
+        let heat_enable = config.price['enable_heat_'+system];
         var priceArrayHeat = heat.prices
         priceArrayHeat.sort(function(a,b){return a.value - b.value});
         var priceArrayHW = hw.prices
@@ -1156,19 +1157,19 @@ module.exports = function(RED) {
             let value = Number((priceArrayHeat[o].value/100).toFixed(2));
             if(priceArrayHeat[o].level=="VERY_CHEAP") {
                 hotwater_adjust = Number(config.price.hotwater_very_cheap);
-                adjust = config.price['heat_very_cheap_'+system]||0;
+                if(heat_enable!==undefined && heat_enable===true) adjust = config.price['heat_very_cheap_'+system]||0;
             } else if(priceArrayHeat[o].level=="CHEAP") {
                 hotwater_adjust = Number(config.price.hotwater_cheap);
-                adjust = config.price['heat_cheap_'+system]||0;
+                if(heat_enable!==undefined && heat_enable===true) adjust = config.price['heat_cheap_'+system]||0;
             } else if(priceArrayHeat[o].level=="NORMAL") {
                 hotwater_adjust = Number(config.price.hotwater_normal);
-                adjust = config.price['heat_normal_'+system]||0;
+                if(heat_enable!==undefined && heat_enable===true) adjust = config.price['heat_normal_'+system]||0;
             } else if(priceArrayHeat[o].level=="EXPENSIVE") {
                 hotwater_adjust = Number(config.price.hotwater_expensive);
-                adjust = config.price['heat_expensive_'+system]||0;
+                if(heat_enable!==undefined && heat_enable===true) adjust = config.price['heat_expensive_'+system]||0;
             } else if(priceArrayHeat[o].level=="VERY_EXPENSIVE") {
                 hotwater_adjust = Number(config.price.hotwater_very_expensive);
-                adjust = config.price['heat_very_expensive_'+system]||0;
+                if(heat_enable!==undefined && heat_enable===true) adjust = config.price['heat_very_expensive_'+system]||0;
             }
             valueArray.push({x:timestamp,y:Number(value)});
             adjustArrayHeat.push({x:timestamp,y:Number(adjust.toFixed(2))})
@@ -1240,6 +1241,7 @@ module.exports = function(RED) {
             config.price.tibber_home = 0
             nibe.setConfig(config);
         }
+        let heat_enable = config.price['enable_heat_'+system];
         var today = tibber.data.viewer.homes[config.price.tibber_home].currentSubscription.priceInfo.today;
         var tomorrow;
         if(tibber.data.viewer.homes[config.price.tibber_home].currentSubscription.priceInfo.tomorrow!==undefined) {
@@ -1259,19 +1261,19 @@ module.exports = function(RED) {
             let value = Number(priceArray[o].energy.toFixed(2));
             if(priceArray[o].level=="VERY_CHEAP") {
                 hotwater_adjust = Number(config.price.hotwater_very_cheap);
-                adjust = config.price['heat_very_cheap_'+system]||0;
+                if(heat_enable!==undefined && heat_enable===true) adjust = config.price['heat_very_cheap_'+system]||0;
             } else if(priceArray[o].level=="CHEAP") {
                 hotwater_adjust = Number(config.price.hotwater_cheap);
-                adjust = config.price['heat_cheap_'+system]||0;
+                if(heat_enable!==undefined && heat_enable===true) adjust = config.price['heat_cheap_'+system]||0;
             } else if(priceArray[o].level=="NORMAL") {
                 hotwater_adjust = Number(config.price.hotwater_normal);
-                adjust = config.price['heat_normal_'+system]||0;
+                if(heat_enable!==undefined && heat_enable===true) adjust = config.price['heat_normal_'+system]||0;
             } else if(priceArray[o].level=="EXPENSIVE") {
                 hotwater_adjust = Number(config.price.hotwater_expensive);
-                adjust = config.price['heat_expensive_'+system]||0;
+                if(heat_enable!==undefined && heat_enable===true) adjust = config.price['heat_expensive_'+system]||0;
             } else if(priceArray[o].level=="VERY_EXPENSIVE") {
                 hotwater_adjust = Number(config.price.hotwater_very_expensive);
-                adjust = config.price['heat_very_expensive_'+system]||0;
+                if(heat_enable!==undefined && heat_enable===true) adjust = config.price['heat_very_expensive_'+system]||0;
             }
             valueArray.push({x:timestamp,y:Number(value)});
             adjustArray.push({x:timestamp,y:Number(adjust.toFixed(2))})
@@ -2277,7 +2279,7 @@ async function runFan() {
     
     // Start regulating only if not defrosting and vented air is above freezing temperatures.
     if(dMboost===true || co2boost===true || (data.alarm.raw_data!==183 && data.evaporator.raw_data>0 && data.temp_fan_speed!==undefined && data.temp_fan_speed.raw_data===0)) {
-        if(flow_set<100) {
+        if(flow_set<30) {
             nibe.log(`För lågt luftflöde inställt, avbryter.`,'fan','error');
             return;
         }
