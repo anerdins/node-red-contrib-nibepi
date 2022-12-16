@@ -908,7 +908,7 @@ module.exports = function(RED) {
                     if(heat_enable!==undefined && heat_enable===true) if(config.price['heat_cheap_'+system]!==undefined) heat_adjust = config.price['heat_cheap_'+system];
                 } else if(heat_level=="NORMAL") {
                     nibe.log(`Nivån är normal`,'price','debug');
-                    if(heat_enable!==undefined && heat_enable===true) if(config.price['heat_normal_'+system]!==undefined) heat_adjust = config.price['heat_normal_'+system];
+                    if(config.price['heat_normal_'+system]!==undefined) heat_adjust = config.price['heat_normal_'+system];
                 } else if(heat_level=="EXPENSIVE") {
                     nibe.log(`Nivån är dyr`,'price','debug');
                     if(inside!==undefined && (inside.data>(data['inside_set_'+system].data+temp_diff)) || config.price['enable_temp_'+system]===undefined || config.price['enable_temp_'+system]===false) {
@@ -965,38 +965,42 @@ module.exports = function(RED) {
                     nibe.log(`Nivån är väldigt billig`,'price','debug');
     
                     if(hw_enable!==undefined && hw_enable===true) hw_adjust = Number(config.price.hotwater_very_cheap);
-                    if(heat_enable!==undefined && heat_enable===true) if(config.price['heat_very_cheap_'+system]!==undefined) heat_adjust = config.price['heat_very_cheap_'+system];
-                    if(config.system.pump!=="F370" && config.system.pump!=="F470") {
-                        if(heat_adjust!==0) {
-                            if(data.dM===undefined) {
-                                data.dM = await getNibeData(hP['dM']).catch(console.log)
+                    if(heat_enable!==undefined && heat_enable===true) {
+                        if(config.price['heat_very_cheap_'+system]!==undefined) heat_adjust = config.price['heat_very_cheap_'+system];
+                        if(config.system.pump!=="F370" && config.system.pump!=="F470") {
+                            if(heat_adjust!==0) {
+                                if(data.dM===undefined) {
+                                    data.dM = await getNibeData(hP['dM']).catch(console.log)
+                                }
+                                if(data.dM.data > 0 && data.dM.data > data.dMstart.data+25) {
+                                    nibe.log(`Ställer in gradminuter nära start ${data.dMstart.data+25}`,'price','debug');
+                                    nibe.setData(hP['dM'],(data.dMstart.data+25));
+                                }
+                                
                             }
-                            if(data.dM.data > 0 && data.dM.data > data.dMstart.data+25) {
-                                nibe.log(`Ställer in gradminuter nära start ${data.dMstart.data+25}`,'price','debug');
-                                nibe.setData(hP['dM'],(data.dMstart.data+25));
-                            }
-                            
                         }
                     }
                 } else if(level=="CHEAP") {
                     nibe.log(`Nivån är billig`,'price','debug');
                     if(hw_enable!==undefined && hw_enable===true) hw_adjust = Number(config.price.hotwater_cheap);
-                    if(heat_enable!==undefined && heat_enable===true) if(config.price['heat_cheap_'+system]!==undefined) heat_adjust = config.price['heat_cheap_'+system];
-                    if(config.system.pump!=="F370" && config.system.pump!=="F470") {
-                        if(heat_adjust!==0) {
-                            if(data.dM===undefined) {
-                                data.dM = await getNibeData(hP['dM']).catch(console.log);
-                            }
-                            if(data.dM.data > 0 && data.dM.data > data.dMstart.data+25) {
-                                nibe.log(`Ställer in gradminuter nära start ${data.dMstart.data+25}`,'price','debug');
-                                nibe.setData(hP['dM'],(data.dMstart.data+25));
+                    if(heat_enable!==undefined && heat_enable===true) {
+                        if(config.price['heat_cheap_'+system]!==undefined) heat_adjust = config.price['heat_cheap_'+system];
+                        if(config.system.pump!=="F370" && config.system.pump!=="F470") {
+                            if(heat_adjust!==0) {
+                                if(data.dM===undefined) {
+                                    data.dM = await getNibeData(hP['dM']).catch(console.log);
+                                }
+                                if(data.dM.data > 0 && data.dM.data > data.dMstart.data+25) {
+                                    nibe.log(`Ställer in gradminuter nära start ${data.dMstart.data+25}`,'price','debug');
+                                    nibe.setData(hP['dM'],(data.dMstart.data+25));
+                                }
                             }
                         }
                     }
                 } else if(level=="NORMAL") {
                     nibe.log(`Nivån är normal`,'price','debug');
                     if(hw_enable!==undefined && hw_enable===true) hw_adjust = Number(config.price.hotwater_normal);
-                    if(heat_enable!==undefined && heat_enable===true) if(config.price['heat_normal_'+system]!==undefined) heat_adjust = config.price['heat_normal_'+system];
+                    if(config.price['heat_normal_'+system]!==undefined) heat_adjust = config.price['heat_normal_'+system];
                 } else if(level=="EXPENSIVE") {
                     
                     nibe.log(`Nivån är dyr`,'price','debug');
