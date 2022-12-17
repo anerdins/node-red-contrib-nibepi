@@ -2285,7 +2285,7 @@ async function runFan() {
     
     
     // Start regulating only if not defrosting and vented air is above freezing temperatures.
-    if(dMboost===true || co2boost===true || (data.alarm.raw_data!==183 && data.evaporator.raw_data>0 && data.temp_fan_speed!==undefined && data.temp_fan_speed.raw_data===0)) {
+    if((data.alarm.raw_data!==183 && data.evaporator.raw_data>0 && data.temp_fan_speed!==undefined && data.temp_fan_speed.raw_data===0)) {
         if(flow_set<30) {
             nibe.log(`För lågt luftflöde inställt, avbryter.`,'fan','error');
             return;
@@ -2296,7 +2296,7 @@ async function runFan() {
         }
         nibe.log(`Villkor uppfyllda för reglering av flöde.`,'fan','debug');
         nibe.log(`Flowset: ${flow_set}, Flöde: ${data.bs1_flow.raw_data}, Flowsaved: ${flow_saved}`,'fan','debug');
-        if(fan_mode!=="low" && data.bs1_flow.raw_data>(flow_set+25) && (flow_saved===undefined || data.bs1_flow.raw_data>flow_saved+25)) {
+        if(fan_mode!=="dMboost" && fan_mode!=="co2boost" && fan_mode!=="low" && data.bs1_flow.raw_data>(flow_set+25) && (flow_saved===undefined || data.bs1_flow.raw_data>flow_saved+25)) {
             nibe.log(`Luftflöde långt över börvärde: ${flow_set}, Flöde: ${data.bs1_flow.raw_data} m3/h, Forcering pågår`,'fan','debug');
         } else if(data.bs1_flow.raw_data>(flow_set+20)) {
             if(data.fan_speed.raw_data-5>10) {
