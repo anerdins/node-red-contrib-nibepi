@@ -501,6 +501,42 @@
             "SE":"Minsta prisskillnad", 
             "EN":"Minimum price difference",
             "DE":"Minimaler Preisunterschied"
+        },"price_min_temp": {
+            "SE":"Min temp", 
+            "EN":"Min temp",
+            "DE":"Min temp"
+        },"price_max_temp": {
+            "SE":"Max temp", 
+            "EN":"Max temp",
+            "DE":"Max temp"
+        },"price_min_freq": {
+            "SE":"Min frekvens", 
+            "EN":"Min frequency",
+            "DE":"Min Frequenz"
+        },"price_max_freq": {
+            "SE":"Max frekvens", 
+            "EN":"Max frequency",
+            "DE":"Max Frequenz"
+        },"price_freq_info": {
+            "SE":"<b>Frekvensreglering</b><br>Ställ in en värmekurva för frekvensen på kompressorn, istället för att stanna kompressorn vid högt pris så kan en värmekurva reglera vilken frekvens den ska köra på vid en viss utetemperatur<br><i>(OBS fungerar endast med inverterstyrda värmepumpar och använder sig av spärrbandsfunktionen)</i>",
+            "EN":"<b>Frequency regulation</b><br>Set a heating curve for the frequency of the compressor, instead of stopping the compressor at a high price, a heating curve can regulate which frequency it should run at a certain outside temperature<br><i> (NOTE only inverter-controlled heat pumps)</i>",
+            "DE":"<b>Frequenzregelung</b><br>Heizkurve für die Frequenz des Kompressors einstellen, anstatt den Kompressor teuer zu stoppen, kann eine Heizkurve regeln, mit welcher Frequenz er bei einer bestimmten Außentemperatur laufen soll< br><i> (HINWEIS nur Inverter-geregelte Wärmepumpen)</i>"
+        },"price_enable_freq": {
+            "SE":"<b>Aktivera Frekvensreglering", 
+            "EN":"<b>Activate Frequency regulation",
+            "DE":"<b>Frequenzregelung aktivieren"
+        },"price_dmreset_info": {
+            "SE":"<b>Gradminuter</b><br>Istället för frekvensreglering kan man återställa gradminuter vid högt pris för att tvinga ett stopp.",
+            "EN":"<b>Degree minutes</b><br>Instead of frequency regulation, one can reset degree minutes at high price to force a stop.",
+            "DE":"<b>Gradminuten</b><br>Statt einer Frequenzregelung kann man die Gradminuten teuer zurücksetzen, um einen Stopp zu erzwingen."
+        },"enable_dM_reset": {
+            "SE":"<b>Återställ gradminuter", 
+            "EN":"<b>Reset degree minutes",
+            "DE":"<b>Gradminuten zurücksetzen"
+        },"price_block_add": {
+            "SE":"<b>Förhindra tillsatsvärme vid högt pris", 
+            "EN":"<b>Prevent additive heat at high price",
+            "DE":"<b>Kostengünstige Zusatzwärme verhindern"
         },"price_enable_own_setting": {
             "SE":"<b>Använd egna inställningar", 
             "EN":"<b>Use you own settings",
