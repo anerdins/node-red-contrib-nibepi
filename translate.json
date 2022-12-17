@@ -529,7 +529,7 @@
             "SE":"<b>Gradminuter</b><br>Istället för frekvensreglering kan man återställa gradminuter vid högt pris för att tvinga ett stopp.",
             "EN":"<b>Degree minutes</b><br>Instead of frequency regulation, one can reset degree minutes at high price to force a stop.",
             "DE":"<b>Gradminuten</b><br>Statt einer Frequenzregelung kann man die Gradminuten teuer zurücksetzen, um einen Stopp zu erzwingen."
-        },"enable_dM_reset": {
+        },"price_enable_dM_reset": {
             "SE":"<b>Återställ gradminuter", 
             "EN":"<b>Reset degree minutes",
             "DE":"<b>Gradminuten zurücksetzen"
