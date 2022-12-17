@@ -1990,7 +1990,14 @@ async function runFan() {
         let config = nibe.getConfig();
         if(config.fan.enable_dm_boost!==undefined && config.fan.enable_dm_boost===true && config.system.pump!=="F370" && config.system.pump!=="F470") {
         data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
+        data.dMaddstart = await getNibeData(hP['dMaddstart']).catch(console.log)
         data.dMstart = await getNibeData(hP['dMstart']).catch(console.log);
+        if(data.dMaddstart===undefined) {
+            data.dMaddstart = {}
+            data.dMadd = await getNibeData(hP['dMadd']).catch(console.log);
+            data.dMaddstart.data = data.dMstart.data-data.dMadd.data
+            data.dMaddstart.raw_data = data.dMstart.raw_data-data.dMadd.raw_data
+        }
         data.dM = await getNibeData(hP['dM']).catch(console.log);
             nibe.log(`Luftflödes boost vid låga gradminuter aktiverat.`,'fan','debug');
             if(config.fan.dm_boost_start===undefined || config.fan.dm_boost_start=="" || config.fan.dm_boost_start===0) {
@@ -1998,7 +2005,7 @@ async function runFan() {
                 nibe.setConfig(config);
                 nibe.log(`Inget standard värde för boosting, ställer 300 gradminuter som diff.`,'fan','debug');
             }
-        let boost = (data.dMstart.data-data.dMadd.data)+config.fan.dm_boost_start;
+        let boost = (data.dMaddstart.data)+config.fan.dm_boost_start;
         nibe.log(`Boostvärde: ${boost}`,'fan','debug');
         if(boost>(data.dMstart.data-100)) {
             reject(new Error(`Startvärde för boost ligger för nära gradminuter vid start av kompressor, ${boost}>${data.dMstart.data-100}`))
