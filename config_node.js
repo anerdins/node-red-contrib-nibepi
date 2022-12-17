@@ -1736,7 +1736,7 @@ const lockFreq = (options) => {
         config.price = {};
         nibe.setConfig(config);
     }
-    if(config.system.pump=="F730" || config.system.pump=="F750" || config.system.pump=="F1155" || config.system.pump=="F1255" || config.system.pump=="F1355") {
+    if(config.system.pump!="F370" && config.system.pump!="F470" && config.system.pump!="F1145" && config.system.pump!="F1245") {
         var min_temp = config.price.min_temp
         var max_temp = config.price.max_temp
         var min_freq = config.price.min_freq
