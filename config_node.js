@@ -2038,6 +2038,8 @@ async function runFan() {
                             fan_mode_saved = fan_mode
                             fan_mode = 'dMboost'
                             dMboost = true;
+                            fan_saved = data.fan_speed.raw_data;
+                            nibe.log(`Sparar fläkthastighet vid första upptäckt av forcering med gradminut boost, värde: ${fan_saved}%`,'fan','debug');
                         }
                         resolve(true)
                     } else {
@@ -2063,6 +2065,7 @@ async function runFan() {
                     resolve(true)
                 } else {
                     dMboost = false;
+                    fan_mode = fan_mode_saved
                     nibe.log(`Gradminuter över gränsvärde för boost: ${boost}, Gradminuter: ${data.dM.data}`,'fan','debug');
                     reject();
                 }
@@ -2072,6 +2075,19 @@ async function runFan() {
         dMboost = false;
         nibe.log(`Luftflödes boost vid låga gradminuter ej aktiverat.`,'fan','debug');
         reject();
+    }
+    if(fan_mode!=="dMboost" && fan_mode_saved=="dMboost") {
+        if(data.alarm.raw_data!==183) {
+            if(fan_saved!==undefined) {
+                nibe.setData(hP.fan_speed,fan_saved);
+                data.fan_speed.raw_data = fan_saved;
+                nibe.log(`Återställer fläkthastighet (${fan_saved}%)`,'fan','debug');
+            }
+            if(config.fan[`speed_${fan_mode_saved}`]!==undefined) flow_set = config.fan[`speed_${fan_mode_saved}`];
+            nibe.log(`Ställer in ${fan_mode_saved} luftflöde: ${config.fan[`speed_${fan_mode_saved}`]} m3/h`,'fan','debug');
+        } else {
+            nibe.log(`Avfrostning pågår, avvaktar, sparad fläkthastighet (${fan_saved}%)`,'fan','debug');
+        }
     }
     });
     return promise;
